@@ -11,7 +11,7 @@ matrix:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        packages: 
+        packages:
           - g++-8
           - gcc-8
     env:
@@ -25,7 +25,7 @@ matrix:
       apt:
         sources:
         - ubuntu-toolchain-r-test
-        packages: 
+        packages:
           - g++-7
           - gcc-7
     env:
@@ -40,28 +40,12 @@ matrix:
         sources:
         - ubuntu-toolchain-r-test
         - llvm-toolchain-trusty-6.0
-        packages: 
+        packages:
           - clang-6.0
           - libstdc++-7-dev
     env:
     - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
     - LABEL="linux-clang-6"
-
-  ## OSX, g++-8
-  - os: osx
-    osx_image: xcode10
-    compiler: gcc
-    env:
-    - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-    - LABEL="osx-g++-8"
-
-  # OSX, g++-7
-  - os: osx
-    osx_image: xcode10
-    compiler: gcc
-    env:
-    - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-    - LABEL="osx-g++-7"
 
   # OSX, clang
   - os: osx
@@ -77,35 +61,7 @@ matrix:
     - MATRIX_EVAL="CC=aarch64-linux-gnu-gcc && CXX=aarch64-linux-gnu-g++"
     - LABEL="aarch64"
 
-before_install:
-- eval $MATRIX_EVAL
-
-install:
-# Need to uninstall oclint to get newer gcc installed https://github.com/travis-ci/travis-ci/issues/8826
-- if [[ "${LABEL:0:3}" == "osx" ]]; then brew cask uninstall --force oclint || true ; fi
-
-# Need a newer version of llvm to link against to get std::filesystem / std::experimental::filesystem 
-- if [[ "${LABEL:0:3}" == "osx" ]]; then travis_retry brew install llvm || travis_retry brew upgrade llvm ; fi
-
-# Neeed to install ccache
-- if [[ "${LABEL:0:3}" == "osx" ]]; then travis_retry brew install ccache ; fi
-- if [[ "${LABEL:0:3}" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH" ; fi
-
-# Install the correct gcc version
-- if [[ "$LABEL" == "osx-g++-8" ]]; then travis_retry brew install gcc@8 ; fi
-- if [[ "$LABEL" == "osx-g++-7" ]]; then travis_retry brew install gcc@7 ; fi
-
-- if [[ "$LABEL" == "aarch64" ]]; then export BASEDIR=`pwd` ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then cd $HOME ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then wget https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/8.2-2018.08/gcc-arm-8.2-2018.08-x86_64-aarch64-linux-gnu.tar.xz ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then mkdir toolchain && cd toolchain ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then tar xfv ../gcc-arm-8.2-2018.08-x86_64-aarch64-linux-gnu.tar.xz >/dev/null ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then cd gcc-arm-8.2-2018.08-x86_64-aarch64-linux-gnu ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then export CUSTOM_TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../scripts/cross-aarch64.cmake" ; fi
-- if [[ "$LABEL" == "aarch64" ]]; then cd $BASEDIR ; fi
-
 script:
 - eval $MATRIX_EVAL
-- mkdir build && cd build
-- cmake .. ${CUSTOM_TOOLCHAIN}
-- make -j
+- ./scripts/ci_cpp.sh
+- if [[ "$LABEL" != "aarch64" ]]; then ./scripts/ci_node.sh ; fi

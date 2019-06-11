@@ -17,9 +17,6 @@ and fitness for purpose.
 ---------------------------------------------------------------------------
 Issue Date: 20/12/2007
 */
-// Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
 
 #include <stdint.h>
 

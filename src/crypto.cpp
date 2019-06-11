@@ -12,29 +12,26 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
-#include <mutex>
+
+#if defined(_MSC_VER)
+#include <malloc.h>
+#endif
 
 #include "Varint.h"
 #include "crypto.h"
 #include "hash.h"
+#include "random.h"
 
 namespace Crypto {
 
-  using std::abort;
-  using std::int32_t;
-  using std::lock_guard;
-  using std::mutex;
-
   extern "C" {
+#include "keccak.h"
 #include "crypto-ops.h"
-#include "random.h"
   }
-
-  mutex random_lock;
 
   static inline void random_scalar(EllipticCurveScalar &res) {
     unsigned char tmp[64];
-    generate_random_bytes(64, tmp);
+    Random::randomBytes(64, tmp);
     sc_reduce(tmp);
     memcpy(&res, tmp, 32);
   }
@@ -44,8 +41,15 @@ namespace Crypto {
     sc_reduce32(reinterpret_cast<unsigned char*>(&res));
   }
 
+  void crypto_ops::scReduce32(EllipticCurveScalar & scalar) {
+    sc_reduce32(reinterpret_cast < unsigned char *>(&scalar));
+  }
+
+  void crypto_ops::hashToScalar(const void *data, size_t length, EllipticCurveScalar & res) {
+    hash_to_scalar(data, length, res);
+  }
+
   void crypto_ops::generate_keys(PublicKey &pub, SecretKey &sec) {
-    lock_guard<mutex> lock(random_lock);
     ge_p3 point;
     random_scalar(reinterpret_cast<EllipticCurveScalar&>(sec));
     ge_scalarmult_base(&point, reinterpret_cast<unsigned char*>(&sec));
@@ -53,7 +57,6 @@ namespace Crypto {
   }
 
   void crypto_ops::generate_deterministic_keys(PublicKey &pub, SecretKey &sec, SecretKey& second) {
-    lock_guard<mutex> lock(random_lock);
     ge_p3 point;
 	sec = second;
     sc_reduce32(reinterpret_cast<unsigned char*>(&sec)); // reduce in case second round of keys (sendkeys)
@@ -62,7 +65,6 @@ namespace Crypto {
   }
 
   SecretKey crypto_ops::generate_m_keys(PublicKey &pub, SecretKey &sec, const SecretKey& recovery_key, bool recover) {
-    lock_guard<mutex> lock(random_lock);
     ge_p3 point;
     SecretKey rng;
     if (recover)
@@ -264,7 +266,6 @@ namespace Crypto {
   };
 
   void crypto_ops::generate_signature(const Hash &prefix_hash, const PublicKey &pub, const SecretKey &sec, Signature &sig) {
-    lock_guard<mutex> lock(random_lock);
     ge_p3 tmp3;
     EllipticCurveScalar k;
     s_comm buf;
@@ -364,16 +365,17 @@ namespace Crypto {
     return sizeof(rs_comm) + pubs_count * sizeof(((rs_comm*)0)->ab[0]);
   }
 
-    std::tuple<bool, std::vector<Signature>> crypto_ops::generateRingSignatures(
+    bool crypto_ops::generateRingSignatures(
         const Hash prefixHash,
         const KeyImage keyImage,
         const std::vector<PublicKey> publicKeys,
         const Crypto::SecretKey transactionSecretKey,
-        uint64_t realOutput)
+        uint64_t realOutput,
+        std::vector<Signature>& signatures)
     {
-        std::vector<Signature> signatures(publicKeys.size());
+        signatures.clear();
 
-        lock_guard<mutex> lock(random_lock);
+        signatures.resize(publicKeys.size());
 
         ge_p3 image_unp;
         ge_dsmp image_pre;
@@ -383,7 +385,7 @@ namespace Crypto {
 
         if (ge_frombytes_vartime(&image_unp, reinterpret_cast<const unsigned char*>(&keyImage)) != 0)
         {
-            return {false, signatures};
+            return false;
         }
 
         ge_dsm_precomp(image_pre, &image_unp);
@@ -413,7 +415,7 @@ namespace Crypto {
 
                 if (ge_frombytes_vartime(&tmp3, reinterpret_cast<const unsigned char*>(&publicKeys[i])) != 0)
                 {
-                    return {false, signatures};
+                    return false;
                 }
 
                 ge_double_scalarmult_base_vartime(
@@ -460,7 +462,7 @@ namespace Crypto {
             reinterpret_cast<unsigned char*>(&k)
         );
 
-        return {true, signatures};
+        return true;
     }
 
     bool crypto_ops::checkRingSignature(
@@ -547,4 +549,26 @@ namespace Crypto {
 
         return sc_isnonzero(reinterpret_cast<unsigned char*>(&h)) == 0;
     }
+
+    void crypto_ops::generateViewFromSpend(
+        const Crypto::SecretKey &spend,
+        Crypto::SecretKey &viewSecret) {
+
+      /* If we don't need the pub key */
+      Crypto::PublicKey unused_dummy_variable;
+      generateViewFromSpend(spend, viewSecret, unused_dummy_variable);
+    }
+
+    void crypto_ops::generateViewFromSpend(
+        const Crypto::SecretKey &spend,
+        Crypto::SecretKey &viewSecret,
+        Crypto::PublicKey &viewPublic) {
+
+        Crypto::SecretKey viewKeySeed;
+
+        keccak((uint8_t *)&spend, sizeof(spend), (uint8_t *)&viewKeySeed, sizeof(viewKeySeed));
+
+        Crypto::generate_deterministic_keys(viewPublic, viewSecret, viewKeySeed);
+    }
+
 }

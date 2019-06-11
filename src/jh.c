@@ -12,9 +12,6 @@
    --------------------------------
    Last Modified: January 16, 2011
 */
-// Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
 
 #include "jh.h"
 

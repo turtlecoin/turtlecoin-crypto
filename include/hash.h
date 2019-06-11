@@ -7,9 +7,13 @@
 
 #pragma once
 
+#include "argon2.h"
+
+#include <cstring>
+
 #include <stddef.h>
 
-#include "CryptoTypes.h"
+#include <CryptoTypes.h>
 
 // Standard Cryptonight Definitions
 #define CN_PAGE_SIZE                    2097152
@@ -44,11 +48,20 @@
 #error The CryptoNight Soft Shell Parameters you supplied will exceed normal paging operations.
 #endif
 
+// Chukwa Definitions
+#define CHUKWA_HASHLEN 32 // The length of the resulting hash in bytes
+#define CHUKWA_SALTLEN 16 // The length of our salt in bytes
+#define CHUKWA_THREADS 1 // How many threads to use at once
+#define CHUKWA_ITERS   3 // How many iterations we perform as part of our slow-hash
+#define CHUKWA_MEMORY  512 // This value is in KiB (0.5MB)
+
 namespace Crypto {
 
   extern "C" {
 #include "hash-ops.h"
   }
+
+  static bool argon_optimization_selected = false;
 
   /*
     Cryptonight hash functions
@@ -143,46 +156,68 @@ namespace Crypto {
   }
 
   // CryptoNight Soft Shell
-  inline  void cn_soft_shell_slow_hash_v0(const void *data, size_t length, Hash &hash, uint32_t height) {
-    uint32_t base_offset = (height % CN_SOFT_SHELL_WINDOW);
-    int32_t offset = (height % (CN_SOFT_SHELL_WINDOW * 2)) - (base_offset * 2);
+  inline  void cn_soft_shell_slow_hash_v0(const void *data, size_t length, Hash &hash, uint64_t height) {
+    uint64_t base_offset = (height % CN_SOFT_SHELL_WINDOW);
+    int64_t offset = (height % (CN_SOFT_SHELL_WINDOW * 2)) - (base_offset * 2);
     if (offset < 0) {
       offset = base_offset;
     }
 
-    uint32_t scratchpad = CN_SOFT_SHELL_MEMORY + (static_cast<uint32_t>(offset) * CN_SOFT_SHELL_PAD_MULTIPLIER);
-    uint32_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint32_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
-    uint32_t pagesize = scratchpad;
+    uint64_t scratchpad = CN_SOFT_SHELL_MEMORY + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_PAD_MULTIPLIER);
+	scratchpad = (static_cast<uint64_t>(scratchpad / 128)) * 128;
+    uint64_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
+    uint64_t pagesize = scratchpad;
 
     cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, pagesize, scratchpad, iterations);
   }
 
-  inline void cn_soft_shell_slow_hash_v1(const void *data, size_t length, Hash &hash, uint32_t height) {
-    uint32_t base_offset = (height % CN_SOFT_SHELL_WINDOW);
-    int32_t offset = (height % (CN_SOFT_SHELL_WINDOW * 2)) - (base_offset * 2);
+  inline void cn_soft_shell_slow_hash_v1(const void *data, size_t length, Hash &hash, uint64_t height) {
+    uint64_t base_offset = (height % CN_SOFT_SHELL_WINDOW);
+    int64_t offset = (height % (CN_SOFT_SHELL_WINDOW * 2)) - (base_offset * 2);
     if (offset < 0) {
       offset = base_offset;
     }
 
-    uint32_t scratchpad = CN_SOFT_SHELL_MEMORY + (static_cast<uint32_t>(offset) * CN_SOFT_SHELL_PAD_MULTIPLIER);
-    uint32_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint32_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
-    uint32_t pagesize = scratchpad;
+    uint64_t scratchpad = CN_SOFT_SHELL_MEMORY + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_PAD_MULTIPLIER);
+	scratchpad = (static_cast<uint64_t>(scratchpad / 128)) * 128;
+    uint64_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
+    uint64_t pagesize = scratchpad;
 
     cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, pagesize, scratchpad, iterations);
   }
 
-  inline void cn_soft_shell_slow_hash_v2(const void *data, size_t length, Hash &hash, uint32_t height) {
-    uint32_t base_offset = (height % CN_SOFT_SHELL_WINDOW);
-    int32_t offset = (height % (CN_SOFT_SHELL_WINDOW * 2)) - (base_offset * 2);
+  inline void cn_soft_shell_slow_hash_v2(const void *data, size_t length, Hash &hash, uint64_t height) {
+    uint64_t base_offset = (height % CN_SOFT_SHELL_WINDOW);
+    int64_t offset = (height % (CN_SOFT_SHELL_WINDOW * 2)) - (base_offset * 2);
     if (offset < 0) {
       offset = base_offset;
     }
 
-    uint32_t scratchpad = CN_SOFT_SHELL_MEMORY + (static_cast<uint32_t>(offset) * CN_SOFT_SHELL_PAD_MULTIPLIER);
-    uint32_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint32_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
-    uint32_t pagesize = scratchpad;
+    uint64_t scratchpad = CN_SOFT_SHELL_MEMORY + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_PAD_MULTIPLIER);
+	scratchpad = (static_cast<uint64_t>(scratchpad / 128)) * 128;
+    uint64_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
+    uint64_t pagesize = scratchpad;
 
     cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, pagesize, scratchpad, iterations);
+  }
+
+  inline void chukwa_slow_hash(const void *data, size_t length, Hash &hash) {
+    uint8_t salt[CHUKWA_SALTLEN];
+    memcpy(salt, data, sizeof(salt));
+
+    /* If this is the first time we've called this hash function then
+       we need to have the Argon2 library check to see if any of the
+       available CPU instruction sets are going to help us out */
+    if (!argon_optimization_selected)
+    {
+      /* Call the library quick benchmark test to set which CPU
+         instruction sets will be used */
+      argon2_select_impl(NULL, NULL);
+
+      argon_optimization_selected = true;
+    }
+
+    argon2id_hash_raw(CHUKWA_ITERS, CHUKWA_MEMORY, CHUKWA_THREADS, data, length, salt, CHUKWA_SALTLEN, hash.data, CHUKWA_HASHLEN);
   }
 
   inline void tree_hash(const Hash *hashes, size_t count, Hash &root_hash) {

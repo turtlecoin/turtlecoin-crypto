@@ -1,13 +1,11 @@
 // Copyright (c) 2012-2017, The CryptoNote developers, The Bytecoin developers
 // Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
 
 #pragma once
 
 #include <algorithm>
 
-#include "StringTools.h"
+#include <StringTools.h>
 
 #include <cstdint>
 
@@ -15,6 +13,8 @@
 
 namespace Crypto
 {
+    using BinaryArray = std::vector<uint8_t>;
+
     struct Hash
     {
         /* Can't have constructors here, because it violates std::is_pod<>
@@ -28,7 +28,7 @@ namespace Crypto
         {
             return !(*this == other);
         }
-        
+
         uint8_t data[32];
     };
 
@@ -55,7 +55,7 @@ namespace Crypto
         {
             return !(*this == other);
         }
-        
+
         uint8_t data[32];
     };
 
@@ -77,12 +77,12 @@ namespace Crypto
         {
             return std::equal(std::begin(data), std::end(data), std::begin(other.data));
         }
-        
+
         bool operator!=(const SecretKey &other) const
         {
             return !(*this == other);
         }
-        
+
         uint8_t data[32];
     };
 
@@ -171,27 +171,27 @@ namespace Crypto
     inline size_t hash_value(const Hash &hash)
     {
         return reinterpret_cast<const size_t &>(hash);
-    } 
+    }
 
     inline size_t hash_value(const PublicKey &publicKey)
     {
         return reinterpret_cast<const size_t &>(publicKey);
-    } 
+    }
 
     inline size_t hash_value(const SecretKey &secretKey)
     {
         return reinterpret_cast<const size_t &>(secretKey);
-    } 
+    }
 
     inline size_t hash_value(const KeyDerivation &keyDerivation)
     {
         return reinterpret_cast<const size_t &>(keyDerivation);
-    } 
+    }
 
     inline size_t hash_value(const KeyImage &keyImage)
     {
         return reinterpret_cast<const size_t &>(keyImage);
-    } 
+    }
 }
 
 namespace std
@@ -244,4 +244,41 @@ namespace std
             return reinterpret_cast<const size_t &>(signature);
         }
     };
+
+    /* Overloading the << operator */
+    inline ostream &operator<<(ostream &os, const Crypto::Hash &hash)
+    {
+        os << Common::podToHex(hash);
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const Crypto::PublicKey &publicKey)
+    {
+        os << Common::podToHex(publicKey);
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const Crypto::SecretKey &secretKey)
+    {
+        os << Common::podToHex(secretKey);
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const Crypto::KeyDerivation &keyDerivation)
+    {
+        os << Common::podToHex(keyDerivation);
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const Crypto::KeyImage &keyImage)
+    {
+        os << Common::podToHex(keyImage);
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const Crypto::Signature &signature)
+    {
+        os << Common::podToHex(signature);
+        return os;
+    }
 }

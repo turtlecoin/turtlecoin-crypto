@@ -3,9 +3,6 @@ chacha-merged.c version 20080118
 D. J. Bernstein
 Public domain.
 */
-// Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
 
 #include <memory.h>
 #include <stdio.h>
@@ -39,6 +36,9 @@ Public domain.
   c = PLUS(c,d); b = ROTATE(XOR(b,c), 7);
 
 static const char sigma[] = "expand 32-byte k";
+
+namespace Crypto
+{
 
 void chacha8(const void* data, size_t length, const uint8_t* key, const uint8_t* iv, char* cipher) {
   uint32_t x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15;
@@ -168,3 +168,5 @@ void chacha8(const void* data, size_t length, const uint8_t* key, const uint8_t*
     data = (uint8_t*)data + 64;
   }
 }
+
+} // namespace Crypto

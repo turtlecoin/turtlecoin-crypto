@@ -7,9 +7,6 @@
  * The hmac_* functions implement HMAC-BLAKE-256 and HMAC-BLAKE-224.
  * HMAC is specified by RFC 2104.
  */
-// Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
 
 #include <string.h>
 #include <stdio.h>

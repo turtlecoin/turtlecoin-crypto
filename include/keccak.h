@@ -1,8 +1,5 @@
 // keccak.h
 // 19-Nov-11  Markku-Juhani O. Saarinen <mjos@iki.fi>
-// Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
 
 #ifndef KECCAK_H
 #define KECCAK_H
