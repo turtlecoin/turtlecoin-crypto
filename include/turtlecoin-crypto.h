@@ -64,7 +64,7 @@ namespace Core
 
             static std::string tree_hash(const std::vector<std::string> hashes);
             static std::string tree_branch(const std::vector<std::string> hashes);
-            static std::string tree_hash_from_branch(const std::vector<std::string> branches, const std::string leaf, const std::string path);
+            static std::string tree_hash_from_branch(const std::vector<std::string> branches, const uint64_t depth, const std::string leaf, const std::string path);
 
             /* Crypto Methods */
             static bool generateRingSignatures(
