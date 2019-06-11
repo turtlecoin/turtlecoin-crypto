@@ -339,7 +339,7 @@ namespace Core
         return Common::podToHex(_branches[0]);
     }
 
-    std::string Cryptography::tree_hash_from_branch(const std::vector<std::string> branches, const std::string leaf, const std::string path)
+    std::string Cryptography::tree_hash_from_branch(const std::vector<std::string> branches, const uint64_t depth, const std::string leaf, const std::string path)
     {
         std::vector<Crypto::Hash> _branches;
 
@@ -362,7 +362,7 @@ namespace Core
 
         Crypto::Hash _hash = Crypto::Hash();
 
-        Crypto::tree_hash_from_branch(_branches.data(), branches.size(), _leaf, _path.data, _hash);
+        Crypto::tree_hash_from_branch(_branches.data(), depth, _leaf, _path.data, _hash);
 
         return Common::podToHex(_hash);
     }
@@ -728,11 +728,9 @@ namespace Core
     }
 }
 
-inline void tree_hash(const char* hashes, const uint64_t hashesLength, char* &hash)
+inline void tree_hash(const char** hashes, const uint64_t hashesLength, char* &hash)
 {
-    const std::string* hashesBuffer = reinterpret_cast<const std::string*>(hashes);
-
-    std::vector<std::string> _hashes(hashesBuffer, hashesBuffer + hashesLength);
+	std::vector<std::string> _hashes(hashes, hashes + hashesLength);
 
     std::string result = Core::Cryptography::tree_hash(_hashes);
 
@@ -750,13 +748,11 @@ inline void tree_branch(const char* hashes, const uint64_t hashesLength, char* &
     branch = strdup(_branch.c_str());
 }
 
-inline void tree_hash_from_branch(const char* branches, const uint64_t branchesLength, const char* leaf, const char* path, char* &hash)
+inline void tree_hash_from_branch(const char** branches, const uint64_t branchesLength, const uint64_t depth, const char* &leaf, const char* &path, char* &hash)
 {
-    const std::string* branchesBuffer = reinterpret_cast<const std::string*>(branches);
+    std::vector<std::string> _branches(branches, branches + branchesLength);
 
-    std::vector<std::string> _branches(branchesBuffer, branchesBuffer + branchesLength);
-
-    std::string _hash = Core::Cryptography::tree_hash_from_branch(_branches, leaf, path);
+    std::string _hash = Core::Cryptography::tree_hash_from_branch(_branches, depth, leaf, path);
 
     hash = strdup(_hash.c_str());
 }
@@ -1003,7 +999,7 @@ extern "C"
         output = strdup(Core::Cryptography::chukwa_slow_hash(input).c_str());
     }
 
-    EXPORTDLL void _tree_hash(const char* hashes, const uint64_t hashesLength, char* &hash)
+    EXPORTDLL void _tree_hash(const char** hashes, const uint64_t hashesLength, char* &hash)
     {
         tree_hash(hashes, hashesLength, hash);
     }
@@ -1013,9 +1009,9 @@ extern "C"
         tree_branch(hashes, hashesLength, branch);
     }
 
-    EXPORTDLL void _tree_hash_from_branch(const char* branches, const uint64_t branchesLength, const uint64_t depth, const char* leaf, const char* path, char* &hash)
+    EXPORTDLL void _tree_hash_from_branch(const char** branches, const uint64_t branchesLength, const uint64_t depth, const char* leaf, const char* path, char* &hash)
     {
-        tree_hash_from_branch(branches, branchesLength, leaf, path, hash);
+        tree_hash_from_branch(branches, branchesLength, depth, leaf, path, hash);
     }
 
     /* Crypto Methods */
