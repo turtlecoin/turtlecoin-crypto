@@ -238,13 +238,13 @@ if(NOT BUILD_JS AND NOT BUILD_WASM)
     target_link_libraries(turtlecoin-crypto-shared ws2_32)
   endif()
 
-  set(CRYPTOTEST_SOURCES
+  ## set(CRYPTOTEST_SOURCES
     ## tests/cryptotest.cpp
-  )
+  ## )
 
-  add_executable(cryptotest ${CRYPTOTEST_SOURCES})
-  target_link_libraries(cryptotest turtlecoin-crypto-static)
-  set_property(TARGET cryptotest PROPERTY OUTPUT_NAME "cryptotest")
+  ## add_executable(cryptotest ${CRYPTOTEST_SOURCES})
+  ## target_link_libraries(cryptotest turtlecoin-crypto-static)
+  ## set_property(TARGET cryptotest PROPERTY OUTPUT_NAME "cryptotest")
 else()
   set(JAVSCRIPT_SOURCES
     src/turtlecoin-crypto-js.cpp
