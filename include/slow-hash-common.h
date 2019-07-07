@@ -226,10 +226,10 @@ union cn_slow_hash_state
 #define VARIANT2_2() \
   do if (variant == 2 || variant == 3) \
   { \
-    *U64(local_hp_state + (j ^ 0x10)) ^= SWAP64LE(hi); \
-    *(U64(local_hp_state + (j ^ 0x10)) + 1) ^= SWAP64LE(lo); \
-    hi ^= SWAP64LE(*U64(local_hp_state + (j ^ 0x20))); \
-    lo ^= SWAP64LE(*(U64(local_hp_state + (j ^ 0x20)) + 1)); \
+    *U64(hp_state + (j ^ 0x10)) ^= SWAP64LE(hi); \
+    *(U64(hp_state + (j ^ 0x10)) + 1) ^= SWAP64LE(lo); \
+    hi ^= SWAP64LE(*U64(hp_state + (j ^ 0x20))); \
+    lo ^= SWAP64LE(*(U64(hp_state + (j ^ 0x20)) + 1)); \
   } while (0)
 
 #define V4_REG_LOAD(dst, src) \
