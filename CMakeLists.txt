@@ -239,7 +239,7 @@ if(NOT BUILD_JS AND NOT BUILD_WASM)
   endif()
 
   set(CRYPTOTEST_SOURCES
-    tests/cryptotest.cpp
+    ## tests/cryptotest.cpp
   )
 
   add_executable(cryptotest ${CRYPTOTEST_SOURCES})

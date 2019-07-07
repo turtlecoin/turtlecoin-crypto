@@ -41,7 +41,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_slow_hash_v0([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_slow_hash_v0(string data)
+        static public string cn_slow_hash_v0(string data, int height)
         {
             if (data.Length % 2 != 0) return null;
 
@@ -55,7 +55,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_slow_hash_v1(string data)
+        static public string cn_slow_hash_v1(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -69,7 +69,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_slow_hash_v2(string data)
+        static public string cn_slow_hash_v2(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -79,11 +79,25 @@ namespace Core
 
             return Marshal.PtrToStringAnsi(output);
         }
+		
+		[DllImport("turtlecoin-crypto-shared")]
+        private static extern void _cn_slow_hash_v4([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
+        static public string cn_slow_hash_v4(string data, int height)
+        {
+            if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
+
+            IntPtr output = new IntPtr();
+
+            _cn_slow_hash_v4(data, ref output);
+
+            return Marshal.PtrToStringAnsi(output);
+        }
+		
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_lite_slow_hash_v0([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_lite_slow_hash_v0(string data)
+        static public string cn_lite_slow_hash_v0(string data, int height)
         {
             if (data.Length % 2 != 0) return null;
 
@@ -97,7 +111,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_lite_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_lite_slow_hash_v1(string data)
+        static public string cn_lite_slow_hash_v1(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -111,7 +125,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_lite_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_lite_slow_hash_v2(string data)
+        static public string cn_lite_slow_hash_v2(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -121,11 +135,39 @@ namespace Core
 
             return Marshal.PtrToStringAnsi(output);
         }
+		
+		[DllImport("turtlecoin-crypto-shared")]
+        private static extern void _cn_half_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
+
+        static public string cn_half_slow_hash_v1(string data, int height)
+        {
+            if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
+
+            IntPtr output = new IntPtr();
+
+            _cn_half_slow_hash_v1(data, ref output);
+
+            return Marshal.PtrToStringAnsi(output);
+        }
+		
+		[DllImport("turtlecoin-crypto-shared")]
+        private static extern void _cn_half_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
+
+        static public string cn_half_slow_hash_v2(string data, int height)
+        {
+            if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
+
+            IntPtr output = new IntPtr();
+
+            _cn_half_slow_hash_v2(data, ref output);
+
+            return Marshal.PtrToStringAnsi(output);
+        }
 
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_dark_slow_hash_v0([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_dark_slow_hash_v0(string data)
+        static public string cn_dark_slow_hash_v0(string data, int height)
         {
             if (data.Length % 2 != 0) return null;
 
@@ -139,7 +181,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_dark_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_dark_slow_hash_v1(string data)
+        static public string cn_dark_slow_hash_v1(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -153,7 +195,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_dark_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_dark_slow_hash_v2(string data)
+        static public string cn_dark_slow_hash_v2(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -167,7 +209,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_dark_lite_slow_hash_v0([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_dark_lite_slow_hash_v0(string data)
+        static public string cn_dark_lite_slow_hash_v0(string data, int height)
         {
             if (data.Length % 2 != 0) return null;
 
@@ -181,7 +223,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_dark_lite_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_dark_lite_slow_hash_v1(string data)
+        static public string cn_dark_lite_slow_hash_v1(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -195,7 +237,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_dark_lite_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_dark_lite_slow_hash_v2(string data)
+        static public string cn_dark_lite_slow_hash_v2(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -209,7 +251,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_turtle_slow_hash_v0([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_turtle_slow_hash_v0(string data)
+        static public string cn_turtle_slow_hash_v0(string data, int height)
         {
             if (data.Length % 2 != 0) return null;
 
@@ -223,7 +265,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_turtle_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_turtle_slow_hash_v1(string data)
+        static public string cn_turtle_slow_hash_v1(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -237,7 +279,7 @@ namespace Core
         [DllImport("turtlecoin-crypto-shared")]
         private static extern void _cn_turtle_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_turtle_slow_hash_v2(string data)
+        static public string cn_turtle_slow_hash_v2(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -251,7 +293,7 @@ namespace Core
         [DllImport("turtle-crypto-shared")]
         private static extern void _cn_turtle_lite_slow_hash_v0([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_turtle_lite_slow_hash_v0(string data)
+        static public string cn_turtle_lite_slow_hash_v0(string data, int height)
         {
             if (data.Length % 2 != 0) return null;
 
@@ -265,7 +307,7 @@ namespace Core
         [DllImport("turtle-crypto-shared")]
         private static extern void _cn_turtle_lite_slow_hash_v1([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_turtle_lite_slow_hash_v1(string data)
+        static public string cn_turtle_lite_slow_hash_v1(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
@@ -279,7 +321,7 @@ namespace Core
         [DllImport("turtle-crypto-shared")]
         private static extern void _cn_turtle_lite_slow_hash_v2([MarshalAs(UnmanagedType.LPStr)]string input, ref IntPtr output);
 
-        static public string cn_turtle_lite_slow_hash_v2(string data)
+        static public string cn_turtle_lite_slow_hash_v2(string data, int height)
         {
             if (data.Length % 2 != 0 || data.Length < MinimumVariationBytes) return null;
 
