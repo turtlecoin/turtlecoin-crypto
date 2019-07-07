@@ -499,7 +499,7 @@ void slow_hash_free_state(uint64_t page_size)
  * @param length the length in bytes of the data
  * @param hash a pointer to a buffer in which the final 256 bit hash will be stored
  */
-void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint32_t page_size, uint32_t scratchpad, uint32_t iterations, int height)
+void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint64_t page_size, uint64_t scratchpad, uint64_t iterations, int height)
 {
     uint64_t TOTALBLOCKS = (page_size / AES_BLOCK_SIZE);
     uint64_t init_rounds = (scratchpad / INIT_SIZE_BYTE);

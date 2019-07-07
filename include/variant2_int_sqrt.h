@@ -49,7 +49,7 @@
 
 // The reference implementation as it is now uses only unsigned int64 arithmetic, so it can't have undefined behavior
 // It was tested once for all edge cases and confirmed correct
-static inline uint32_t integer_square_root_v2(uint64_t n)
+static inline uint64_t integer_square_root_v2(uint64_t n)
 {
   uint64_t r = 1ULL << 63;
 
