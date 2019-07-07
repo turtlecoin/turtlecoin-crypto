@@ -1,4 +1,5 @@
 // Copyright (c) 2018-2019, The TurtleCoin Developers
+// Copyright (c) 2019, PiTi - Crypto-Webminer Project
 //
 // Please see the included LICENSE file for more information.
 
@@ -57,200 +58,233 @@ namespace Core
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_slow_hash_v0(const std::string input)
+    std::string Cryptography::cn_slow_hash_v0(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_slow_hash_v0(data.data(), data.size(), hash);
+        Crypto::cn_slow_hash_v0(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_slow_hash_v1(const std::string input)
+    std::string Cryptography::cn_slow_hash_v1(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_slow_hash_v1(data.data(), data.size(), hash);
+        Crypto::cn_slow_hash_v1(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_slow_hash_v2(const std::string input)
+    std::string Cryptography::cn_slow_hash_v2(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_slow_hash_v2(data.data(), data.size(), hash);
+        Crypto::cn_slow_hash_v2(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_lite_slow_hash_v0(const std::string input)
+    std::string Cryptography::cn_slow_hash_v4(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_lite_slow_hash_v0(data.data(), data.size(), hash);
+        Crypto::cn_slow_hash_v4(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_lite_slow_hash_v1(const std::string input)
+    std::string Cryptography::cn_lite_slow_hash_v0(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_lite_slow_hash_v1(data.data(), data.size(), hash);
+        Crypto::cn_lite_slow_hash_v0(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_lite_slow_hash_v2(const std::string input)
+    std::string Cryptography::cn_lite_slow_hash_v1(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_lite_slow_hash_v2(data.data(), data.size(), hash);
+        Crypto::cn_lite_slow_hash_v1(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_dark_slow_hash_v0(const std::string input)
+    std::string Cryptography::cn_lite_slow_hash_v2(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_dark_slow_hash_v0(data.data(), data.size(), hash);
+        Crypto::cn_lite_slow_hash_v2(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_dark_slow_hash_v1(const std::string input)
+    std::string Cryptography::cn_half_slow_hash_v1(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_dark_slow_hash_v1(data.data(), data.size(), hash);
+        Crypto::cn_half_slow_hash_v1(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_dark_slow_hash_v2(const std::string input)
+    std::string Cryptography::cn_half_slow_hash_v2(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_dark_slow_hash_v2(data.data(), data.size(), hash);
+        Crypto::cn_half_slow_hash_v2(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_dark_lite_slow_hash_v0(const std::string input)
+    std::string Cryptography::cn_dark_slow_hash_v0(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_dark_lite_slow_hash_v0(data.data(), data.size(), hash);
+        Crypto::cn_dark_slow_hash_v0(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_dark_lite_slow_hash_v1(const std::string input)
+    std::string Cryptography::cn_dark_slow_hash_v1(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_dark_lite_slow_hash_v1(data.data(), data.size(), hash);
+        Crypto::cn_dark_slow_hash_v1(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_dark_lite_slow_hash_v2(const std::string input)
+    std::string Cryptography::cn_dark_slow_hash_v2(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_dark_lite_slow_hash_v2(data.data(), data.size(), hash);
+        Crypto::cn_dark_slow_hash_v2(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_turtle_slow_hash_v0(const std::string input)
+    std::string Cryptography::cn_dark_lite_slow_hash_v0(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_turtle_slow_hash_v0(data.data(), data.size(), hash);
+        Crypto::cn_dark_lite_slow_hash_v0(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_turtle_slow_hash_v1(const std::string input)
+    std::string Cryptography::cn_dark_lite_slow_hash_v1(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_turtle_slow_hash_v1(data.data(), data.size(), hash);
+        Crypto::cn_dark_lite_slow_hash_v1(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_turtle_slow_hash_v2(const std::string input)
+    std::string Cryptography::cn_dark_lite_slow_hash_v2(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_turtle_slow_hash_v2(data.data(), data.size(), hash);
+        Crypto::cn_dark_lite_slow_hash_v2(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_turtle_lite_slow_hash_v0(const std::string input)
+    std::string Cryptography::cn_turtle_slow_hash_v0(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_turtle_lite_slow_hash_v0(data.data(), data.size(), hash);
+        Crypto::cn_turtle_slow_hash_v0(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_turtle_lite_slow_hash_v1(const std::string input)
+    std::string Cryptography::cn_turtle_slow_hash_v1(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_turtle_lite_slow_hash_v1(data.data(), data.size(), hash);
+        Crypto::cn_turtle_slow_hash_v1(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::cn_turtle_lite_slow_hash_v2(const std::string input)
+    std::string Cryptography::cn_turtle_slow_hash_v2(const std::string input, int height)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::cn_turtle_lite_slow_hash_v2(data.data(), data.size(), hash);
+        Crypto::cn_turtle_slow_hash_v2(data.data(), data.size(), hash, height);
+
+        return Common::podToHex(hash);
+    }
+
+    std::string Cryptography::cn_turtle_lite_slow_hash_v0(const std::string input, int height)
+    {
+        Crypto::Hash hash = Crypto::Hash();
+
+        Crypto::BinaryArray data = toBinaryArray(input);
+
+        Crypto::cn_turtle_lite_slow_hash_v0(data.data(), data.size(), hash, height);
+
+        return Common::podToHex(hash);
+    }
+
+    std::string Cryptography::cn_turtle_lite_slow_hash_v1(const std::string input, int height)
+    {
+        Crypto::Hash hash = Crypto::Hash();
+
+        Crypto::BinaryArray data = toBinaryArray(input);
+
+        Crypto::cn_turtle_lite_slow_hash_v1(data.data(), data.size(), hash, height);
+
+        return Common::podToHex(hash);
+    }
+
+    std::string Cryptography::cn_turtle_lite_slow_hash_v2(const std::string input, int height)
+    {
+        Crypto::Hash hash = Crypto::Hash();
+
+        Crypto::BinaryArray data = toBinaryArray(input);
+
+        Crypto::cn_turtle_lite_slow_hash_v2(data.data(), data.size(), hash, height);
 
         return Common::podToHex(hash);
     }
@@ -905,94 +939,109 @@ extern "C"
         output = strdup(Core::Cryptography::cn_fast_hash(input).c_str());
     }
 
-    EXPORTDLL void _cn_slow_hash_v0(const char* input, char* &output)
+    EXPORTDLL void _cn_slow_hash_v0(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_slow_hash_v0(input).c_str());
+        output = strdup(Core::Cryptography::cn_slow_hash_v0(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_slow_hash_v1(const char* input, char* &output)
+    EXPORTDLL void _cn_slow_hash_v1(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_slow_hash_v1(input).c_str());
+        output = strdup(Core::Cryptography::cn_slow_hash_v1(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_slow_hash_v2(const char* input, char* &output)
+    EXPORTDLL void _cn_slow_hash_v2(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_slow_hash_v2(input).c_str());
+        output = strdup(Core::Cryptography::cn_slow_hash_v2(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_lite_slow_hash_v0(const char* input, char* &output)
+    EXPORTDLL void _cn_slow_hash_v4(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_lite_slow_hash_v0(input).c_str());
+        output = strdup(Core::Cryptography::cn_slow_hash_v4(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_lite_slow_hash_v1(const char* input, char* &output)
+    EXPORTDLL void _cn_lite_slow_hash_v0(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_lite_slow_hash_v1(input).c_str());
+        output = strdup(Core::Cryptography::cn_lite_slow_hash_v0(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_lite_slow_hash_v2(const char* input, char* &output)
+    EXPORTDLL void _cn_lite_slow_hash_v1(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_lite_slow_hash_v2(input).c_str());
+        output = strdup(Core::Cryptography::cn_lite_slow_hash_v1(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_dark_slow_hash_v0(const char* input, char* &output)
+    EXPORTDLL void _cn_lite_slow_hash_v2(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_dark_slow_hash_v0(input).c_str());
+        output = strdup(Core::Cryptography::cn_lite_slow_hash_v2(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_dark_slow_hash_v1(const char* input, char* &output)
+    EXPORTDLL void _cn_half_slow_hash_v1(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_dark_slow_hash_v1(input).c_str());
+        output = strdup(Core::Cryptography::cn_half_slow_hash_v1(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_dark_slow_hash_v2(const char* input, char* &output)
+    EXPORTDLL void _cn_half_slow_hash_v2(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_dark_slow_hash_v2(input).c_str());
+        output = strdup(Core::Cryptography::cn_half_slow_hash_v2(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_dark_lite_slow_hash_v0(const char* input, char* &output)
+    EXPORTDLL void _cn_dark_slow_hash_v0(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_dark_lite_slow_hash_v0(input).c_str());
+        output = strdup(Core::Cryptography::cn_dark_slow_hash_v0(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_dark_lite_slow_hash_v1(const char* input, char* &output)
+    EXPORTDLL void _cn_dark_slow_hash_v1(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_dark_lite_slow_hash_v1(input).c_str());
+        output = strdup(Core::Cryptography::cn_dark_slow_hash_v1(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_dark_lite_slow_hash_v2(const char* input, char* &output)
+    EXPORTDLL void _cn_dark_slow_hash_v2(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_dark_lite_slow_hash_v2(input).c_str());
+        output = strdup(Core::Cryptography::cn_dark_slow_hash_v2(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_turtle_slow_hash_v0(const char* input, char* &output)
+    EXPORTDLL void _cn_dark_lite_slow_hash_v0(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_turtle_slow_hash_v0(input).c_str());
+        output = strdup(Core::Cryptography::cn_dark_lite_slow_hash_v0(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_turtle_slow_hash_v1(const char* input, char* &output)
+    EXPORTDLL void _cn_dark_lite_slow_hash_v1(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_turtle_slow_hash_v1(input).c_str());
+        output = strdup(Core::Cryptography::cn_dark_lite_slow_hash_v1(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_turtle_slow_hash_v2(const char* input, char* &output)
+    EXPORTDLL void _cn_dark_lite_slow_hash_v2(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_turtle_slow_hash_v2(input).c_str());
+        output = strdup(Core::Cryptography::cn_dark_lite_slow_hash_v2(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_turtle_lite_slow_hash_v0(const char* input, char* &output)
+    EXPORTDLL void _cn_turtle_slow_hash_v0(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_turtle_lite_slow_hash_v0(input).c_str());
+        output = strdup(Core::Cryptography::cn_turtle_slow_hash_v0(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_turtle_lite_slow_hash_v1(const char* input, char* &output)
+    EXPORTDLL void _cn_turtle_slow_hash_v1(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_turtle_lite_slow_hash_v1(input).c_str());
+        output = strdup(Core::Cryptography::cn_turtle_slow_hash_v1(input, height).c_str());
     }
 
-    EXPORTDLL void _cn_turtle_lite_slow_hash_v2(const char* input, char* &output)
+    EXPORTDLL void _cn_turtle_slow_hash_v2(const char* input, int height, char* &output)
     {
-        output = strdup(Core::Cryptography::cn_turtle_lite_slow_hash_v2(input).c_str());
+        output = strdup(Core::Cryptography::cn_turtle_slow_hash_v2(input, height).c_str());
+    }
+
+    EXPORTDLL void _cn_turtle_lite_slow_hash_v0(const char* input, int height, char* &output)
+    {
+        output = strdup(Core::Cryptography::cn_turtle_lite_slow_hash_v0(input, height).c_str());
+    }
+
+    EXPORTDLL void _cn_turtle_lite_slow_hash_v1(const char* input, int height, char* &output)
+    {
+        output = strdup(Core::Cryptography::cn_turtle_lite_slow_hash_v1(input, height).c_str());
+    }
+
+    EXPORTDLL void _cn_turtle_lite_slow_hash_v2(const char* input, int height, char* &output)
+    {
+        output = strdup(Core::Cryptography::cn_turtle_lite_slow_hash_v2(input, height).c_str());
     }
 
     EXPORTDLL void _cn_soft_shell_slow_hash_v0(const char* input, const uint32_t height, char* &output)

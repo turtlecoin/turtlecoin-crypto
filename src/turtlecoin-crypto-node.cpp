@@ -1867,6 +1867,10 @@ void InitModule(v8::Local<v8::Object> exports)
                  Nan::New<v8::FunctionTemplate>
                  (cn_slow_hash_v2)->GetFunction());
 
+    exports->Set(Nan::New("cn_slow_hash_v4").ToLocalChecked(),
+                 Nan::New<v8::FunctionTemplate>
+                 (cn_slow_hash_v4)->GetFunction());
+
     exports->Set(Nan::New("cn_lite_slow_hash_v0").ToLocalChecked(),
                  Nan::New<v8::FunctionTemplate>
                  (cn_lite_slow_hash_v0)->GetFunction());
@@ -1878,6 +1882,14 @@ void InitModule(v8::Local<v8::Object> exports)
     exports->Set(Nan::New("cn_lite_slow_hash_v2").ToLocalChecked(),
                  Nan::New<v8::FunctionTemplate>
                  (cn_lite_slow_hash_v2)->GetFunction());
+
+    exports->Set(Nan::New("cn_half_slow_hash_v1").ToLocalChecked(),
+                 Nan::New<v8::FunctionTemplate>
+                 (cn_half_slow_hash_v1)->GetFunction());
+
+    exports->Set(Nan::New("cn_half_slow_hash_v2").ToLocalChecked(),
+                 Nan::New<v8::FunctionTemplate>
+                 (cn_half_slow_hash_v2)->GetFunction());
 
     exports->Set(Nan::New("cn_dark_slow_hash_v0").ToLocalChecked(),
                  Nan::New<v8::FunctionTemplate>

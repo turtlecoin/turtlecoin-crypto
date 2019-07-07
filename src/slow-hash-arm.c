@@ -241,7 +241,7 @@ STATIC INLINE void aligned_free(void *ptr)
 }
     #endif /* FORCE_USE_HEAP */
 
-void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint64_t page_size, uint64_t scratchpad, uint64_t iterations)
+void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint64_t page_size, uint64_t scratchpad, uint64_t iterations, int height)
 {
     uint64_t TOTALBLOCKS = (page_size / AES_BLOCK_SIZE);
     uint64_t init_rounds = (scratchpad / INIT_SIZE_BYTE);
@@ -481,7 +481,7 @@ STATIC INLINE void xor_blocks(uint8_t* a, const uint8_t* b)
     U64(a)[1] ^= U64(b)[1];
 }
 
-void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint64_t page_size, uint64_t scratchpad, uint64_t iterations)
+void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint64_t page_size, uint64_t scratchpad, uint64_t iterations, int height)
 {
     uint64_t init_rounds = (scratchpad / INIT_SIZE_BYTE);
     uint64_t aes_rounds = (iterations / 2);

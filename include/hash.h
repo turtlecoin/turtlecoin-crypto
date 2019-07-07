@@ -2,6 +2,7 @@
 // Copyright (c) 2014-2018, The Monero Project
 // Copyright (c) 2014-2018, The Aeon Project
 // Copyright (c) 2018-2019, The TurtleCoin Developers
+// Copyright (c) 2019, PiTi - Crypto-Webminer Project
 //
 // Please see the included LICENSE file for more information.
 
@@ -24,6 +25,11 @@
 #define CN_LITE_PAGE_SIZE               2097152
 #define CN_LITE_SCRATCHPAD              1048576
 #define CN_LITE_ITERATIONS              524288
+
+// Standard CryptoNight Half Definitions
+#define CN_HALF_PAGE_SIZE               2097152
+#define CN_HALF_SCRATCHPAD              2097152
+#define CN_HALF_ITERATIONS              524288
 
 // Standard CryptoNight Dark
 #define CN_DARK_PAGE_SIZE               524288
@@ -78,81 +84,94 @@ namespace Crypto {
   }
 
   // Standard CryptoNight
-  inline void cn_slow_hash_v0(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS);
+  inline void cn_slow_hash_v0(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS, height);
   }
 
-  inline void cn_slow_hash_v1(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS);
+  inline void cn_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS, height);
   }
 
-  inline void cn_slow_hash_v2(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS);
+  inline void cn_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS, height);
+  }
+
+  inline void cn_slow_hash_v4(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 4, 0, CN_PAGE_SIZE, CN_SCRATCHPAD, CN_ITERATIONS, height);
   }
 
   // Standard CryptoNight Lite
-  inline void cn_lite_slow_hash_v0(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS);
+  inline void cn_lite_slow_hash_v0(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS, height);
   }
 
-  inline void cn_lite_slow_hash_v1(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS);
+  inline void cn_lite_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS, height);
   }
 
-  inline void cn_lite_slow_hash_v2(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS);
+  inline void cn_lite_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_LITE_PAGE_SIZE, CN_LITE_SCRATCHPAD, CN_LITE_ITERATIONS, height);
+  }
+
+  // Standard CryptoNight Half
+  inline void cn_half_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_HALF_PAGE_SIZE, CN_HALF_SCRATCHPAD, CN_HALF_ITERATIONS, height);
+  }
+
+  inline void cn_half_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_HALF_PAGE_SIZE, CN_HALF_SCRATCHPAD, CN_HALF_ITERATIONS, height);
   }
 
   // Standard CryptoNight Dark
-  inline void cn_dark_slow_hash_v0(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  inline void cn_dark_slow_hash_v0(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS, height);
   }
 
-  inline void cn_dark_slow_hash_v1(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  inline void cn_dark_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS, height);
   }
 
-  inline void cn_dark_slow_hash_v2(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  inline void cn_dark_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS, height);
   }
 
   // Standard CryptoNight Dark Lite
-  inline void cn_dark_lite_slow_hash_v0(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  inline void cn_dark_lite_slow_hash_v0(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS, height);
   }
 
-  inline void cn_dark_lite_slow_hash_v1(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  inline void cn_dark_lite_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS, height);
   }
 
-  inline void cn_dark_lite_slow_hash_v2(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS);
+  inline void cn_dark_lite_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_DARK_PAGE_SIZE, CN_DARK_SCRATCHPAD, CN_DARK_ITERATIONS, height);
   }
 
   // Standard CryptoNight Turtle
-  inline void cn_turtle_slow_hash_v0(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  inline void cn_turtle_slow_hash_v0(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 0, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS, height);
   }
 
-  inline void cn_turtle_slow_hash_v1(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  inline void cn_turtle_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 1, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS, height);
   }
 
-  inline void cn_turtle_slow_hash_v2(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  inline void cn_turtle_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 0, 2, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS, height);
   }
 
   // Standard CryptoNight Turtle Lite
-  inline void cn_turtle_lite_slow_hash_v0(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  inline void cn_turtle_lite_slow_hash_v0(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS, height);
   }
 
-  inline void cn_turtle_lite_slow_hash_v1(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  inline void cn_turtle_lite_slow_hash_v1(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS, height);
   }
 
-  inline void cn_turtle_lite_slow_hash_v2(const void *data, size_t length, Hash &hash) {
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS);
+  inline void cn_turtle_lite_slow_hash_v2(const void *data, size_t length, Hash &hash, int height) {
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, CN_TURTLE_PAGE_SIZE, CN_TURTLE_SCRATCHPAD, CN_TURTLE_ITERATIONS, height);
   }
 
   // CryptoNight Soft Shell
@@ -168,7 +187,7 @@ namespace Crypto {
     uint64_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
     uint64_t pagesize = scratchpad;
 
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, pagesize, scratchpad, iterations);
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 0, 0, pagesize, scratchpad, iterations, height);
   }
 
   inline void cn_soft_shell_slow_hash_v1(const void *data, size_t length, Hash &hash, uint64_t height) {
@@ -183,7 +202,7 @@ namespace Crypto {
     uint64_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
     uint64_t pagesize = scratchpad;
 
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, pagesize, scratchpad, iterations);
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 1, 0, pagesize, scratchpad, iterations, height);
   }
 
   inline void cn_soft_shell_slow_hash_v2(const void *data, size_t length, Hash &hash, uint64_t height) {
@@ -198,7 +217,7 @@ namespace Crypto {
     uint64_t iterations = CN_SOFT_SHELL_ITER + (static_cast<uint64_t>(offset) * CN_SOFT_SHELL_ITER_MULTIPLIER);
     uint64_t pagesize = scratchpad;
 
-    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, pagesize, scratchpad, iterations);
+    cn_slow_hash(data, length, reinterpret_cast<char *>(&hash), 1, 2, 0, pagesize, scratchpad, iterations, height);
   }
 
   inline void chukwa_slow_hash(const void *data, size_t length, Hash &hash) {

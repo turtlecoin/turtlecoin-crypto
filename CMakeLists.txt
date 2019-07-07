@@ -1,5 +1,6 @@
 # Copyright (c) 2012-2017, The CryptoNote developers, The Bytecoin developers
 # Copyright (c) 2018-2019, The TurtleCoin Developers
+# Copyright (c) 2019, PiTi - Crypto-Webminer Project
 #
 # Please see the included LICENSE file for more information.
 
@@ -255,13 +256,15 @@ else()
   # Override our release flags for emscripten compatibility
   set(CMAKE_C_FLAGS_DEBUG "")
   set(CMAKE_CXX_FLAGS_DEBUG "")
-  set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG -Wno-unused-variable")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wno-unused-variable")
+  set(CMAKE_C_FLAGS_RELEASE "-O3 --llvm-lto 1 -DNDEBUG -Wno-unused-variable")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 --llvm-lto 1 -DNDEBUG -Wno-unused-variable")
 
   set(JS_LINKFLAGS
+    -O3
+    --llvm-lto 1
+    -s SINGLE_FILE=1
     -s NO_FILESYSTEM=1
     -s EXPORT_NAME="'TurtleCoinCrypto'"
-    -s POLYFILL_OLD_MATH_FUNCTIONS=1
     -s MODULARIZE=1
     --bind
   )

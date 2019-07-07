@@ -2,6 +2,7 @@
 // Copyright (c) 2014-2018, The Monero Project
 // Copyright (c) 2014-2018, The Aeon Project
 // Copyright (c) 2018, The TurtleCoin Developers
+// Copyright (c) 2019, PiTi - Crypto-Webminer Project
 //
 // Please see the included LICENSE file for more information.
 
@@ -41,9 +42,6 @@ static void (*const extra_hashes[4])(const void *, size_t, char *) =
 {
     hash_extra_blake, hash_extra_groestl, hash_extra_jh, hash_extra_skein
 };
-
-extern void aesb_single_round(const uint8_t *in, uint8_t*out, const uint8_t *expandedKey);
-extern void aesb_pseudo_round(const uint8_t *in, uint8_t *out, const uint8_t *expandedKey);
 
 static void mul(const uint8_t* a, const uint8_t* b, uint8_t* res)
 {
@@ -89,32 +87,26 @@ static void swap_blocks(uint8_t *a, uint8_t *b)
     U64(b)[1] = U64(t)[1];
 }
 
-static void xor_blocks(uint8_t* a, const uint8_t* b)
+void xor_blocks(uint8_t *a, const uint8_t *b) //Perf +30%
 {
-    size_t i;
-    for (i = 0; i < AES_BLOCK_SIZE; i++)
-    {
-        a[i] ^= b[i];
-    }
+  ((uint64_t *)a)[0] ^= ((uint64_t *)b)[0];
+  ((uint64_t *)a)[1] ^= ((uint64_t *)b)[1];
 }
 
-static void xor64(uint8_t* left, const uint8_t* right)
+static void xor64(uint8_t *a, const uint64_t b) //Perf +30%
 {
-    size_t i;
-    for (i = 0; i < 8; ++i)
-    {
-        left[i] ^= right[i];
-    }
+  *(uint64_t *)a ^= b;
 }
 
-void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint64_t page_size, uint64_t scratchpad, uint64_t iterations)
+void cn_slow_hash(const void *data, size_t length, char *hash, int light, int variant, int prehashed, uint32_t page_size, uint32_t scratchpad, uint32_t iterations, int height)
 {
-    uint64_t init_rounds = (scratchpad / INIT_SIZE_BYTE);
-    uint64_t aes_rounds = (iterations / 2);
+    uint32_t init_rounds = (scratchpad / INIT_SIZE_BYTE);
+    uint32_t aes_rounds = (iterations / 2);
     size_t lightFlag = (light ? 2: 1);
 
     uint8_t text[INIT_SIZE_BYTE];
     uint8_t a[AES_BLOCK_SIZE];
+    uint8_t a1[AES_BLOCK_SIZE];
     uint8_t b[AES_BLOCK_SIZE * 2];
     uint8_t c[AES_BLOCK_SIZE];
     uint8_t c1[AES_BLOCK_SIZE];
@@ -151,8 +143,9 @@ void cn_slow_hash(const void *data, size_t length, char *hash, int light, int va
     aes_ctx = (oaes_ctx *) oaes_alloc();
     oaes_key_import_data(aes_ctx, state.hs.b, AES_KEY_SIZE);
 
-    VARIANT1_PORTABLE_INIT();
-    VARIANT2_PORTABLE_INIT();
+    VARIANT1_INIT64();
+    VARIANT2_INIT64();
+    VARIANT4_RANDOM_MATH_INIT();
 
     // use aligned data
     memcpy(expandedKey, aes_ctx->key->exp_data, aes_ctx->key->exp_data_len);
@@ -171,16 +164,16 @@ void cn_slow_hash(const void *data, size_t length, char *hash, int light, int va
 
     for(i = 0; i < aes_rounds; i++)
     {
-    #define MASK(div) ((uint64_t)(((page_size / AES_BLOCK_SIZE) / (div) - 1) << 4))
-    #define state_index(x,div) ((*(uint64_t *) x) & MASK(div))
+    #define MASK(div) ((uint32_t)(((page_size / AES_BLOCK_SIZE) / (div) - 1) << 4))
+    #define state_index(x,div) ((*(uint32_t *) x) & MASK(div))
 
       // Iteration 1
       j = state_index(a,lightFlag);
       p = &long_state[j];
-      aesb_single_round(p, p, a);
-      copy_block(c1, p);
+      aesb_single_round(p, c1, a);
 
-      VARIANT2_PORTABLE_SHUFFLE_ADD(long_state, j);
+      VARIANT2_PORTABLE_SHUFFLE_ADD(c1, a, long_state, j);
+      copy_block(p, c1);
       xor_blocks(p, b);
       VARIANT1_1(p);
 
@@ -189,21 +182,23 @@ void cn_slow_hash(const void *data, size_t length, char *hash, int light, int va
       p = &long_state[j];
       copy_block(c, p);
 
+      copy_block(a1, a);
       VARIANT2_PORTABLE_INTEGER_MATH(c, c1);
+      VARIANT4_RANDOM_MATH(a1, c, r, b, b + AES_BLOCK_SIZE);
       mul(c1, c, d);
       VARIANT2_2_PORTABLE();
-      VARIANT2_PORTABLE_SHUFFLE_ADD(long_state, j);
-      sum_half_blocks(a, d);
-      swap_blocks(a, c);
-      xor_blocks(a, c);
+      VARIANT2_PORTABLE_SHUFFLE_ADD(c1, a, long_state, j);
+      sum_half_blocks(a1, d);
+      swap_blocks(a1, c);
+      xor_blocks(a1, c);
       VARIANT1_2(c + 8);
       copy_block(p, c);
 
       if (variant >= 2) {
-          copy_block(b + AES_BLOCK_SIZE, b);
+        copy_block(b + AES_BLOCK_SIZE, b);
       }
-
       copy_block(b, c1);
+      copy_block(a, a1);
     }
 
     memcpy(text, state.init, INIT_SIZE_BYTE);

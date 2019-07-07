@@ -1,4 +1,5 @@
 // Copyright (c) 2018-2019, The TurtleCoin Developers
+// Copyright (c) 2019, PiTi - Crypto-Webminer Project
 //
 // Please see the included LICENSE file for more information.
 
@@ -140,10 +141,14 @@ EMSCRIPTEN_BINDINGS(signatures)
     function("cn_slow_hash_v0", &Core::Cryptography::cn_slow_hash_v0);
     function("cn_slow_hash_v1", &Core::Cryptography::cn_slow_hash_v1);
     function("cn_slow_hash_v2", &Core::Cryptography::cn_slow_hash_v2);
+    function("cn_slow_hash_v4", &Core::Cryptography::cn_slow_hash_v4);
 
     function("cn_lite_slow_hash_v0", &Core::Cryptography::cn_lite_slow_hash_v0);
     function("cn_lite_slow_hash_v1", &Core::Cryptography::cn_lite_slow_hash_v1);
     function("cn_lite_slow_hash_v2", &Core::Cryptography::cn_lite_slow_hash_v2);
+
+    function("cn_half_slow_hash_v1", &Core::Cryptography::cn_half_slow_hash_v1);
+    function("cn_half_slow_hash_v2", &Core::Cryptography::cn_half_slow_hash_v2);
 
     function("cn_dark_slow_hash_v0", &Core::Cryptography::cn_dark_slow_hash_v0);
     function("cn_dark_slow_hash_v1", &Core::Cryptography::cn_dark_slow_hash_v1);

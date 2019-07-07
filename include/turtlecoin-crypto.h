@@ -1,4 +1,5 @@
 // Copyright (c) 2018-2019, The TurtleCoin Developers
+// Copyright (c) 2019, PiTi - Crypto-Webminer Project
 //
 // Please see the included LICENSE file for more information.
 
@@ -32,29 +33,33 @@ namespace Core
             /* Hashing Methods */
             static std::string cn_fast_hash(const std::string data);
 
-            static std::string cn_slow_hash_v0(const std::string data);
-            static std::string cn_slow_hash_v1(const std::string data);
-            static std::string cn_slow_hash_v2(const std::string data);
+            static std::string cn_slow_hash_v0(const std::string data, int height);
+            static std::string cn_slow_hash_v1(const std::string data, int height);
+            static std::string cn_slow_hash_v2(const std::string data, int height);
+            static std::string cn_slow_hash_v4(const std::string data, int height);
 
-            static std::string cn_lite_slow_hash_v0(const std::string data);
-            static std::string cn_lite_slow_hash_v1(const std::string data);
-            static std::string cn_lite_slow_hash_v2(const std::string data);
+            static std::string cn_lite_slow_hash_v0(const std::string data, int height);
+            static std::string cn_lite_slow_hash_v1(const std::string data, int height);
+            static std::string cn_lite_slow_hash_v2(const std::string data, int height);
 
-            static std::string cn_dark_slow_hash_v0(const std::string data);
-            static std::string cn_dark_slow_hash_v1(const std::string data);
-            static std::string cn_dark_slow_hash_v2(const std::string data);
+            static std::string cn_half_slow_hash_v1(const std::string data, int height);
+            static std::string cn_half_slow_hash_v2(const std::string data, int height);
 
-            static std::string cn_dark_lite_slow_hash_v0(const std::string data);
-            static std::string cn_dark_lite_slow_hash_v1(const std::string data);
-            static std::string cn_dark_lite_slow_hash_v2(const std::string data);
+            static std::string cn_dark_slow_hash_v0(const std::string data, int height);
+            static std::string cn_dark_slow_hash_v1(const std::string data, int height);
+            static std::string cn_dark_slow_hash_v2(const std::string data, int height);
 
-            static std::string cn_turtle_slow_hash_v0(const std::string data);
-            static std::string cn_turtle_slow_hash_v1(const std::string data);
-            static std::string cn_turtle_slow_hash_v2(const std::string data);
+            static std::string cn_dark_lite_slow_hash_v0(const std::string data, int height);
+            static std::string cn_dark_lite_slow_hash_v1(const std::string data, int height);
+            static std::string cn_dark_lite_slow_hash_v2(const std::string data, int height);
 
-            static std::string cn_turtle_lite_slow_hash_v0(const std::string data);
-            static std::string cn_turtle_lite_slow_hash_v1(const std::string data);
-            static std::string cn_turtle_lite_slow_hash_v2(const std::string data);
+            static std::string cn_turtle_slow_hash_v0(const std::string data, int height);
+            static std::string cn_turtle_slow_hash_v1(const std::string data, int height);
+            static std::string cn_turtle_slow_hash_v2(const std::string data, int height);
+
+            static std::string cn_turtle_lite_slow_hash_v0(const std::string data, int height);
+            static std::string cn_turtle_lite_slow_hash_v1(const std::string data, int height);
+            static std::string cn_turtle_lite_slow_hash_v2(const std::string data, int height);
 
             static std::string cn_soft_shell_slow_hash_v0(const std::string data, const uint64_t height);
             static std::string cn_soft_shell_slow_hash_v1(const std::string data, const uint64_t height);
