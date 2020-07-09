@@ -17,10 +17,12 @@
 
 #include "hash-ops.h"
 
-#include <alloca.h>
+//#include <alloca.h> //FreeBSD has this in stdlib.h
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
+
 
 void tree_hash(const char (*hashes)[HASH_SIZE], size_t count, char *root_hash)
 {
