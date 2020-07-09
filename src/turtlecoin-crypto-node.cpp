@@ -1852,7 +1852,45 @@ void cn_turtle_lite_slow_hash_v2(const Nan::FunctionCallbackInfo<v8::Value> &inf
 
 /* Chukwa */
 
-void chukwa_slow_hash(const Nan::FunctionCallbackInfo<v8::Value> &info)
+void chukwa_slow_hash_base(const Nan::FunctionCallbackInfo<v8::Value> &info)
+{
+    /* Setup our return object */
+    v8::Local<v8::Value> functionReturnValue = Nan::New("").ToLocalChecked();
+
+    bool functionSuccess = false;
+
+    std::string data = getString(info, 0);
+
+    uint32_t iterations = getUInt32(info, 1);
+
+    uint32_t memory = getUInt32(info, 2);
+
+    uint32_t threads = getUInt32(info, 3);
+
+    if (!data.empty() && iterations != 0 && memory != 0 && threads != 0)
+    {
+        try
+        {
+            std::string hash = Core::Cryptography::chukwa_slow_hash_base(
+                data,
+                iterations,
+                memory,
+                threads);
+
+            functionReturnValue = Nan::New(hash).ToLocalChecked();
+
+            functionSuccess = true;
+        }
+        catch (const std::exception &)
+        {
+            functionSuccess = false;
+        }
+    }
+
+    info.GetReturnValue().Set(prepareResult(functionSuccess, functionReturnValue));
+}
+
+void chukwa_slow_hash_v1(const Nan::FunctionCallbackInfo<v8::Value> &info)
 {
     /* Setup our return object */
     v8::Local<v8::Value> functionReturnValue = Nan::New("").ToLocalChecked();
@@ -1865,7 +1903,35 @@ void chukwa_slow_hash(const Nan::FunctionCallbackInfo<v8::Value> &info)
     {
         try
         {
-            std::string hash = Core::Cryptography::chukwa_slow_hash(data);
+            std::string hash = Core::Cryptography::chukwa_slow_hash_v1(data);
+
+            functionReturnValue = Nan::New(hash).ToLocalChecked();
+
+            functionSuccess = true;
+        }
+        catch (const std::exception &)
+        {
+            functionSuccess = false;
+        }
+    }
+
+    info.GetReturnValue().Set(prepareResult(functionSuccess, functionReturnValue));
+}
+
+void chukwa_slow_hash_v2(const Nan::FunctionCallbackInfo<v8::Value> &info)
+{
+    /* Setup our return object */
+    v8::Local<v8::Value> functionReturnValue = Nan::New("").ToLocalChecked();
+
+    bool functionSuccess = false;
+
+    std::string data = getString(info, 0);
+
+    if (!data.empty())
+    {
+        try
+        {
+            std::string hash = Core::Cryptography::chukwa_slow_hash_v2(data);
 
             functionReturnValue = Nan::New(hash).ToLocalChecked();
 
@@ -2166,8 +2232,18 @@ NAN_MODULE_INIT(InitModule)
 
     Nan::Set(
         target,
-        Nan::New("chukwa_slow_hash").ToLocalChecked(),
-        Nan::GetFunction(Nan::New<v8::FunctionTemplate>(chukwa_slow_hash)).ToLocalChecked());
+        Nan::New("chukwa_slow_hash_base").ToLocalChecked(),
+        Nan::GetFunction(Nan::New<v8::FunctionTemplate>(chukwa_slow_hash_base)).ToLocalChecked());
+
+    Nan::Set(
+        target,
+        Nan::New("chukwa_slow_hash_v1").ToLocalChecked(),
+        Nan::GetFunction(Nan::New<v8::FunctionTemplate>(chukwa_slow_hash_v1)).ToLocalChecked());
+
+     Nan::Set(
+         target,
+         Nan::New("chukwa_slow_hash_v2").ToLocalChecked(),
+         Nan::GetFunction(Nan::New<v8::FunctionTemplate>(chukwa_slow_hash_v2)).ToLocalChecked());
 }
 
 NODE_MODULE(turtlecoincrypto, InitModule);

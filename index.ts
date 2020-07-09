@@ -1295,13 +1295,66 @@ export class Crypto {
     /**
      * Calculates the hash of the data supplied using the chukwa_slow_hash method
      * @param data
+     * @param version
      */
-    public chukwa_slow_hash(data: string): string {
+    public chukwa_slow_hash(data: string, version: number = 1): string {
         if (!isHex(data)) {
             throw new Error('Invalid data found');
         }
 
-        return tryRunFunc('chukwa_slow_hash', data);
+        let func = 'chukwa_slow_hash_';
+
+        switch (version) {
+            case 1:
+                func += 'v1';
+                break;
+            case 2:
+                func += 'v2';
+                break;
+            default:
+                throw new Error('Unknown Chukwa version number');
+        }
+
+        return tryRunFunc(func, data);
+    }
+
+    /**
+     * Calculates the hash of the data supplied using the chukwa_slow_hash_base method
+     * @param data
+     * @param iterations
+     * @param memory
+     * @param threads
+     */
+    public chukwa_slow_hash_base(data: string, iterations: number, memory: number, threads: number): string {
+        if (!isHex(data)) {
+            throw new Error('Invalid data found');
+        }
+
+        return tryRunFunc('chukwa_slow_hash_base', data, iterations, memory, threads);
+    }
+
+    /**
+     * Calculates the hash of the data supplied using the chukwa_slow_hash_v1 method
+     * @param data
+     */
+    public chukwa_slow_hash_v1(data: string): string {
+        if (!isHex(data)) {
+            throw new Error('Invalid data found');
+        }
+
+        return tryRunFunc('chukwa_slow_hash_v1', data);
+    }
+
+    /**
+     * Calculates the hash of the data supplied using the chukwa_slow_hash_v2 method
+     * @param data
+     */
+    public chukwa_slow_hash_v2(data: string): string {
+        if (!isHex(data)) {
+            throw new Error('Invalid data found');
+        }
+
+        return tryRunFunc('chukwa_slow_hash_v2', data);
     }
 }
 

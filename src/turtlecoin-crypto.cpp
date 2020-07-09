@@ -317,16 +317,42 @@ namespace Core
         return Common::podToHex(hash);
     }
 
-    std::string Cryptography::chukwa_slow_hash(const std::string input)
+    std::string Cryptography::chukwa_slow_hash_base(
+        const std::string input,
+        const uint32_t iterations,
+        const uint32_t memory,
+        const uint32_t threads)
     {
         Crypto::Hash hash = Crypto::Hash();
 
         Crypto::BinaryArray data = toBinaryArray(input);
 
-        Crypto::chukwa_slow_hash(data.data(), data.size(), hash);
+        Crypto::chukwa_slow_hash_base(data.data(), data.size(), hash, iterations, memory, threads);
 
         return Common::podToHex(hash);
     }
+
+    std::string Cryptography::chukwa_slow_hash_v1(const std::string input)
+    {
+        Crypto::Hash hash = Crypto::Hash();
+
+        Crypto::BinaryArray data = toBinaryArray(input);
+
+        Crypto::chukwa_slow_hash_v1(data.data(), data.size(), hash);
+
+        return Common::podToHex(hash);
+    }
+
+    std::string Cryptography::chukwa_slow_hash_v2(const std::string input)
+        {
+            Crypto::Hash hash = Crypto::Hash();
+
+            Crypto::BinaryArray data = toBinaryArray(input);
+
+            Crypto::chukwa_slow_hash_v2(data.data(), data.size(), hash);
+
+            return Common::podToHex(hash);
+        }
 
     uint32_t Cryptography::tree_depth(const uint32_t count)
     {
@@ -1481,9 +1507,23 @@ extern "C"
         output = strdup(Core::Cryptography::cn_soft_shell_slow_hash_v2(input, height).c_str());
     }
 
-    EXPORTDLL void _chukwa_slow_hash(const char *input, char *&output)
+    EXPORTDLL void _chukwa_slow_hash_base(const char *input, char *&output, const uint32_t iterations, const uint32_t memory, const uint32_t threads)
     {
-        output = strdup(Core::Cryptography::chukwa_slow_hash(input).c_str());
+        output = strdup(Core::Cryptography::chukwa_slow_hash_base(
+            input,
+            iterations,
+            memory,
+            threads).c_str());
+    }
+
+    EXPORTDLL void _chukwa_slow_hash_v1(const char *input, char *&output)
+    {
+        output = strdup(Core::Cryptography::chukwa_slow_hash_v1(input).c_str());
+    }
+
+    EXPORTDLL void _chukwa_slow_hash_v2(const char *input, char *&output)
+    {
+        output = strdup(Core::Cryptography::chukwa_slow_hash_v2(input).c_str());
     }
 
     EXPORTDLL uint32_t _tree_depth(const uint32_t count)

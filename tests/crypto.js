@@ -807,9 +807,14 @@ describe('Hash Generation Methods', function () {
       hash: 'b2172ec9466e1aee70ec8572a14c233ee354582bcb93f869d429744de5726a26'
     },
     {
-      name: 'Chukwa',
-      func: 'chukwa_slow_hash',
+      name: 'Chukwa v1',
+      func: 'chukwa_slow_hash_v1',
       hash: 'c0dad0eeb9c52e92a1c3aa5b76a3cb90bd7376c28dce191ceeb1096e3a390d2e'
+    },
+    {
+      name: 'Chukwa v2',
+      func: 'chukwa_slow_hash_v2',
+      hash: '3578c135261366a7bac407b8c0ff50f3ad96f096ec2813e9644e6e77a43f803d'
     }
   ]
 
@@ -818,5 +823,30 @@ describe('Hash Generation Methods', function () {
       const hash = TurtleCoinCrypto[algo.func](testdata)
       assert(algo.hash === hash)
     })
+  })
+
+  it('chukwa_slow_hash', () => {
+    const hash = TurtleCoinCrypto.chukwa_slow_hash(testdata)
+    assert(hash === 'c0dad0eeb9c52e92a1c3aa5b76a3cb90bd7376c28dce191ceeb1096e3a390d2e')
+  })
+
+  it('chukwa_slow_hash [1]', () => {
+    const hash = TurtleCoinCrypto.chukwa_slow_hash(testdata, 1)
+    assert(hash === 'c0dad0eeb9c52e92a1c3aa5b76a3cb90bd7376c28dce191ceeb1096e3a390d2e')
+  })
+
+  it('chukwa_slow_hash [2]', () => {
+    const hash = TurtleCoinCrypto.chukwa_slow_hash(testdata, 2)
+    assert(hash === '3578c135261366a7bac407b8c0ff50f3ad96f096ec2813e9644e6e77a43f803d')
+  })
+
+  it('chukwa_slow_hash_base [3 iterations, 512KB, 1 thread]', () => {
+    const hash = TurtleCoinCrypto.chukwa_slow_hash_base(testdata, 3, 512, 1)
+    assert(hash === 'c0dad0eeb9c52e92a1c3aa5b76a3cb90bd7376c28dce191ceeb1096e3a390d2e')
+  })
+
+  it('chukwa_slow_hash_base [4 iterations, 1024KB, 1 thread]', () => {
+    const hash = TurtleCoinCrypto.chukwa_slow_hash_base(testdata, 4, 1024, 1)
+    assert(hash === '3578c135261366a7bac407b8c0ff50f3ad96f096ec2813e9644e6e77a43f803d')
   })
 })
