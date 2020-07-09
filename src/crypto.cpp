@@ -5,7 +5,9 @@
 //
 // Please see the included LICENSE file for more information.
 
-//#include <alloca.h> //FreeBSD has this is stdlib.h
+#ifndef __FreeBSD__
+#include <alloca.h>
+#endif
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
