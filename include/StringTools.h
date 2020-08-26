@@ -135,4 +135,6 @@ namespace Common
 
     std::string timeIntervalToString(uint64_t intervalInSeconds);
 
+    std::vector<std::string> toStringVector(const char *string, uint64_t length);
+
 } // namespace Common

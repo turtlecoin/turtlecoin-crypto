@@ -308,4 +308,18 @@ namespace Common
         return ss.str();
     }
 
+    std::vector<std::string> toStringVector(const char *string, uint64_t length)
+    {
+        const std::string buffer = std::string(string);
+
+        std::vector<std::string> result;
+
+        for (int i = 0; i < buffer.length(); i += length)
+        {
+            result.push_back(buffer.substr(i, length));
+        }
+
+        return result;
+    }
+
 } // namespace Common

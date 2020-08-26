@@ -1083,22 +1083,18 @@ namespace Core
     }
 } // namespace Core
 
-inline void tree_hash(const char *hashes, const uint64_t hashesLength, char *&hash)
+inline void tree_hash(const char *hashes, char *&hash)
 {
-    const std::string *hashesBuffer = reinterpret_cast<const std::string *>(hashes);
-
-    std::vector<std::string> l_hashes(hashesBuffer, hashesBuffer + hashesLength);
+    std::vector<std::string> l_hashes = Common::toStringVector(hashes, 64);
 
     std::string result = Core::Cryptography::tree_hash(l_hashes);
 
     hash = strdup(result.c_str());
 }
 
-inline void tree_branch(const char *hashes, const uint64_t hashesLength, char *&branch)
+inline void tree_branch(const char *hashes, char *&branch)
 {
-    const std::string *hashesBuffer = reinterpret_cast<const std::string *>(hashes);
-
-    std::vector<std::string> l_hashes(hashesBuffer, hashesBuffer + hashesLength);
+    std::vector<std::string> l_hashes = Common::toStringVector(hashes, 64);
 
     std::vector<std::string> l_branch = Core::Cryptography::tree_branch(l_hashes);
 
@@ -1107,14 +1103,11 @@ inline void tree_branch(const char *hashes, const uint64_t hashesLength, char *&
 
 inline void tree_hash_from_branch(
     const char *branches,
-    const uint64_t branchesLength,
     const char *leaf,
     const char *path,
     char *&hash)
 {
-    const std::string *branchesBuffer = reinterpret_cast<const std::string *>(branches);
-
-    std::vector<std::string> l_branches(branchesBuffer, branchesBuffer + branchesLength);
+    std::vector<std::string> l_branches = Common::toStringVector(branches, 64);
 
     std::string l_hash = Core::Cryptography::tree_hash_from_branch(l_branches, leaf, path);
 
@@ -1125,14 +1118,11 @@ inline int generateRingSignatures(
     const char *prefixHash,
     const char *keyImage,
     const char *publicKeys,
-    uint64_t publicKeysLength,
     const char *transactionSecretKey,
     const uint64_t realOutput,
     char *&signatures)
 {
-    const std::string *publicKeysBuffer = reinterpret_cast<const std::string *>(publicKeys);
-
-    std::vector<std::string> l_publicKeys(publicKeysBuffer, publicKeysBuffer + publicKeysLength);
+    std::vector<std::string> l_publicKeys = Common::toStringVector(publicKeys, 64);
 
     std::vector<std::string> l_signatures;
 
@@ -1151,17 +1141,11 @@ inline bool checkRingSignature(
     const char *prefixHash,
     const char *keyImage,
     const char *publicKeys,
-    const uint64_t publicKeysLength,
-    const char *signatures,
-    const uint64_t signaturesLength)
+    const char *signatures)
 {
-    const std::string *publicKeysBuffer = reinterpret_cast<const std::string *>(publicKeys);
+    std::vector<std::string> l_publicKeys = Common::toStringVector(publicKeys, 64);
 
-    std::vector<std::string> l_publicKeys(publicKeysBuffer, publicKeysBuffer + publicKeysLength);
-
-    const std::string *signaturesBuffer = reinterpret_cast<const std::string *>(signatures);
-
-    std::vector<std::string> l_signatures(signaturesBuffer, signaturesBuffer + signaturesLength);
+    std::vector<std::string> l_signatures = Common::toStringVector(signatures, 128);
 
     return Core::Cryptography::checkRingSignature(prefixHash, keyImage, l_publicKeys, l_signatures);
 }
@@ -1264,12 +1248,9 @@ inline int completeRingSignatures(
     const char *transactionSecretKey,
     const uint64_t realOutput,
     const char *k,
-    char *&signatures,
-    const uint64_t signaturesLength)
+    char *&signatures)
 {
-    const std::string *sigsBuffer = reinterpret_cast<const std::string *>(signatures);
-
-    std::vector<std::string> sigs(sigsBuffer, sigsBuffer + signaturesLength);
+    std::vector<std::string> sigs = Common::toStringVector(signatures, 128);
 
     bool success = Core::Cryptography::completeRingSignatures(transactionSecretKey, realOutput, k, sigs);
 
@@ -1285,14 +1266,11 @@ inline int prepareRingSignatures(
     const char *prefixHash,
     const char *keyImage,
     const char *publicKeys,
-    const uint64_t publicKeysLength,
     const uint64_t realOutput,
     char *&signatures,
     char *&k)
 {
-    const std::string *keysBuffer = reinterpret_cast<const std::string *>(publicKeys);
-
-    std::vector<std::string> keys(keysBuffer, keysBuffer + publicKeysLength);
+    std::vector<std::string> keys = Common::toStringVector(publicKeys, 64);
 
     std::vector<std::string> sigs;
 
@@ -1315,12 +1293,9 @@ inline void restoreKeyImage(
     const char *derivation,
     const uint64_t output_index,
     const char *partialKeyImages,
-    const uint64_t partialKeyImagesLength,
     char *&keyImage)
 {
-    const std::string *keysBuffer = reinterpret_cast<const std::string *>(partialKeyImages);
-
-    std::vector<std::string> keys(keysBuffer, keysBuffer + partialKeyImagesLength);
+    std::vector<std::string> keys = Common::toStringVector(partialKeyImages, 64);
 
     const std::string result = Core::Cryptography::restoreKeyImage(publicEphemeral, derivation, output_index, keys);
 
@@ -1331,19 +1306,13 @@ inline int restoreRingSignatures(
     const char *derivation,
     const uint64_t output_index,
     const char *partialSigningKeys,
-    const uint64_t partialSigningKeysLength,
     const uint64_t realOutput,
     const char *k,
-    char *&signatures,
-    const uint64_t signaturesLength)
+    char *&signatures)
 {
-    const std::string *keysBuffer = reinterpret_cast<const std::string *>(partialSigningKeys);
+    std::vector<std::string> keys = Common::toStringVector(partialSigningKeys, 64);
 
-    std::vector<std::string> keys(keysBuffer, keysBuffer + partialSigningKeysLength);
-
-    const std::string *sigsBuffer = reinterpret_cast<const std::string *>(signatures);
-
-    std::vector<std::string> sigs(sigsBuffer, sigsBuffer + signaturesLength);
+    std::vector<std::string> sigs = Common::toStringVector(signatures, 128);
 
     bool success = Core::Cryptography::restoreRingSignatures(derivation, output_index, keys, realOutput, k, sigs);
 
@@ -1358,12 +1327,9 @@ inline int restoreRingSignatures(
 inline void calculateMultisigPrivateKeys(
     const char *ourPrivateSpendKey,
     const char *publicKeys,
-    const uint64_t publicKeysLength,
     char *&multisigKeys)
 {
-    const std::string *keysBuffer = reinterpret_cast<const std::string *>(publicKeys);
-
-    std::vector<std::string> keys(keysBuffer, keysBuffer + publicKeysLength);
+    std::vector<std::string> keys = Common::toStringVector(publicKeys, 64);
 
     std::vector<std::string> multisigKeysTemp =
         Core::Cryptography::calculateMultisigPrivateKeys(ourPrivateSpendKey, keys);
@@ -1371,22 +1337,18 @@ inline void calculateMultisigPrivateKeys(
     multisigKeys = reinterpret_cast<char *>(multisigKeysTemp.data());
 }
 
-inline void calculateSharedPrivateKey(const char *secretKeys, const uint64_t secretKeysLength, char *&secretKey)
+inline void calculateSharedPrivateKey(const char *secretKeys, char *&secretKey)
 {
-    const std::string *keysBuffer = reinterpret_cast<const std::string *>(secretKeys);
-
-    std::vector<std::string> keys(keysBuffer, keysBuffer + secretKeysLength);
+    std::vector<std::string> keys = Common::toStringVector(secretKeys, 64);
 
     const std::string result = Core::Cryptography::calculateSharedPrivateKey(keys);
 
     secretKey = strdup(result.c_str());
 }
 
-inline void calculateSharedPublicKey(const char *publicKeys, const uint64_t publicKeysLength, char *&publicKey)
+inline void calculateSharedPublicKey(const char *publicKeys, char *&publicKey)
 {
-    const std::string *keysBuffer = reinterpret_cast<const std::string *>(publicKeys);
-
-    std::vector<std::string> keys(keysBuffer, keysBuffer + publicKeysLength);
+    std::vector<std::string> keys = Common::toStringVector(publicKeys, 64);
 
     const std::string result = Core::Cryptography::calculateSharedPublicKey(keys);
 
@@ -1531,25 +1493,23 @@ extern "C"
         return Core::Cryptography::tree_depth(count);
     }
 
-    EXPORTDLL void _tree_hash(const char *hashes, const uint64_t hashesLength, char *&hash)
+    EXPORTDLL void _tree_hash(const char *hashes, char *&hash)
     {
-        tree_hash(hashes, hashesLength, hash);
+        tree_hash(hashes, hash);
     }
 
-    EXPORTDLL void _tree_branch(const char *hashes, const uint64_t hashesLength, char *&branch)
+    EXPORTDLL void _tree_branch(const char *hashes, char *&branch)
     {
-        tree_branch(hashes, hashesLength, branch);
+        tree_branch(hashes, branch);
     }
 
     EXPORTDLL void _tree_hash_from_branch(
         const char *branches,
-        const uint64_t branchesLength,
-        const uint64_t depth,
         const char *leaf,
         const char *path,
         char *&hash)
     {
-        tree_hash_from_branch(branches, branchesLength, leaf, path, hash);
+        tree_hash_from_branch(branches, leaf, path, hash);
     }
 
     /* Crypto Methods */
@@ -1558,24 +1518,21 @@ extern "C"
         const char *prefixHash,
         const char *keyImage,
         const char *publicKeys,
-        const uint64_t publicKeysLength,
         const char *transactionSecretKey,
         const uint64_t realOutput,
         char *&signatures)
     {
         return generateRingSignatures(
-            prefixHash, keyImage, publicKeys, publicKeysLength, transactionSecretKey, realOutput, signatures);
+            prefixHash, keyImage, publicKeys, transactionSecretKey, realOutput, signatures);
     }
 
     EXPORTDLL bool _checkRingSignature(
         const char *prefixHash,
         const char *keyImage,
         const char *publicKeys,
-        const uint64_t publicKeysLength,
-        const char *signatures,
-        const uint64_t signaturesLength)
+        const char *signatures)
     {
-        return checkRingSignature(prefixHash, keyImage, publicKeys, publicKeysLength, signatures, signaturesLength);
+        return checkRingSignature(prefixHash, keyImage, publicKeys, signatures);
     }
 
     EXPORTDLL void _generatePrivateViewKeyFromPrivateSpendKey(const char *spendPrivateKey, char *&output)
@@ -1677,31 +1634,26 @@ extern "C"
         const char *derivation,
         const uint64_t output_index,
         const char *partialKeyImages,
-        const uint64_t partialKeyImagesLength,
         char *&keyImage)
     {
-        restoreKeyImage(publicEphemeral, derivation, output_index, partialKeyImages, partialKeyImagesLength, keyImage);
+        restoreKeyImage(publicEphemeral, derivation, output_index, partialKeyImages, keyImage);
     }
 
     EXPORTDLL int _restoreRingSignatures(
         const char *derivation,
         const uint64_t output_index,
         const char *partialSigningKeys,
-        const uint64_t partialSigningKeysLength,
         const uint64_t realOutput,
         const char *k,
-        char *&signatures,
-        const uint64_t signaturesLength)
+        char *&signatures)
     {
         return restoreRingSignatures(
             derivation,
             output_index,
             partialSigningKeys,
-            partialSigningKeysLength,
             realOutput,
             k,
-            signatures,
-            signaturesLength);
+            signatures);
     }
 
     EXPORTDLL void
@@ -1714,40 +1666,37 @@ extern "C"
         const char *prefixHash,
         const char *keyImage,
         const char *publicKeys,
-        const uint64_t publicKeysLength,
         const uint64_t realOutput,
         char *&signatures,
         char *&k)
     {
-        return prepareRingSignatures(prefixHash, keyImage, publicKeys, publicKeysLength, realOutput, signatures, k);
+        return prepareRingSignatures(prefixHash, keyImage, publicKeys, realOutput, signatures, k);
     }
 
     EXPORTDLL int _completeRingSignatures(
         const char *transactionSecretKey,
         const uint64_t realOutput,
         const char *k,
-        char *&signatures,
-        const uint64_t signaturesLength)
+        char *&signatures)
     {
-        return completeRingSignatures(transactionSecretKey, realOutput, k, signatures, signaturesLength);
+        return completeRingSignatures(transactionSecretKey, realOutput, k, signatures);
     }
 
     EXPORTDLL void _calculateMultisigPrivateKeys(
         const char *ourPrivateSpendKey,
         const char *publicKeys,
-        const uint64_t publicKeysLength,
         char *&multisigKeys)
     {
-        calculateMultisigPrivateKeys(ourPrivateSpendKey, publicKeys, publicKeysLength, multisigKeys);
+        calculateMultisigPrivateKeys(ourPrivateSpendKey, publicKeys, multisigKeys);
     }
 
-    EXPORTDLL void _calculateSharedPrivateKey(const char *secretKeys, const uint64_t secretKeysLength, char *&secretKey)
+    EXPORTDLL void _calculateSharedPrivateKey(const char *secretKeys, char *&secretKey)
     {
-        calculateSharedPrivateKey(secretKeys, secretKeysLength, secretKey);
+        calculateSharedPrivateKey(secretKeys, secretKey);
     }
 
-    EXPORTDLL void _calculateSharedPublicKey(const char *publicKeys, const uint64_t publicKeysLength, char *&publicKey)
+    EXPORTDLL void _calculateSharedPublicKey(const char *publicKeys, char *&publicKey)
     {
-        calculateSharedPublicKey(publicKeys, publicKeysLength, publicKey);
+        calculateSharedPublicKey(publicKeys, publicKey);
     }
 }
