@@ -137,4 +137,6 @@ namespace Common
 
     std::vector<std::string> toStringVector(const char *string, uint64_t length);
 
+    char* fromStringVector(std::vector<std::string> list);
+
 } // namespace Common

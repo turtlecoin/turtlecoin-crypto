@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <string.h>
 
 namespace Common
 {
@@ -320,6 +321,18 @@ namespace Common
         }
 
         return result;
+    }
+
+    char* fromStringVector(std::vector<std::string> list)
+    {
+        std::string data;
+
+        for (const auto &element: list)
+        {
+            data += element;
+        }
+
+        return strdup(data.c_str());
     }
 
 } // namespace Common

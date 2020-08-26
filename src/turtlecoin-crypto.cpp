@@ -1098,7 +1098,7 @@ inline void tree_branch(const char *hashes, char *&branch)
 
     std::vector<std::string> l_branch = Core::Cryptography::tree_branch(l_hashes);
 
-    branch = reinterpret_cast<char *>(l_branch.data());
+    branch = Common::fromStringVector(l_branch);
 }
 
 inline void tree_hash_from_branch(
@@ -1131,7 +1131,7 @@ inline int generateRingSignatures(
 
     if (success)
     {
-        signatures = reinterpret_cast<char *>(l_signatures.data());
+        signatures = Common::fromStringVector(l_signatures);
     }
 
     return success;
@@ -1256,7 +1256,7 @@ inline int completeRingSignatures(
 
     if (success)
     {
-        signatures = reinterpret_cast<char *>(sigs.data());
+        signatures = Common::fromStringVector(sigs);
     }
 
     return success;
@@ -1282,7 +1282,7 @@ inline int prepareRingSignatures(
     {
         k = strdup(kTemp.c_str());
 
-        signatures = reinterpret_cast<char *>(sigs.data());
+        signatures = Common::fromStringVector(sigs);
     }
 
     return success;
@@ -1318,7 +1318,7 @@ inline int restoreRingSignatures(
 
     if (success)
     {
-        signatures = reinterpret_cast<char *>(sigs.data());
+        signatures = Common::fromStringVector(sigs);
     }
 
     return success;
@@ -1334,7 +1334,7 @@ inline void calculateMultisigPrivateKeys(
     std::vector<std::string> multisigKeysTemp =
         Core::Cryptography::calculateMultisigPrivateKeys(ourPrivateSpendKey, keys);
 
-    multisigKeys = reinterpret_cast<char *>(multisigKeysTemp.data());
+    multisigKeys = Common::fromStringVector(multisigKeysTemp);
 }
 
 inline void calculateSharedPrivateKey(const char *secretKeys, char *&secretKey)
