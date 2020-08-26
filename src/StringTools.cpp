@@ -313,6 +313,11 @@ namespace Common
     {
         const std::string buffer = std::string(string);
 
+        if (buffer.length() % length != 0)
+        {
+            throw std::runtime_error("toStringVector: invalid string size");
+        }
+
         std::vector<std::string> result;
 
         for (int i = 0; i < buffer.length(); i += length)
