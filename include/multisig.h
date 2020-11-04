@@ -1,71 +1,80 @@
-// Copyright (c) 2012-2017, The CryptoNote developers, The Bytecoin developers
-// Copyright (c) 2014-2018, The Monero Project
-// Copyright (c) 2018-2020, The TurtleCoin Developers
+// Copyright (c) 2020-2021, The TurtleCoin Developers
 //
-// Please see the included LICENSE file for more information.
+// Redistribution and use in source and binary forms, with or without modification, are
+// permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of
+//    conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list
+//    of conditions and the following disclaimer in the documentation and/or other
+//    materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be
+//    used to endorse or promote products derived from this software without specific
+//    prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#ifndef CRYPTO_MULTISIG_H
+#define CRYPTO_MULTISIG_H
 
-#include "crypto.h"
+#include "crypto_common.h"
 
-namespace Crypto
+namespace Crypto::Multisig
 {
-    namespace Multisig
-    {
-        /* Calculates a set of multisig private keys */
-        std::vector<Crypto::SecretKey> calculate_multisig_private_keys(
-            const Crypto::SecretKey &ourPrivateSpendKey,
-            const std::vector<Crypto::PublicKey> &publicKeys);
+    /**
+     * Generates a multisig secret key using our secret key and their public key
+     * @param their_public_key
+     * @param our_secret_key
+     * @return
+     */
+    crypto_secret_key_t generate_multisig_secret_key(
+        const crypto_public_key_t &their_public_key,
+        const crypto_secret_key_t &our_secret_key);
 
-        /* Calculates a shared private key */
-        void calculate_shared_private_key(
-            const std::vector<Crypto::SecretKey> &secretKeys,
-            Crypto::SecretKey &sharedSecretKey);
+    /**
+     * Generate a vector of multisig secret keys from our secret key and a vector
+     * of the other participants public keys
+     * @param their_public_keys
+     * @param our_secret_key
+     * @return
+     */
+    std::vector<crypto_secret_key_t> generate_multisig_secret_keys(
+        const std::vector<crypto_public_key_t> &their_public_keys,
+        const crypto_secret_key_t &our_secret_key);
 
-        Crypto::SecretKey calculate_shared_private_key(const std::vector<Crypto::SecretKey> &secretKeys);
+    /**
+     * Generate a shared public key from a vector of participant public keys
+     * @param public_keys
+     * @return
+     */
+    crypto_public_key_t generate_shared_public_key(const std::vector<crypto_public_key_t> &public_keys);
 
-        /* Calculates a shared public spend key */
-        void calculate_shared_public_key(
-            const std::vector<Crypto::PublicKey> &publicKeys,
-            Crypto::PublicKey &sharedPublicKey);
-        Crypto::PublicKey calculate_shared_public_key(const std::vector<Crypto::PublicKey> &publicKeys);
+    /**
+     * Generate a shared secret key from a vector of participant secret keys
+     * @param secret_keys
+     * @return
+     */
+    crypto_secret_key_t generate_shared_secret_key(const std::vector<crypto_secret_key_t> &secret_keys);
 
-        /* Generates the the partial ring signing key using
-           the base signature and our private spend key */
-        Crypto::SecretKey
-            generate_partial_signing_key(const Crypto::Signature &signature, const Crypto::SecretKey &privateSpendKey);
+    /**
+     * Calculates the number of mutlisig secret key exchange key rounds that must be
+     * completed before we will have the desired number of multisig keys for the M:N
+     * multisig scheme. N:N is easy, N-1:N is pretty easy, and M:N gets insane
+     * @param participants
+     * @param threshold
+     * @return
+     */
+    size_t rounds_required(size_t participants, size_t threshold);
+} // namespace Crypto::Multisig
 
-        /* Used to restore a key image using the partial
-           keyImages supplied by other participants */
-        Crypto::KeyImage restore_key_image(
-            const Crypto::PublicKey &publicEphemeral,
-            const Crypto::EllipticCurveScalar &derivationScalar,
-            const std::vector<Crypto::KeyImage> &partialKeyImages);
-
-        Crypto::KeyImage restore_key_image(
-            const Crypto::PublicKey &publicEphemeral,
-            const Crypto::KeyDerivation &derivation,
-            const size_t output_index,
-            const std::vector<Crypto::KeyImage> &partialKeyImages);
-
-        /* Completes the ring signatures once enough parts
-           have been collected to do so */
-        bool restore_ring_signatures(
-            const Crypto::EllipticCurveScalar &derivationScalar,
-            const std::vector<Crypto::SecretKey> &partialSigningKeys,
-            const uint64_t realOutput,
-            const Crypto::EllipticCurveScalar &k,
-            std::vector<Crypto::Signature> &signatures);
-
-        bool restore_ring_signatures(
-            const Crypto::KeyDerivation &derivation,
-            const size_t output_index,
-            const std::vector<Crypto::SecretKey> &partialSigningKeys,
-            const uint64_t realOutput,
-            const Crypto::EllipticCurveScalar &k,
-            std::vector<Crypto::Signature> &signatures);
-
-        /* Calculates the number of multisig rounds required for anything other than N:N */
-        uint32_t rounds_required(const uint32_t participants, uint32_t threshold);
-    } // namespace Multisig
-} // namespace Crypto
+#endif // CRYPTO_MULTISIG_H

@@ -17,6 +17,10 @@ jobs:
       MSBUILD_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/MSBuild/Current/Bin"
     steps:
     - uses: actions/checkout@v1
+    - name: Checkout Submodules
+      run: |
+        git submodule init
+        git submodule update --recursive
     - name: Create Build Directory
       run: mkdir build
     - name: Install Dependencies (Linux)
@@ -35,19 +39,19 @@ jobs:
         export CC=gcc-8
         export CXX=g++-8
         cd build
-        cmake ..
+        cmake .. -DBUILD_TEST=1
     - name: Execute CMake Process (OSX)
       if: matrix.os == 'macos-latest'
       run: |
         export CC=/usr/local/opt/llvm/bin/clang
         export CXX=/usr/local/opt/llvm/bin/clang++
         cd build
-        cmake ..
+        cmake .. -DBUILD_TEST=1
     - name: Execute CMake Process (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         cd build
-        cmake -G "Visual Studio 16 2019" -A x64 ..
+        cmake -G "Visual Studio 16 2019" -A x64 .. -DBUILD_TEST=1
     - name: Build Project (Linux & OSX)
       if: matrix.os != 'windows-latest'
       run: |
@@ -58,7 +62,7 @@ jobs:
       run: |
         $env:PATH = "$env:PATH;$env:MSBUILD_PATH"
         cd build
-        MSBuild turtlecoin-crypto.sln /p:Configuration=Release /m
+        MSBuild crypto.sln /p:Configuration=Release /m
     - name: Test Cryptography (Linux & OSX)
       if: matrix.os != 'windows-latest'
       run: |
@@ -75,10 +79,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node: ['10', '11', '12', '13', '14']
+        node: ['12', '13', '14']
     name: ${{ matrix.os }} - Node ${{ matrix.node }} Test
     steps:
     - uses: actions/checkout@v1
+    - name: Checkout Submodules
+      run: |
+        git submodule init
+        git submodule update --recursive
     - uses: actions/setup-node@v1
       name: Set up Node
       with:
@@ -87,25 +95,32 @@ jobs:
     - name: Install Windows Node.js Build Tools
       if: matrix.os == 'windows-latest'
       run: npm install -g windows-build-tools --vs2015
+    - name: Install Yarn
+      run: npm install -g yarn
     - name: Install Dependencies
-      run: npm install
-    - name: Check Typescript Style
-      run: npm run style
-    - name: Compile Typescript
-      run: npm run build-typescript
-    - name: Build JS/WASM Module
-      run: npm run build-native
-    - name: Execute C++ Unit Tests
-      run: npm run test-node
-    - name: Execute JS/WASM Unit Tests
-      run: npm run test-js
-    - name: Generate Prebuilds
-      if: matrix.node == '12' && github.event_name == 'release' && matrix.os != 'windows-latest' && github.repository == 'turtlecoin/turtlecoin-crypto'
+      run: yarn
+    - name: Execute EMScripten Build Process (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: bash
       run: |
-        npm install -g prebuild
-        prebuild --all --strip -u ${{ secrets.GITHUB_TOKEN }}
+        ./scripts/build_js.sh
+    - name: Check Typescript Style
+      run: yarn style
+    - name: Compile Typescript
+      run: yarn build-ts
+    - name: Execute C++ Unit Tests
+      run: yarn test-node
+    - name: Execute JS Unit Tests
+      run: yarn test-js
+    - name: Execute WASM Unit Tests
+      run: yarn test-wasm
+    - name: Generate Prebuilds
+      if: matrix.node == '12' && github.event_name == 'release'
+      run: |
+        yarn prebuild-all --strip
+        yarn prebuild-all --strip -u ${{ secrets.GITHUB_TOKEN }}
     - name: Publish to NPM
-      if: matrix.node == '12' && matrix.os == 'ubuntu-latest' && github.event_name == 'release' && github.repository == 'turtlecoin/turtlecoin-crypto'
+      if: matrix.node == '12' && matrix.os == 'ubuntu-latest' && github.event_name == 'release'
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npm publish
+      run: npm publish --access public

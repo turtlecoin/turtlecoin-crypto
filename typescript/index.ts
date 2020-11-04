@@ -1,1668 +1,1247 @@
-// Copyright (c) 2020, The TurtleCoin Developers
+// Copyright (c) 2020-2021, The TurtleCoin Developers
 //
-// Please see the included LICENSE file for more information.
+// Redistribution and use in source and binary forms, with or without modification, are
+// permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of
+//    conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list
+//    of conditions and the following disclaimer in the documentation and/or other
+//    materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be
+//    used to endorse or promote products derived from this software without specific
+//    prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import { keccak256 } from 'js-sha3';
+import * as bindings from 'bindings';
 import {
-    IKeyPair,
-    ICryptoConfig,
-    IModuleSettings,
-    IPreparedRingSignatures,
-    CryptoType
-} from './Interfaces';
-
-export { IKeyPair, ICryptoConfig, IPreparedRingSignatures, CryptoType };
-
-/**
- * @ignore
- */
-const userCryptoFunctions: ICryptoConfig = {};
-
-/**
- * @ignore
- */
-const moduleVars: IModuleSettings = {
-    crypto: null,
-    type: CryptoType.UNKNOWN
+    crypto_arcturus_signature_t,
+    crypto_bulletproof_t,
+    crypto_bulletproof_plus_t,
+    crypto_clsag_signature_t,
+    IConfig,
+    LibraryType,
+    LibraryTypeName,
+    ModuleSettings
+} from './types';
+import { Reader, Writer } from '@turtlecoin/bytestream';
+import { format } from 'util';
+import * as BigInteger from 'big-integer';
+export {
+    crypto_arcturus_signature_t, crypto_clsag_signature_t, crypto_bulletproof_t, crypto_bulletproof_plus_t,
+    IConfig, LibraryType
 };
 
 /**
  * @ignore
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-// eslint-disable-next-line no-extend-native
-Array.prototype.toVectorString = function () {
-    if (!moduleVars.crypto.VectorString) {
-        throw new Error('VectorString unavailable');
-    }
+const userConfig: IConfig = {};
 
-    const arr = new moduleVars.crypto.VectorString();
-
-    this.map(elem => arr.push_back(elem));
-
-    return arr;
+/**
+ * @ignore
+ */
+const runtime_configuration: ModuleSettings = {
+    library: null,
+    type: LibraryType.UNKNOWN
 };
 
 /**
- * A class containing the TurtleCoin cryptographic primitive methods that wraps
- * the Node.js native module, the WASM binary, or native JS implementations
- * into a common interface
+ * A wrapper around the underlying cryptographic libraries offered by this package
  */
 export class Crypto {
     /**
-     * Returns the type of the cryptographic primitives used by the wrapper
+     * Constructs a new instance of the class
+     * @param config
      */
-    public static get type (): CryptoType {
-        return moduleVars.type;
-    }
-
-    /**
-     * Returns if the Node.js native library is being used
-     */
-    public static get isNative (): boolean {
-        switch (moduleVars.type) {
-            case CryptoType.NODEADDON:
-                return true;
-            default:
-                return false;
+    constructor (config?: IConfig) {
+        if (config) {
+            Crypto.userConfig = config;
         }
     }
 
     /**
-     * Returns if the wrapper is loaded and ready
+     * Retrieves the current user configuration
      */
-    public static get isReady (): boolean {
-        return (moduleVars.crypto !== null &&
-            typeof moduleVars.crypto.cn_fast_hash === 'function');
+    public static get userConfig (): IConfig {
+        return userConfig;
     }
 
     /**
-     * Retrieves the array of user-defined cryptographic primitive functions
-     * that replace our primitives at runtime
-     */
-    public static get userCryptoFunctions (): ICryptoConfig {
-        return userCryptoFunctions;
-    }
-
-    /**
-     * Allows for updating the user-defined cryptographic primitive functions
-     * that will replace our primitives at runtime.
+     * Sets the current user configuration
      * @param config
      */
-    public static set userCryptoFunctions (config: ICryptoConfig) {
-        Object.keys(config)
-            .forEach(key => {
-                userCryptoFunctions[key] = config[key];
+    public static set userConfig (config: IConfig) {
+        for (const key of Object.keys(config)) {
+            userConfig[key] = config[key];
+        }
+    }
+
+    /**
+     * Sets the current user configuration
+     * @param config
+     */
+    public set userConfig (config: IConfig) {
+        Crypto.userConfig = config;
+    }
+
+    /**
+     * Returns a human readable form of the underlying cryptographic module name
+     */
+    public static get library_name (): string {
+        return LibraryTypeName(runtime_configuration.type);
+    }
+
+    /**
+     * Returns the LibraryType of the underlying cryptographic module
+     */
+    public static get library_type (): LibraryType {
+        return runtime_configuration.type;
+    }
+
+    /**
+     * Returns if we are using the native node module for the underlying cryptographic module
+     */
+    public static get is_native (): boolean {
+        return runtime_configuration.type === LibraryType.NODEADDON;
+    }
+
+    /**
+     * Retrieves the current user configuration
+     */
+    public get userConfig (): IConfig {
+        return userConfig;
+    }
+
+    /**
+     * Returns a human readable form of the underlying cryptographic module name
+     */
+    public get library_name (): string {
+        return LibraryTypeName(runtime_configuration.type);
+    }
+
+    /**
+     * Returns the LibraryType of the underlying cryptographic module
+     */
+    public get library_type (): LibraryType {
+        return runtime_configuration.type;
+    }
+
+    /**
+     * Returns if we are using the native node module for the underlying cryptographic module
+     */
+    public get is_native (): boolean {
+        return runtime_configuration.type === LibraryType.NODEADDON;
+    }
+
+    /**
+     * Forces use of the Javascript asm.js library
+     */
+    public static async force_js_library (): Promise<boolean> {
+        return Crypto.load_js();
+    }
+
+    /**
+     * Forces use of the WASM library
+     */
+    public static async force_wasm_library (): Promise<boolean> {
+        return Crypto.load_wasm();
+    }
+
+    private static async load_node_module (): Promise<boolean> {
+        try {
+            const module = bindings('crypto.node');
+
+            if (Object.getOwnPropertyNames(module).length === 0 || typeof module.sha3 === 'undefined') {
+                return false;
+            }
+
+            runtime_configuration.library = module;
+
+            runtime_configuration.type = LibraryType.NODEADDON;
+
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    private static async load_wasm (): Promise<boolean> {
+        const WASM = await (async () => {
+            try {
+                return require('../build.js/crypto-wasm');
+            } catch {
+                return null;
+            }
+        })();
+
+        if (!WASM) {
+            return false;
+        }
+
+        const module = await (new WASM());
+
+        if (Object.getOwnPropertyNames(module).length === 0 || typeof module.sha3 === 'undefined') {
+            return false;
+        }
+
+        runtime_configuration.library = module;
+
+        runtime_configuration.type = LibraryType.WASMJS;
+
+        return true;
+    }
+
+    private static async load_js (): Promise<boolean> {
+        const JS = await (async () => {
+            try {
+                return require('../build.js/crypto-js');
+            } catch {
+                return null;
+            }
+        })();
+
+        if (!JS) {
+            return false;
+        }
+
+        const module = await (new JS());
+
+        if (Object.getOwnPropertyNames(module).length === 0 || typeof module.sha3 === 'undefined') {
+            return false;
+        }
+
+        runtime_configuration.library = module;
+
+        runtime_configuration.type = LibraryType.JS;
+
+        return true;
+    }
+
+    /**
+     * Encodes the hexadecimal encoded string into a base58 encoded string
+     * @param hex
+     */
+    public async base58_encode (hex: string): Promise<string> {
+        return execute('base58_encode', hex);
+    }
+
+    /**
+     * Encodes the hexadecimal encoded string into a base58 encoded string
+     * and automatically includes a SHA3 checksum in the result
+     * @param hex
+     */
+    public async base58_encode_check (hex: string): Promise<string> {
+        return execute('base58_encode_check', hex);
+    }
+
+    /**
+     * Decodes the Base58 encoded string into a hexadecimal encoded string
+     * @param base58
+     */
+    public async base58_decode (base58: string): Promise<string> {
+        return execute('base58_decode', base58);
+    }
+
+    /**
+     * Decodes the Base58 encoded string into a hexadecimal encoded string
+     * as long as the checksum included matches the checksum expected
+     * @param base58
+     */
+    public async base58_decode_check (base58: string): Promise<string> {
+        return execute('base58_decode_check', base58);
+    }
+
+    /**
+     * Checks the Arcturus "ring signature" presented
+     * @param message_digest
+     * @param public_keys
+     * @param key_images
+     * @param input_commitments
+     * @param output_commitments
+     * @param signature
+     */
+    public async arcturus_check_ring_signature (
+        message_digest: string,
+        public_keys: string[],
+        key_images: string[],
+        input_commitments: string[],
+        output_commitments: string[],
+        signature: crypto_arcturus_signature_t): Promise<boolean> {
+        const sig = JSON.stringify(signature);
+
+        return execute('arcturus_check_ring_signature',
+            message_digest,
+            public_keys,
+            key_images,
+            input_commitments,
+            output_commitments,
+            sig);
+    }
+
+    /**
+     * Completes the prepared Arcturus "ring signature"
+     * @param signing_scalars
+     * @param x
+     * @param rho_R
+     * @param m
+     * @param signature
+     * @param partial_signing_scalars
+     */
+    public async arcturus_complete_ring_signature (
+        signing_scalars: string[],
+        x: string,
+        rho_R: string[][],
+        m: number,
+        signature: crypto_arcturus_signature_t,
+        partial_signing_scalars: string[][] = []
+    ): Promise<crypto_arcturus_signature_t> {
+        const sig = JSON.stringify(signature);
+
+        const result = await execute('arcturus_complete_ring_signature',
+            signing_scalars, x, rho_R, m, sig, partial_signing_scalars);
+
+        return JSON.parse(result);
+    }
+
+    /**
+     * Generates a partial signing scalar that is a factor of the full signing scalar and typically
+     * used by multisig wallets -- input data is supplied from prepare_ring_signature
+     * @param m
+     * @param x
+     * @param spend_secret_key
+     */
+    public async arcturus_generate_partial_signing_scalar (
+        m: number, x: string, spend_secret_key: string): Promise<string> {
+        return execute('arcturus_generate_partial_signing_scalar', m, x, spend_secret_key);
+    }
+
+    /**
+     * Generates an Arcturus "ring signature" using the secrets provided
+     * @param message_digest
+     * @param public_keys
+     * @param key_images
+     * @param input_commitments
+     * @param output_commitments
+     * @param real_output_indexes
+     * @param secret_ephemerals
+     * @param input_blinding_factors
+     * @param output_blinding_factors
+     * @param input_amounts
+     * @param output_amounts
+     */
+    public async arcturus_generate_ring_signature (
+        message_digest: string,
+        public_keys: string[],
+        key_images: string[],
+        input_commitments: string[],
+        output_commitments: string[],
+        real_output_indexes: number[],
+        secret_ephemerals: string[],
+        input_blinding_factors: string[],
+        output_blinding_factors: string[],
+        input_amounts: number[],
+        output_amounts: number[]
+    ): Promise<crypto_arcturus_signature_t> {
+        const result = await execute('arcturus_generate_ring_signature',
+            message_digest,
+            public_keys,
+            key_images,
+            input_commitments,
+            output_commitments,
+            real_output_indexes,
+            secret_ephemerals,
+            input_blinding_factors,
+            output_blinding_factors,
+            input_amounts,
+            output_amounts);
+
+        return JSON.parse(result);
+    }
+
+    /**
+     * Prepares an Arcturus "ring signature" using the primitive values provided
+     * Must be completed via complete_ring_signature before it will validate
+     * @param message_digest
+     * @param public_keys
+     * @param key_images
+     * @param input_commitments
+     * @param output_commitments
+     * @param real_output_indexes
+     * @param input_blinding_factors
+     * @param output_blinding_factors
+     * @param input_amounts
+     * @param output_amounts
+     */
+    public async arcturus_prepare_ring_signature (
+        message_digest: string,
+        public_keys: string[],
+        key_images: string[],
+        input_commitments: string[],
+        output_commitments: string[],
+        real_output_indexes: number[],
+        input_blinding_factors: string[],
+        output_blinding_factors: string[],
+        input_amounts: number[],
+        output_amounts: number[]
+    ): Promise<[string, string[][], crypto_arcturus_signature_t]> {
+        const [x, rho_R, signature] = await execute('arcturus_prepare_ring_signature',
+            message_digest,
+            public_keys,
+            key_images,
+            input_commitments,
+            output_commitments,
+            real_output_indexes,
+            input_blinding_factors,
+            output_blinding_factors,
+            input_amounts,
+            output_amounts);
+
+        return [x, rho_R, JSON.parse(signature)];
+    }
+
+    /**
+     * Checks that the provided ring signature is valid
+     * @param message_digest
+     * @param key_image
+     * @param public_keys
+     * @param signature
+     */
+    public async borromean_check_ring_signature (
+        message_digest: string, key_image: string, public_keys: string[], signature: string[]): Promise<boolean> {
+        return execute('borromean_check_ring_signature', message_digest, key_image, public_keys, signature);
+    }
+
+    /**
+     * Completes the ring signature using the provided values
+     * @param signing_scalar
+     * @param real_output_index
+     * @param signature
+     * @param partial_signing_scalars
+     */
+    public async borromean_complete_ring_signature (
+        signing_scalar: string, real_output_index: number,
+        signature: string[], partial_signing_scalars: string[] = []): Promise<string[]> {
+        return execute('borromean_complete_ring_signature', signing_scalar,
+            real_output_index, signature, partial_signing_scalars);
+    }
+
+    /**
+     * Generates a partial signing scalar for the provided values (Multisig)
+     * @param real_output_index
+     * @param signature
+     * @param secret_spend_key
+     */
+    public async borromean_generate_partial_signing_scalar (
+        real_output_index: number, signature: string[], secret_spend_key: string): Promise<string> {
+        return execute('borromean_generate_partial_signing_scalar', real_output_index,
+            signature, secret_spend_key);
+    }
+
+    /**
+     * Generates a ring signature for the provided values
+     * @param message_digest
+     * @param secret_ephemeral
+     * @param public_keys
+     */
+    public async borromean_generate_ring_signature (
+        message_digest: string, secret_ephemeral: string, public_keys: string[]): Promise<string[]> {
+        return execute('borromean_generate_ring_signature', message_digest, secret_ephemeral,
+            public_keys);
+    }
+
+    /**
+     * Prepares a ring signature for the provided values
+     * @param message_digest
+     * @param key_image
+     * @param public_keys
+     * @param real_output_index
+     */
+    public async borromean_prepare_ring_signature (
+        message_digest: string, key_image: string,
+        public_keys: string[], real_output_index: number): Promise<string[]> {
+        return execute('borromean_prepare_ring_signature', message_digest, key_image,
+            public_keys, real_output_index);
+    }
+
+    /**
+     * Generates the proof and commitments for the provided values
+     * @param amounts
+     * @param blinding_factors
+     */
+    public async bulletproofs_prove (
+        amounts: number[], blinding_factors: string[]): Promise<[crypto_bulletproof_t, string[]]> {
+        const [proof, commitments] = await execute('bulletproofs_prove', amounts, blinding_factors);
+
+        return [JSON.parse(proof), commitments];
+    }
+
+    /**
+     * Verifies the proofs for the provided commitments
+     * @param proofs
+     * @param commitments
+     */
+    public async bulletproofs_verify (
+        proofs: crypto_bulletproof_t[], commitments: string[][]): Promise<boolean> {
+        const proofs_array = JSON.stringify(proofs);
+
+        return execute('bulletproofs_verify', proofs_array, commitments);
+    }
+
+    /**
+     * Generates the proof and commitments for the provided values
+     * @param amounts
+     * @param blinding_factors
+     */
+    public async bulletproofsplus_prove (
+        amounts: number[], blinding_factors: string[]): Promise<[crypto_bulletproof_plus_t, string[]]> {
+        const [proof, commitments] = await execute('bulletproofsplus_prove', amounts, blinding_factors);
+
+        return [JSON.parse(proof), commitments];
+    }
+
+    /**
+     * Verifies the proofs for the provided commitments
+     * @param proofs
+     * @param commitments
+     */
+    public async bulletproofsplus_verify (
+        proofs: crypto_bulletproof_plus_t[], commitments: string[][]): Promise<boolean> {
+        const proofs_array = JSON.stringify(proofs);
+
+        return execute('bulletproofsplus_verify', proofs_array, commitments);
+    }
+
+    /**
+     * Checks that the provided ring signature is valid
+     * @param message_digest
+     * @param key_image
+     * @param public_keys
+     * @param signature
+     * @param commitments
+     * @param pseudo_commitment
+     */
+    public async clsag_check_ring_signature (message_digest: string, key_image: string, public_keys: string[],
+        signature: crypto_clsag_signature_t, commitments: string[] = [], pseudo_commitment: string = ''
+    ): Promise<boolean> {
+        const sig = JSON.stringify(signature);
+
+        return execute('clsag_check_ring_signature', message_digest, key_image,
+            public_keys, sig, commitments, pseudo_commitment);
+    }
+
+    /**
+     * Completes the ring signature using the provided values
+     * @param signing_scalar
+     * @param real_output_index
+     * @param signature
+     * @param h
+     * @param mu_P
+     * @param partial_signing_scalars
+     */
+    public async clsag_complete_ring_signature (signing_scalar: string, real_output_index: number,
+        signature: crypto_clsag_signature_t, h: string[],
+        mu_P: string, partial_signing_scalars: string[] = []): Promise<crypto_clsag_signature_t> {
+        const sig = JSON.stringify(signature);
+
+        const result = await execute('clsag_complete_ring_signature',
+            signing_scalar, real_output_index, sig, h, mu_P, partial_signing_scalars);
+
+        return JSON.parse(result);
+    }
+
+    /**
+     * Generates a partial signing scalar for the provided values (Multisig)
+     * @param mu_P
+     * @param secret_spend_key
+     */
+    public async clsag_generate_partial_signing_scalar (
+        mu_P: string, secret_spend_key: string): Promise<string> {
+        return execute('clsag_generate_partial_signing_scalar', mu_P, secret_spend_key);
+    }
+
+    /**
+     * Generates a ring signature for the provided values
+     * @param message_digest
+     * @param secret_ephemeral
+     * @param public_keys
+     * @param input_blinding_factor
+     * @param public_commitments
+     * @param pseudo_blinding_factor
+     * @param pseudo_commitment
+     */
+    public async clsag_generate_ring_signature (message_digest: string, secret_ephemeral: string,
+        public_keys: string[], input_blinding_factor: string = '',
+        public_commitments: string[] = [], pseudo_blinding_factor: string = '',
+        pseudo_commitment: string = ''): Promise<crypto_clsag_signature_t> {
+        const result = await execute('clsag_generate_ring_signature',
+            message_digest,
+            secret_ephemeral,
+            public_keys,
+            input_blinding_factor,
+            public_commitments,
+            pseudo_blinding_factor,
+            pseudo_commitment);
+
+        return JSON.parse(result);
+    }
+
+    /**
+     * Prepares a ring signature for the provided values
+     * @param message_digest
+     * @param key_image
+     * @param public_keys
+     * @param real_output_index
+     * @param input_blinding_factor
+     * @param public_commitments
+     * @param pseudo_blinding_factor
+     * @param pseudo_commitment
+     */
+    public async clsag_prepare_ring_signature (message_digest: string, key_image: string, public_keys: string[],
+        real_output_index: number,
+        input_blinding_factor: string = '', public_commitments: string[] = [],
+        pseudo_blinding_factor: string = '', pseudo_commitment: string = ''
+    ): Promise<[crypto_clsag_signature_t, string[], string]> {
+        const [signature, h, mu_P] = await execute('clsag_prepare_ring_signature',
+            message_digest,
+            key_image,
+            public_keys,
+            real_output_index,
+            input_blinding_factor,
+            public_commitments,
+            pseudo_blinding_factor,
+            pseudo_commitment);
+
+        return [JSON.parse(signature), h, mu_P];
+    }
+
+    /**
+     * Calculates the H() of the provided value
+     * @param input
+     * @param iterations
+     * @param memory
+     * @param threads
+     */
+    public async argon2d (
+        input: string, iterations: number = 1, memory: number = 256, threads: number = 1): Promise<string> {
+        return execute('argon2d', input, iterations, memory, threads);
+    }
+
+    /**
+     * Calculates the H() of the provided value
+     * @param input
+     * @param iterations
+     * @param memory
+     * @param threads
+     */
+    public async argon2i (
+        input: string, iterations: number = 1, memory: number = 256, threads: number = 1): Promise<string> {
+        return execute('argon2i', input, iterations, memory, threads);
+    }
+
+    /**
+     * Calculates the H() of the provided value
+     * @param input
+     * @param iterations
+     * @param memory
+     * @param threads
+     */
+    public async argon2id (
+        input: string, iterations: number = 1, memory: number = 256, threads: number = 1): Promise<string> {
+        return execute('argon2id', input, iterations, memory, threads);
+    }
+
+    /**
+     * Calculates the H() of the provided value
+     * @param input
+     */
+    public async sha3 (input: string): Promise<string> {
+        return execute('sha3', input);
+    }
+
+    /**
+     * Calculates the H_i() of the provided value over specified stretching iterations
+     * @param input
+     * @param iterations
+     */
+    public async sha3_slow_hash (input: string, iterations: number = 0): Promise<string> {
+        return execute('sha3_slow_hash', input, iterations);
+    }
+
+    /**
+     * Calculates the Merkle root for the provided values
+     * @param hashes
+     */
+    public async root_hash (hashes: string[]): Promise<string> {
+        return execute('root_hash', hashes);
+    }
+
+    /**
+     * Calculates the Merkle root for the provided values
+     * @param branches
+     * @param depth
+     * @param leaf
+     * @param path
+     */
+    public async root_hash_from_branch (
+        branches: string[], depth: number, leaf: string, path: number): Promise<string> {
+        return execute('root_hash_from_branch', branches, depth, leaf, path);
+    }
+
+    /**
+     * Calculates the tree branch of the provided values
+     * @param hashes
+     */
+    public async tree_branch (hashes: string[]): Promise<string[]> {
+        return execute('tree_branch', hashes);
+    }
+
+    /**
+     * Calculates the depth of the merkle tree for the given count of values
+     * @param count
+     */
+    public async tree_depth (count: number): Promise<number> {
+        return execute('tree_depth', count);
+    }
+
+    /**
+     * Generates the multisig secret key for the provided values
+     * @param their_public_key
+     * @param our_secret_key
+     */
+    public async generate_multisig_secret_key (
+        their_public_key: string, our_secret_key: string): Promise<string> {
+        return execute('generate_multisig_secret_key', their_public_key, our_secret_key);
+    }
+
+    /**
+     * Generate the multisig secret keys for the provided values
+     * @param their_public_keys
+     * @param our_secret_key
+     */
+    public async generate_multisig_secret_keys (
+        their_public_keys: string[], our_secret_key: string): Promise<string[]> {
+        return execute('generate_multisig_secret_keys', their_public_keys, our_secret_key);
+    }
+
+    /**
+     * Calculate the shared public key for the provided values
+     * @param public_keys
+     */
+    public async generate_shared_public_key (public_keys: string[]): Promise<string> {
+        return execute('generate_shared_public_key', public_keys);
+    }
+
+    /**
+     * Calculate the shared secret key for the provided values
+     * @param secret_keys
+     */
+    public async generate_shared_secret_key (secret_keys: string[]): Promise<string> {
+        return execute('generate_shared_secret_key', secret_keys);
+    }
+
+    /**
+     * Calculates the number of multisig key exchange rounds required for the provided values
+     * @param participants
+     * @param threshold
+     */
+    public async rounds_required (participants: number, threshold: number): Promise<number> {
+        return execute('rounds_required', participants, threshold);
+    }
+
+    /**
+     * Checks to verify that the total value of the pseudo commitments is equal to the total value
+     * of the output_commitments plus the transaction fee
+     * @param pseudo_commitments
+     * @param output_commitments
+     * @param transaction_fee
+     */
+    public async check_commitments_parity (
+        pseudo_commitments: string[], output_commitments: string[], transaction_fee: number): Promise<boolean> {
+        return execute('check_commitments_parity', pseudo_commitments, output_commitments, transaction_fee);
+    }
+
+    /**
+     * Generates the amount mask for the provided value
+     * @param derivation_scalar
+     */
+    public async generate_amount_mask (derivation_scalar: string): Promise<string> {
+        return execute('generate_amount_mask', derivation_scalar);
+    }
+
+    /**
+     * Generates the blinding factor for the provided value
+     * @param derivation_scalar
+     */
+    public async generate_commitment_blinding_factor (derivation_scalar: string): Promise<string> {
+        return execute('generate_commitment_blinding_factor', derivation_scalar);
+    }
+
+    /**
+     * Generates a pedersen commitment for the provided values
+     * @param blinding_factor
+     * @param amount
+     */
+    public async generate_pedersen_commitment (blinding_factor: string, amount: number): Promise<string> {
+        return execute('generate_pedersen_commitment', blinding_factor, amount);
+    }
+
+    /**
+     * Generates pseudo pedersen commitments for the provided values
+     * @param input_amounts
+     * @param output_blinding_factors
+     */
+    public async generate_pseudo_commitments (
+        input_amounts: number[], output_blinding_factors: string[]): Promise<[string[], string[]]> {
+        return execute('generate_pseudo_commitments', input_amounts, output_blinding_factors);
+    }
+
+    /**
+     * Generates a pedersen commitment for the provided value
+     * @param amount
+     */
+    public async generate_transaction_fee_commitment (amount: number): Promise<string> {
+        return execute('generate_pedersen_commitment', ''.padEnd(64, '0'), amount);
+    }
+
+    /**
+     * Hides/Un-Hides an amount using the provided mask
+     * @param amount_mask
+     * @param amount
+     */
+    public async toggle_masked_amount (
+        amount_mask: string, amount: string | number | BigInteger.BigInteger): Promise<BigInteger.BigInteger> {
+        if (typeof amount !== 'string') {
+            const writer = new Writer();
+
+            writer.uint64_t(amount);
+
+            amount = writer.blob;
+        } else {
+            const reader = new Reader(amount);
+
+            try {
+                reader.uint64_t();
+            } catch {
+                throw new Error('Cannot read amount value');
+            }
+        }
+
+        return execute('toggle_masked_amount', amount_mask, amount)
+            .then(result => {
+                const reader = new Reader(result);
+
+                return reader.uint64_t();
             });
     }
 
     /**
-     * Forces the wrapper to use the JS (slow) cryptographic primitives
-     */
-    public static forceJSCrypto (): boolean {
-        return loadNativeJS();
-    }
-
-    /**
-     * Creates a new wrapper object
-     * @param [config] may contain user-defined cryptographic primitive functions
-     * that will replace our primitives at runtime.
-     */
-    public constructor (config?: ICryptoConfig) {
-        if (!initialize()) {
-            throw new Error('Could not initialize underlying cryptographic library');
-        }
-
-        if (config) {
-            Crypto.userCryptoFunctions = config;
-        }
-    }
-
-    /**
-     * Returns the type of the cryptographic primitives used by the wrapper
-     */
-    public get type (): CryptoType {
-        return Crypto.type;
-    }
-
-    /**
-     * Returns if the Node.js native library is being used
-     */
-    public get isNative (): boolean {
-        return Crypto.isNative;
-    }
-
-    /**
-     * Returns if the wrapper is loaded and ready
-     */
-    public get isReady (): boolean {
-        return Crypto.isReady;
-    }
-
-    /**
-     * Retrieves the array of user-defined cryptographic primitive functions
-     * that replace our primitives at runtime
-     */
-    public get userCryptoFunctions (): ICryptoConfig {
-        return Crypto.userCryptoFunctions;
-    }
-
-    /**
-     * Allows for updating the user-defined cryptographic primitive functions
-     * that will replace our primitives at runtime.
-     * @param config
-     */
-    public set userCryptoFunctions (config: ICryptoConfig) {
-        Crypto.userCryptoFunctions = config;
-    }
-
-    /**
-     * Forces the wrapper to use the JS (slow) cryptographic primitives
-     */
-    public forceJSCrypto (): boolean {
-        return Crypto.forceJSCrypto();
-    }
-
-    /**
-     * Calculates the multisignature (m) private keys using our private spend key
-     * and the public spend keys of other participants in a M:N scheme
-     * @param private_spend_key our private spend key
-     * @param public_keys an array of the other participants public spend keys
-     */
-    public async calculateMultisigPrivateKeys (
-        private_spend_key: string,
-        public_keys: string[]
-    ): Promise<string[]> {
-        if (!await this.checkScalar(private_spend_key)) {
-            throw new Error('privateSpendKey is not a scalar');
-        }
-        if (!Array.isArray(public_keys)) {
-            throw new Error('public_keys must be an array');
-        }
-
-        public_keys = public_keys.map(elem => elem.toLowerCase());
-
-        for (const key of public_keys) {
-            if (!await this.checkKey(key)) {
-                throw new Error('Invalid public key found');
-            }
-        }
-
-        return tryRunFunc('calculateMultisigPrivateKeys',
-            private_spend_key.toLowerCase(), public_keys);
-    }
-
-    /**
-     * Calculates a shared private key from the private keys supplied
-     * @param private_keys the array of private keys
-     */
-    public async calculateSharedPrivateKey (private_keys: string[]): Promise<string> {
-        if (!Array.isArray(private_keys)) {
-            throw new Error('private_keys must be an array');
-        }
-
-        private_keys = private_keys.map(elem => elem.toLowerCase());
-
-        for (const key of private_keys) {
-            if (!await this.checkScalar(key)) {
-                throw new Error('Invalid private key found');
-            }
-        }
-
-        return tryRunFunc('calculateSharedPrivateKey', private_keys);
-    }
-
-    /**
-     * Calculates a shared public key from the public keys supplied
-     * @param public_keys the array of public keys
-     */
-    public async calculateSharedPublicKey (public_keys: string[]): Promise<string> {
-        if (!Array.isArray(public_keys)) {
-            throw new Error('public_keys must be an array');
-        }
-
-        public_keys = public_keys.map(elem => elem.toLowerCase());
-
-        for (const key of public_keys) {
-            if (!await this.checkKey(key)) {
-                throw new Error('Invalid public key found');
-            }
-        }
-
-        return tryRunFunc('calculateSharedPublicKey', public_keys);
-    }
-
-    /**
-     * Checks whether a given key is a public key
-     * @param public_key the public key to check
-     */
-    public async checkKey (public_key: string): Promise<boolean> {
-        if (!isHex64(public_key)) {
-            return false;
-        }
-
-        return tryRunFunc('checkKey', public_key.toLowerCase());
-    }
-
-    /**
-     * Checks a set of ring signatures to verify that they are valid
-     * @param prefix_hash the hash (often the transaction prefix hash)
-     * @param key_image real key_image used to generate the signatures
-     * @param input_keys the output keys used during signing (mixins + real)
-     * @param signatures the signatures
-     */
-    public async checkRingSignatures (
-        prefix_hash: string,
-        key_image: string,
-        input_keys: string[],
-        signatures: string[]
-    ): Promise<boolean> {
-        if (!isHex64(prefix_hash)) {
-            return false;
-        }
-        if (!isHex64(key_image)) {
-            return false;
-        }
-        if (!Array.isArray(input_keys)) {
-            return false;
-        }
-        if (!Array.isArray(signatures)) {
-            return false;
-        }
-
-        let err = false;
-
-        input_keys = input_keys.map(elem => elem.toLowerCase());
-
-        signatures = signatures.map(elem => elem.toLowerCase());
-
-        for (const key of input_keys) {
-            if (!await this.checkKey(key)) {
-                err = true;
-            }
-        }
-
-        for (const sig of signatures) {
-            if (!isHex128(sig)) {
-                err = true;
-            }
-        }
-
-        if (err) {
-            return false;
-        }
-
-        return tryRunFunc('checkRingSignature',
-            prefix_hash.toLowerCase(), key_image.toLowerCase(), input_keys, signatures);
-    }
-
-    /**
-     * Checks whether the given key is a private key
-     * @param private_key
-     */
-    public async checkScalar (private_key: string): Promise<boolean> {
-        if (!isHex64(private_key)) {
-            return false;
-        }
-
-        private_key = private_key.toLowerCase();
-
-        return (private_key === await this.scReduce32(private_key));
-    }
-
-    /**
-     * Checks that the given signature is valid for the hash and public key supplied
-     * @param message_digest the hash (message digest) used
-     * @param public_key the public key of the private key used to sign
-     * @param signature the signature
-     */
-    public async checkSignature (
-        message_digest: string,
-        public_key: string,
-        signature: string
-    ): Promise<boolean> {
-        if (!isHex64(message_digest)) {
-            return false;
-        }
-        if (!await this.checkKey(public_key)) {
-            return false;
-        }
-        if (!isHex128(signature)) {
-            return false;
-        }
-
-        return tryRunFunc('checkSignature',
-            message_digest.toLowerCase(), public_key.toLowerCase(), signature.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_fast_hash method
-     * @param data
-     */
-    public async cn_fast_hash (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Supplied data must be in hexadecimal form');
-        }
-
-        data = data.toLowerCase();
-
-        return tryRunFunc('cn_fast_hash', data)
-            .catch(() => { return keccak256(Buffer.from(data, 'hex')); });
-    }
-
-    /**
-     * Completes a given set of prepared ring signatures using the single
-     * private_ephemeral
-     * @param private_ephemeral private ephemeral of the output being spent
-     * @param real_output_index the position of the signature in the array that belongs
-     * to the real output being spent
-     * @param k the random scalar provided with the prepared ring signatures
-     * @param signatures the prepared ring signatures
-     */
-    public async completeRingSignatures (
-        private_ephemeral: string,
-        real_output_index: number,
-        k: string,
-        signatures: string[]
-    ): Promise<string[]> {
-        if (!await this.checkScalar(private_ephemeral)) {
-            throw new Error('Invalid private key found');
-        }
-        if (!Array.isArray(signatures)) {
-            throw new Error('signatures must be an array');
-        }
-        if (!isUInt(real_output_index) || real_output_index > signatures.length - 1) {
-            throw new Error('Invalid real_output_index format');
-        }
-        if (!await this.checkScalar(k)) {
-            throw new Error('Invalid k found');
-        }
-
-        for (const sig of signatures) {
-            if (!isHex128(sig)) {
-                throw new Error('Invalid signature found');
-            }
-        }
-
-        return tryRunFunc('completeRingSignatures',
-            private_ephemeral.toLowerCase(), real_output_index, k.toLowerCase(), signatures);
-    }
-
-    /**
-     * Converts a key derivation to its resulting scalar
-     * @param derivation the key derivation
-     * @param output_index the index of the output in the transaction
-     */
-    public async derivationToScalar (
-        derivation: string,
-        output_index: number
-    ): Promise<string> {
-        if (!isHex64(derivation)) {
-            throw new Error('Invalid derivation found');
-        }
-
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-
-        return tryRunFunc('derivationToScalar', derivation.toLowerCase(), output_index);
-    }
-
-    /**
-     * Derives the public ephemeral from the key derivation, output index, and
-     * our public spend key
-     * @param derivation the key derivation
-     * @param output_index the index of the output in the transaction
-     * @param public_key our public spend key
-     */
-    public async derivePublicKey (
-        derivation: string,
-        output_index: number,
-        public_key: string
-    ): Promise<string> {
-        if (!isHex64(derivation)) {
-            throw new Error('Invalid derivation found');
-        }
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-        if (!await this.checkKey(public_key)) {
-            throw new Error('Invalid public key found');
-        }
-
-        return tryRunFunc('derivePublicKey',
-            derivation.toLowerCase(), output_index, public_key.toLowerCase());
-    }
-
-    /**
-     * Derives the private ephemeral from the key derivation, output index, and
-     * our private spend key
-     * @param derivation the key derivation
-     * @param output_index the index of the output in the transaction
-     * @param private_key our private spend key
-     */
-    public async deriveSecretKey (
-        derivation: string,
-        output_index: number,
-        private_key: string
-    ): Promise<string> {
-        if (!isHex64(derivation)) {
-            throw new Error('Invalid derivation found');
-        }
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('deriveSecretKey',
-            derivation.toLowerCase(), output_index, private_key.toLowerCase());
-    }
-
-    /**
-     * Generates a set of deterministic spend keys for a sub wallet given
-     * our root private spend key and the index of the subwallet
-     * @param private_key our root private spend key (seed)
-     * @param walletIndex the index of the subwallet
-     */
-    public async generateDeterministicSubwalletKeys (
-        private_key: string,
-        walletIndex: number
-    ): Promise<IKeyPair> {
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-        if (!isUInt(walletIndex)) {
-            throw new Error('Invalid wallet index found');
-        }
-
-        const keys = await tryRunFunc('generateDeterministicSubwalletKeys',
-            private_key.toLowerCase(), walletIndex);
-
-        if (keys) {
-            return {
-                private_key: keys.private_key || keys.secretKey || keys.SecretKey,
-                public_key: keys.public_key || keys.PublicKey
-            };
-        } else {
-            throw new Error('Could not generate deterministic subwallet keys');
-        }
-    }
-
-    /**
-     * Generates a key derivation (aB) given the public key and private key
+     * Checks that the provided signature is valid
+     * @param message_digest
      * @param public_key
-     * @param private_key
+     * @param signature
      */
-    public async generateKeyDerivation (public_key: string, private_key: string): Promise<string> {
-        if (!await this.checkKey(public_key)) {
-            throw new Error('Invalid public key found');
-        }
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('generateKeyDerivation',
-            public_key.toLowerCase(), private_key.toLowerCase());
+    public async check_signature (
+        message_digest: string, public_key: string, signature: string): Promise<boolean> {
+        return execute('check_signature', message_digest, public_key, signature);
     }
 
     /**
-     * Generates a key derivation scalar H_s(aB) given the public key and private key
-     * @param public_key the public key
-     * @param private_key the private key
-     * @param output_index the output index
+     * Completes the signature using the provided values
+     * @param signing_scalar
+     * @param signature
+     * @param partial_signing_scalars
      */
-    public async generateKeyDerivationScalar (
-        public_key: string,
-        private_key: string,
-        output_index: number
+    public async complete_signature (
+        signing_scalar: string | undefined, signature: string, partial_signing_scalars: string[] = []
     ): Promise<string> {
-        if (!await this.checkKey(public_key)) {
-            throw new Error('Invalid public key found');
+        if (!signing_scalar) {
+            signing_scalar = ''.padStart(64, '0');
         }
 
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-
-        return tryRunFunc('generateKeyDerivationScalar',
-            public_key.toLowerCase(), private_key.toLowerCase(), output_index);
+        return execute('complete_signature', signing_scalar, signature, partial_signing_scalars);
     }
 
     /**
-     * Generates a key image given the public ephemeral and the private ephemeral
-     * @param publicEphemeral the public ephemeral of the output
-     * @param private_ephemeral the private ephemeral of the output
+     * Generates a partial signing scalar for the provided values (Multisig)
+     * @param signature
+     * @param secret_spend_key
      */
-    public async generateKeyImage (publicEphemeral: string, private_ephemeral: string): Promise<string> {
-        if (!await this.checkKey(publicEphemeral)) {
-            throw new Error('Invalid public ephemeral found');
-        }
-        if (!await this.checkScalar(private_ephemeral)) {
-            throw new Error('Invalid private ephemeral found');
+    public generate_partial_signing_scalar (signature: string, secret_spend_key: string): Promise<string> {
+        return execute('generate_partial_signing_scalar', signature, secret_spend_key);
+    }
+
+    /**
+     * Generates a signature for the provided values
+     * @param message_digest
+     * @param secret_key
+     */
+    public generate_signature (message_digest: string, secret_key: string): Promise<string> {
+        return execute('generate_signature', message_digest, secret_key);
+    }
+
+    /**
+     * Prepares a signature for the provided values
+     * @param message_digest
+     * @param public_key
+     */
+    public prepare_signature (message_digest: string, public_key: string): Promise<string> {
+        return execute('prepare_signature', message_digest, public_key);
+    }
+
+    /**
+     * Forces use of the Javascript asm.js library
+     */
+    public async force_js_library (): Promise<boolean> {
+        return Crypto.load_js();
+    }
+
+    /**
+     * Forces use of the WASM library
+     */
+    public async force_wasm_library (): Promise<boolean> {
+        return Crypto.load_wasm();
+    }
+
+    /**
+     * Initializes the underlying cryptographic library via auto-detection (fastest to slowest)
+     */
+    public async initialize (): Promise<boolean> {
+        if (runtime_configuration.library == null) {
+            if (await Crypto.load_node_module()) {
+                return true;
+            }
+
+            if (await Crypto.load_wasm()) {
+                return true;
+            }
+
+            return await Crypto.load_js();
         }
 
-        return tryRunFunc('generateKeyImage',
-            publicEphemeral.toLowerCase(), private_ephemeral.toLowerCase());
+        return true;
+    }
+
+    /**
+     * Calculates the exponent of 2^e that matches the target value
+     * @param value
+     */
+    public async calculate_base2_exponent (value: number): Promise<number> {
+        return execute('calculate_base2_exponent', value);
+    }
+
+    /**
+     * Checks the given value to verify if it is a point on the curve
+     * @param point
+     */
+    public async check_point (point: string): Promise<boolean> {
+        return execute('check_point', point);
+    }
+
+    /**
+     * Checks the given value to verify that it is a scalar value
+     * @param scalar
+     */
+    public async check_scalar (scalar: string): Promise<boolean> {
+        return execute('check_scalar', scalar);
+    }
+
+    /**
+     * Computes a derivation scalar for the given values
+     * @param derivation
+     * @param output_index
+     */
+    public async derivation_to_scalar (derivation: string, output_index: number): Promise<string> {
+        return execute('derivation_to_scalar', derivation, output_index);
+    }
+
+    /**
+     * Computes the public key for the given values
+     * @param derivation_scalar
+     * @param public_key
+     */
+    public async derive_public_key (derivation_scalar: string, public_key: string): Promise<string> {
+        return execute('derive_public_key', derivation_scalar, public_key);
+    }
+
+    /**
+     * Computes the secret key for the given values
+     * @param derivation_scalar
+     * @param secret_key
+     */
+    public async derive_secret_key (derivation_scalar: string, secret_key: string): Promise<string> {
+        return execute('derive_secret_key', derivation_scalar, secret_key);
+    }
+
+    /**
+     * Generates a key derivation for the given values
+     * @param public_key
+     * @param secret_key
+     */
+    public async generate_key_derivation (public_key: string, secret_key: string): Promise<string> {
+        return execute('generate_key_derivation', public_key, secret_key);
+    }
+
+    /**
+     * Generates a key image for the given values
+     * @param public_emphemeral
+     * @param secret_ephemeral
+     * @param partial_key_images
+     */
+    public async generate_key_image (
+        public_emphemeral: string, secret_ephemeral: string, partial_key_images: string[] = []): Promise<string> {
+        return execute('generate_key_image', public_emphemeral, secret_ephemeral, partial_key_images);
+    }
+
+    /**
+     * Generates a v2 key image such that
+     * @param secret_ephemeral
+     */
+    public async generate_key_image_v2 (secret_ephemeral: string): Promise<string> {
+        return execute('generate_key_image_v2', secret_ephemeral);
     }
 
     /**
      * Generates a new random key pair
      */
-    public async generateKeys (): Promise<IKeyPair> {
-        const keys = await tryRunFunc('generateKeys');
-
-        if (keys) {
-            return {
-                private_key: keys.private_key || keys.secretKey || keys.SecretKey,
-                public_key: keys.public_key || keys.publicKey || keys.PublicKey
-            };
-        } else {
-            throw new Error('Could not generate keys');
-        }
+    public async generate_keys (): Promise<[string, string]> {
+        return execute('generate_keys');
     }
 
     /**
-     * Generates a partial signing key for a multisig ring signature set
-     * @param signature the prepared real input signature
-     * @param private_key our private spend key (or multisig private key)
+     * Generates deterministic subwallet keys from the wallet seed value.
+     *
+     * For compatibility & security purposes, all wallet keys and addresses, should be derived from
+     * the wallet seed and the seed should never be used directly.
+     *
+     * Subwallets are generated by injecting deterministic salt into the hashing process
+     * whereby it is nearly impossible to reconstruct the spend keys without knowing the
+     * subwallet index and the seed value that they were derived from.
+     *
+     * @param wallet_seed
+     * @param subwallet_index
      */
-    public async generatePartialSigningKey (signature: string, private_key: string): Promise<string> {
-        if (!isHex128(signature)) {
-            throw new Error('Invalid signature found');
-        }
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('generatePartialSigningKey',
-            signature.toLowerCase(), private_key.toLowerCase());
+    public async generate_wallet_spend_keys (
+        wallet_seed: string, subwallet_index: number = 0): Promise<[string, string]> {
+        return execute('generate_wallet_spend_keys', wallet_seed, subwallet_index);
     }
 
     /**
-     * Generates a private view key from the private spend key
-     * @param private_key the private spend key
+     * Calculates deterministic wallet view keys from the given wallet seed value.
+     *
+     * For compatibility & security purposes, all wallet keys and addresses, should be derived from
+     * the wallet seed and the seed should never be used directly.
+     *
+     * @param wallet_seed
      */
-    public async generatePrivateViewKeyFromPrivateSpendKey (private_key: string): Promise<string> {
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('generatePrivateViewKeyFromPrivateSpendKey', private_key.toLowerCase());
+    public async generate_wallet_view_keys (wallet_seed: string): Promise<[string, string]> {
+        return execute('generate_wallet_view_keys', wallet_seed);
     }
 
     /**
-     * Generates ring signatures for the supplied values
-     * @param hash the message digest hash (often the transaction prefix hash)
-     * @param key_image the key image of the output being spent
-     * @param public_keys an array of the output keys used for signing (mixins + our output)
-     * @param private_ephemeral the private ephemeral of the output being spent
-     * @param real_output_index the array index of the real output being spent in the public_keys array
+     * Calculates Hp() for the given value
+     * @param input
      */
-    public async generateRingSignatures (
-        hash: string,
-        key_image: string,
-        public_keys: string[],
-        private_ephemeral: string,
-        real_output_index: number
-    ): Promise<string[]> {
-        if (!isHex64(hash)) {
-            throw new Error('Invalid hash found');
-        }
-        if (!isHex64(key_image)) {
-            throw new Error('Invalid key image found');
-        }
-        if (!await this.checkScalar(private_ephemeral)) {
-            throw new Error('Invalid private key found');
-        }
-        if (!Array.isArray(public_keys)) {
-            throw new Error('public keys must be an array');
-        }
-        if (!isUInt(real_output_index) || real_output_index > public_keys.length - 1) {
-            throw new Error('Invalid real index found');
-        }
-
-        public_keys = public_keys.map(elem => elem.toLowerCase());
-
-        for (const key of public_keys) {
-            if (!await this.checkKey(key)) {
-                throw new Error('Invalid public key found');
-            }
-        }
-
-        return tryRunFunc('generateRingSignatures',
-            hash.toLowerCase(), key_image.toLowerCase(), public_keys,
-            private_ephemeral.toLowerCase(), real_output_index);
+    public async hash_to_point (input: string): Promise<string> {
+        return execute('hash_to_point', input);
     }
 
     /**
-     * Generates a signature for the given message digest (hash)
-     * @param hash the hash
-     * @param public_key the public key used in signing
-     * @param private_key the private key used to sign
+     * Calculates Hs() for the given value
+     * @param input
      */
-    public async generateSignature (
-        hash: string,
-        public_key: string,
-        private_key: string
-    ): Promise<string> {
-        if (!isHex64(hash)) {
-            throw new Error('Invalid hash found');
-        }
-        if (!await this.checkKey(public_key)) {
-            throw new Error('Invalid public key found');
-        }
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('generateSignature',
-            hash.toLowerCase(), public_key.toLowerCase(), private_key.toLowerCase());
+    public async hash_to_scalar (input: string): Promise<string> {
+        return execute('hash_to_scalar', input);
     }
 
     /**
-     * Generates a vew key pair from the private spend key
-     * @param private_key the private spend key
+     * Rounds the value to the next power of 2 (2^n)
+     * @param value
      */
-    public async generateViewKeysFromPrivateSpendKey (private_key: string): Promise<IKeyPair> {
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        const keys = await tryRunFunc('generateViewKeysFromPrivateSpendKey',
-            private_key.toLowerCase());
-
-        if (keys) {
-            return {
-                private_key: keys.private_key || keys.secretKey || keys.SecretKey,
-                public_key: keys.public_key || keys.PublicKey
-            };
-        } else {
-            throw new Error('Could not generate view keys from private spend key');
-        }
+    public async pow2_round (value: number): Promise<number> {
+        return execute('pow2_round', value);
     }
 
     /**
-     * Converts a hash to an elliptic curve point
-     * @param hash the hash
+     * Generates a random hash
      */
-    public async hashToEllipticCurve (hash: string): Promise<string> {
-        if (!isHex64(hash)) {
-            throw new Error('Invalid hash found');
-        }
-
-        return tryRunFunc('hashToEllipticCurve', hash.toLowerCase());
+    public async random_hash (): Promise<string> {
+        return execute('random_hash');
     }
 
     /**
-     * Converts a hash to a scalar
-     * @param hash the hash
+     * Generates an array of random hashes
+     * @param count
      */
-    public async hashToScalar (hash: string): Promise<string> {
-        if (!isHex64(hash)) {
-            throw new Error('Invalid hash found');
-        }
-
-        return tryRunFunc('hashToScalar', hash.toLowerCase());
+    public async random_hashes (count: number = 1): Promise<string[]> {
+        return execute('random_hashes', count);
     }
 
     /**
-     * Prepares ring signatures for completion or restoration later
-     * @param hash the message digest hash (often the transaction prefix hash)
-     * @param key_image the key image of the output being spent
-     * @param public_keys an array of the output keys used for signing (mixins + our output)
-     * @param real_output_index the array index of the real output being spent in the public_keys array
-     * @param k a random scalar (private key)
+     * Generates a random point on the curve
      */
-    public async prepareRingSignatures (
-        hash: string,
-        key_image: string,
-        public_keys: string[],
-        real_output_index: number,
-        k?: string
-    ): Promise<IPreparedRingSignatures> {
-        if (!isHex64(hash)) {
-            throw new Error('Invalid hash found');
-        }
-        if (!isHex64(key_image)) {
-            throw new Error('Invalid key image found');
-        }
-        if (!Array.isArray(public_keys)) {
-            throw new Error('public_keys must be an array');
-        }
-        if (!isUInt(real_output_index) || real_output_index > public_keys.length - 1) {
-            throw new Error('Invalid real index found');
-        }
-
-        if (k) {
-            k = k.toLowerCase();
-        }
-
-        hash = hash.toLowerCase();
-
-        key_image = key_image.toLowerCase();
-
-        public_keys = public_keys.map(elem => elem.toLowerCase());
-
-        for (const key of public_keys) {
-            if (!await this.checkKey(key)) {
-                throw new Error('Invalid public key found');
-            }
-        }
-
-        let result;
-
-        if (!k) {
-            result = await tryRunFunc('prepareRingSignatures',
-                hash, key_image, public_keys, real_output_index);
-        } else {
-            if (moduleVars.type === CryptoType.NODEADDON) {
-                result = await tryRunFunc('prepareRingSignatures',
-                    hash, key_image, public_keys, real_output_index, k);
-            } else if (moduleVars.type === CryptoType.JS ||
-                moduleVars.type === CryptoType.WASM ||
-                moduleVars.type === CryptoType.WASMJS) {
-                result = await tryRunFunc('prepareRingSignaturesK',
-                    hash, key_image, public_keys, real_output_index, k);
-            } else {
-                result = await tryRunFunc('prepareRingSignatures',
-                    hash, key_image, public_keys, real_output_index, k);
-            }
-        }
-
-        if (result) {
-            return {
-                signatures: result.signatures,
-                k: result.key
-            };
-        } else {
-            throw new Error('Could not prepare ring signatures');
-        }
+    public async random_point (): Promise<string> {
+        return execute('random_point');
     }
 
     /**
-     * Re-initializes the underlying cryptographic primitives
+     * Generates an array of random points on the curve
+     * @param count
      */
-    public async reloadCrypto (): Promise<boolean> {
-        return initialize();
+    public async random_points (count: number = 1): Promise<string[]> {
+        return execute('random_points', count);
     }
 
     /**
-     * Restores a key image from a set of partial key images generated by the other
-     * participants in a multisig wallet
-     * @param publicEphemeral the transaction public ephemeral
-     * @param derivation the key derivation of the our output
-     * @param output_index the index of our output in the transaction
-     * @param partialKeyImages the array of partial key images from the needed
-     * number of participants in the multisig scheme
+     * Generates a random scalar value
      */
-    public async restoreKeyImage (
-        publicEphemeral: string,
-        derivation: string,
-        output_index: number,
-        partialKeyImages: string[]
-    ): Promise<string> {
-        if (!await this.checkKey(publicEphemeral)) {
-            throw new Error('Invalid public ephemeral found');
-        }
-        if (!isHex64(derivation)) {
-            throw new Error('Invalid derivation found');
-        }
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-        if (!Array.isArray(partialKeyImages)) {
-            throw new Error('partial key images must be an array');
-        }
-
-        partialKeyImages = partialKeyImages.map(elem => elem.toLowerCase());
-
-        for (const key of partialKeyImages) {
-            if (!isHex64(key)) {
-                throw new Error('Invalid key image found');
-            }
-        }
-
-        return tryRunFunc('restoreKeyImage',
-            publicEphemeral.toLowerCase(), derivation.toLowerCase(), output_index, partialKeyImages);
+    public async random_scalar (): Promise<string> {
+        return execute('random_scalar');
     }
 
     /**
-     * Restores the ring signatures using the previously prepared ring signatures
-     * and the necessary number of partial signing keys generated by other
-     * participants in the multisig wallet
-     * @param derivation the key derivation for the output being spent
-     * @param output_index the index of the output being spent in the transaction
-     * @param partialSigningKeys the array of partial signing keys from the necessary number
-     * of participants
-     * @param real_output_index the index of the real input in the ring signatures
-     * @param k the random scalar generated py preparing the ring signatures
-     * @param signatures the prepared ring signatures
+     * Generates an array of random scalar values
+     * @param count
      */
-    public async restoreRingSignatures (
-        derivation: string,
-        output_index: number,
-        partialSigningKeys: string[],
-        real_output_index: number,
-        k: string,
-        signatures: string[]
-    ): Promise<string[]> {
-        if (!isHex64(derivation)) {
-            throw new Error('Invalid derivation found');
-        }
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-        if (!Array.isArray(partialSigningKeys)) {
-            throw new Error('partial signing keys must be an array');
-        }
-        if (!await this.checkScalar(k)) {
-            throw new Error('Invalid k found');
-        }
-        if (!Array.isArray(signatures)) {
-            throw new Error('signatures must be an array');
-        }
-        if (!isUInt(real_output_index) || real_output_index > signatures.length - 1) {
-            throw new Error('Invalid real index found');
-        }
-
-        partialSigningKeys = partialSigningKeys.map(elem => elem.toLowerCase());
-
-        signatures = signatures.map(elem => elem.toLowerCase());
-
-        for (const key of partialSigningKeys) {
-            if (!await this.checkScalar(key)) {
-                throw new Error('Invalid partial signing key found');
-            }
-        }
-
-        for (const sig of signatures) {
-            if (!isHex128(sig)) {
-                throw new Error('Invalid signature found');
-            }
-        }
-
-        return tryRunFunc(
-            'restoreRingSignatures',
-            derivation.toLowerCase(),
-            output_index,
-            partialSigningKeys,
-            real_output_index,
-            k.toLowerCase(),
-            signatures);
+    public async random_scalars (count: number = 1): Promise<string[]> {
+        return execute('random_scalars', count);
     }
 
     /**
-     * Derives the public key using the derivation scalar
-     * @param derivationScalar the derivation scalar
-     * @param public_key the public key
+     * Calculates the public key for the given secret key
+     * @param secret_key
      */
-    public async scalarDerivePublicKey (derivationScalar: string, public_key: string): Promise<string> {
-        if (!await this.checkScalar(derivationScalar)) {
-            throw new Error('Invalid derivation scalar found');
-        }
-
-        if (!await this.checkKey(public_key)) {
-            throw new Error('Invalid public key found');
-        }
-
-        return tryRunFunc('scalarDerivePublicKey',
-            derivationScalar.toLowerCase(), public_key.toLowerCase());
+    public async secret_key_to_public_key (secret_key: string): Promise<string> {
+        return execute('secret_key_to_public_key', secret_key);
     }
 
     /**
-     * Derives the private key using the derivation scalar
-     * @param derivationScalar the derivation scalar
-     * @param private_key the private key
+     * Calculates the public key from the provided values
+     * @param derivation
+     * @param output_index
+     * @param public_ephemeral
      */
-    public async scalarDeriveSecretKey (derivationScalar: string, private_key: string): Promise<string> {
-        if (!await this.checkScalar(derivationScalar)) {
-            throw new Error('Invalid derivation scalar found');
-        }
-
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('scalarDeriveSecretKey',
-            derivationScalar.toLowerCase(), private_key.toLowerCase());
+    public async underive_public_key (
+        derivation: string, output_index: number, public_ephemeral: string): Promise<string> {
+        return execute('underive_public_key', derivation, output_index, public_ephemeral);
     }
-
-    /**
-     * Multiplies two key images together
-     * @param key_imageA
-     * @param key_imageB
-     */
-    public async scalarmultKey (key_imageA: string, key_imageB: string): Promise<string> {
-        if (!isHex64(key_imageA)) {
-            throw new Error('Invalid key image A found');
-        }
-        if (!isHex64(key_imageB)) {
-            throw new Error('Invalid key image B found');
-        }
-
-        return tryRunFunc('scalarmultKey',
-            key_imageA.toLowerCase(), key_imageB.toLowerCase());
-    }
-
-    /**
-     * Reduces a value to a scalar (mod q)
-     * @param data
-     */
-    public async scReduce32 (data: string): Promise<string> {
-        if (!isHex64(data)) {
-            throw new Error('Invalid data format');
-        }
-
-        return tryRunFunc('scReduce32', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the public key of a private key
-     * @param private_key
-     */
-    public async secretKeyToPublicKey (private_key: string): Promise<string> {
-        if (!await this.checkScalar(private_key)) {
-            throw new Error('Invalid private key found');
-        }
-
-        return tryRunFunc('secretKeyToPublicKey', private_key.toLowerCase());
-    }
-
-    /**
-     * Calculates the merkle tree branch of the given hashes
-     * @param hashes the array of hashes
-     */
-    public async tree_branch (hashes: string[]): Promise<string[]> {
-        if (!Array.isArray(hashes)) {
-            throw new Error('hashes must be an array');
-        }
-
-        hashes = hashes.map(elem => elem.toLowerCase());
-
-        for (const hash of hashes) {
-            if (!isHex64(hash)) {
-                throw new Error('Invalid hash found');
-            }
-        }
-
-        return tryRunFunc('tree_branch', hashes);
-    }
-
-    /**
-     * Calculates the depth of the merkle tree
-     * @param count the number of hashes in the tree
-     */
-    public async tree_depth (count: number): Promise<number> {
-        if (!isUInt(count)) {
-            throw new Error('Invalid count found');
-        }
-
-        return tryRunFunc('tree_depth', count);
-    }
-
-    /**
-     * Calculates the merkle tree hash of the given hashes
-     * @param hashes the array of hashes
-     */
-    public async tree_hash (hashes: string[]): Promise<string> {
-        if (!Array.isArray(hashes)) {
-            throw new Error('hashes must be an array');
-        }
-
-        hashes = hashes.map(elem => elem.toLowerCase());
-
-        for (const hash of hashes) {
-            if (!isHex64(hash)) {
-                throw new Error('Invalid hash found');
-            }
-        }
-
-        return tryRunFunc('tree_hash', hashes);
-    }
-
-    /**
-     * Calculates the merkle tree hash from the given branch information
-     * @param branches the merkle tree branches
-     * @param leaf the leaf on the merkle tree
-     * @param path the path on the merkle tree
-     */
-    public async tree_hash_from_branch (
-        branches: string[],
-        leaf: string,
-        path: number
-    ): Promise<string> {
-        if (!Array.isArray(branches)) {
-            throw new Error('branches must be an array');
-        }
-        if (!isHex64(leaf)) {
-            throw new Error('Invalid leaf found');
-        }
-        if (!isUInt(path)) {
-            throw new Error('Invalid path found');
-        }
-
-        branches = branches.map(elem => elem.toLowerCase());
-
-        for (const branch of branches) {
-            if (!isHex64(branch)) {
-                throw new Error('Invalid branch found');
-            }
-        }
-
-        if (moduleVars.type === CryptoType.NODEADDON) {
-            return tryRunFunc('tree_hash_from_branch',
-                branches, leaf.toLowerCase(), path);
-        } else {
-            return tryRunFunc('tree_hash_from_branch',
-                branches, leaf.toLowerCase(), path.toString());
-        }
-    }
-
-    /**
-     * Underives a public key instead of deriving it
-     * @param derivation the key derivation
-     * @param output_index the index of the output in the transaction
-     * @param outputKey the output key in the transaction
-     */
-    public async underivePublicKey (
-        derivation: string,
-        output_index: number,
-        outputKey: string
-    ): Promise<string> {
-        if (!isHex64(derivation)) {
-            throw new Error('Invalid derivation found');
-        }
-        if (!isUInt(output_index)) {
-            throw new Error('Invalid output index found');
-        }
-        if (!await this.checkKey(outputKey)) {
-            throw new Error('Invalid output key found');
-        }
-
-        return tryRunFunc('underivePublicKey',
-            derivation.toLowerCase(), output_index, outputKey.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_slow_hash_v0 method
-     * @param data
-     */
-    public async cn_slow_hash_v0 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_slow_hash_v0', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_slow_hash_v1 method
-     * @param data
-     */
-    public async cn_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_slow_hash_v2 method
-     * @param data
-     */
-    public async cn_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_slow_hash_v2', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_lite_slow_hash_v0 method
-     * @param data
-     */
-    public async cn_lite_slow_hash_v0 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_lite_slow_hash_v0', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_lite_slow_hash_v1 method
-     * @param data
-     */
-    public async cn_lite_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_lite_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_lite_slow_hash_v2 method
-     * @param data
-     */
-    public async cn_lite_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_lite_slow_hash_v2', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_dark_slow_hash_v0 method
-     * @param data
-     */
-    public async cn_dark_slow_hash_v0 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_dark_slow_hash_v0', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_dark_slow_hash_v1 method
-     * @param data
-     */
-    public async cn_dark_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_dark_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_dark_slow_hash_v2 method
-     * @param data
-     */
-    public async cn_dark_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_dark_slow_hash_v2', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_dark_lite_slow_hash_v0 method
-     * @param data
-     */
-    public async cn_dark_lite_slow_hash_v0 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_dark_lite_slow_hash_v0', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_dark_lite_slow_hash_v1 method
-     * @param data
-     */
-    public async cn_dark_lite_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_dark_lite_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_dark_lite_slow_hash_v2 method
-     * @param data
-     */
-    public async cn_dark_lite_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_dark_lite_slow_hash_v2', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_turtle_slow_hash_v0 method
-     * @param data
-     */
-    public async cn_turtle_slow_hash_v0 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_turtle_slow_hash_v0', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_turtle_slow_hash_v1 method
-     * @param data
-     */
-    public async cn_turtle_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_turtle_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_turtle_slow_hash_v2 method
-     * @param data
-     */
-    public async cn_turtle_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_turtle_slow_hash_v2', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_turtle_lite_slow_hash_v0 method
-     * @param data
-     */
-    public async cn_turtle_lite_slow_hash_v0 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_turtle_lite_slow_hash_v0', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_turtle_lite_slow_hash_v1 method
-     * @param data
-     */
-    public async cn_turtle_lite_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_turtle_lite_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_turtle_lite_slow_hash_v2 method
-     * @param data
-     */
-    public async cn_turtle_lite_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('cn_turtle_lite_slow_hash_v2', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_soft_shell_slow_hash_v0 method
-     * @param data
-     * @param height the height of the blockchain
-     */
-    public async cn_soft_shell_slow_hash_v0 (data: string, height: number): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-        if (!isUInt(height)) {
-            throw new Error('Invalid height found');
-        }
-
-        return tryRunFunc('cn_soft_shell_slow_hash_v0', data.toLowerCase(), height);
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_soft_shell_slow_hash_v1 method
-     * @param data
-     * @param height the height of the blockchain
-     */
-    public async cn_soft_shell_slow_hash_v1 (data: string, height: number): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-        if (!isUInt(height)) {
-            throw new Error('Invalid height found');
-        }
-
-        return tryRunFunc('cn_soft_shell_slow_hash_v1', data.toLowerCase(), height);
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the cn_soft_shell_slow_hash_v2 method
-     * @param data
-     * @param height the height of the blockchain
-     */
-    public async cn_soft_shell_slow_hash_v2 (data: string, height: number): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-        if (!isUInt(height)) {
-            throw new Error('Invalid height found');
-        }
-
-        return tryRunFunc('cn_soft_shell_slow_hash_v2', data.toLowerCase(), height);
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the chukwa_slow_hash method
-     * @param data
-     * @param version
-     */
-    public async chukwa_slow_hash (data: string, version = 1): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        let func = 'chukwa_slow_hash_';
-
-        switch (version) {
-            case 1:
-                func += 'v1';
-                break;
-            case 2:
-                func += 'v2';
-                break;
+}
+
+/**
+ * @ignore
+ */
+async function execute (...args: any[]): Promise<any> {
+    const method: string = args.shift();
+
+    const is_our_module = (): boolean => {
+        switch (runtime_configuration.type) {
+            case LibraryType.WASMJS:
+            case LibraryType.JS:
+            case LibraryType.NODEADDON:
+                return true;
             default:
-                throw new Error('Unknown Chukwa version number');
+                return false;
+        }
+    };
+
+    const exchange_json = (): boolean => {
+        switch (runtime_configuration.type) {
+            case LibraryType.WASMJS:
+            case LibraryType.JS:
+                return true;
+            default:
+                return false;
+        }
+    };
+
+    const method_call = (() => {
+        if (typeof runtime_configuration.library[method] !== 'undefined') {
+            return runtime_configuration.library[method];
         }
 
-        return tryRunFunc(func, data.toLowerCase());
-    }
+        return undefined;
+    })();
 
-    /**
-     * Calculates the hash of the data supplied using the chukwa_slow_hash_base method
-     * @param data
-     * @param iterations
-     * @param memory
-     * @param threads
-     */
-    public async chukwa_slow_hash_base (
-        data: string,
-        iterations: number,
-        memory: number,
-        threads: number
-    ): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
+    const args_to_obj = (parameters: any[]): string => {
+        const obj: any = {};
+
+        for (let i = 0; i < parameters.length; ++i) {
+            obj[i.toString()] = parameters[i];
         }
 
-        return tryRunFunc('chukwa_slow_hash_base',
-            data.toLowerCase(), iterations, memory, threads);
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the chukwa_slow_hash_v1 method
-     * @param data
-     */
-    public async chukwa_slow_hash_v1 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('chukwa_slow_hash_v1', data.toLowerCase());
-    }
-
-    /**
-     * Calculates the hash of the data supplied using the chukwa_slow_hash_v2 method
-     * @param data
-     */
-    public async chukwa_slow_hash_v2 (data: string): Promise<string> {
-        if (!isHex(data)) {
-            throw new Error('Invalid data found');
-        }
-
-        return tryRunFunc('chukwa_slow_hash_v2', data.toLowerCase());
-    }
-}
-
-/**
- * @ignore
- */
-function initialize (): boolean {
-    if (moduleVars.crypto === null) {
-        if (loadNativeAddon()) {
-            return true;
-        }
-        if (loadBrowserWASM()) {
-            return true;
-        }
-        if (loadWASMJS()) {
-            return true;
-        }
-        return loadNativeJS();
-    } else {
-        return true;
-    }
-}
-
-/**
- * @ignore
- */
-async function tryRunFunc (...args: any[]): Promise<any> {
-    function tryVectorStringToArray (vs: any) {
-        if (vs instanceof moduleVars.crypto.VectorString) {
-            const tmp = [];
-
-            for (let i = 0; i < vs.size(); i++) {
-                tmp.push(vs.get(i));
-            }
-
-            return tmp;
-        } else {
-            return vs;
-        }
-    }
-
-    const func: string = args.shift();
+        return JSON.stringify(obj);
+    };
 
     return new Promise((resolve, reject) => {
-        if ((userCryptoFunctions as any)[func]) {
+        if (userConfig[method]) {
             try {
-                return resolve((userCryptoFunctions as any)[func](...args));
+                return resolve(userConfig[method](...args));
             } catch (e) {
-                return reject(new Error('Error with use defined cryptographic primitive'));
+                return reject(new Error(format('Could not call user configured primitive: %', e.toString())));
             }
-        } else if (moduleVars.type === CryptoType.NODEADDON && moduleVars.crypto[func]) {
-            /* If the function name starts with 'check' then it
-               will return a boolean which we can just send back
-               up the stack */
-            if (func.indexOf('check') === 0) {
-                try {
-                    return resolve(moduleVars.crypto[func](...args));
-                } catch (e) {
-                    return reject(new Error('Underlying cryptographic module failure'));
-                }
-            } else {
-                try {
-                    const [err, res] = moduleVars.crypto[func](...args);
+        } else if (is_our_module() && method_call) {
+            try {
+                const temp_result: any =
+                    exchange_json() ? method_call(args_to_obj(args)) : method_call(...args);
 
-                    if (err) {
-                        return reject(err);
+                const result: any = exchange_json() ? JSON.parse(temp_result) : temp_result;
+
+                if (typeof result === 'boolean') {
+                    return resolve(result);
+                } else if (Array.isArray(result)) {
+                    const failure: boolean = result.shift();
+
+                    if (result.length === 0) {
+                        return resolve(failure);
                     }
 
-                    return resolve(res);
-                } catch (e) {
-                    return reject(new Error('Underlying cryptographic method failure'));
-                }
-            }
-        } else if (moduleVars.crypto[func]) {
-            for (let i = 0; i < args.length; i++) {
-                if (Array.isArray(args[i])) {
-                    args[i] = args[i].toVectorString();
-                }
-            }
+                    if (failure) {
+                        const error = format('0x03: %s(%s) => [%s]', method,
+                            exchange_json() ? args_to_obj(args) : args.join(','), result.join(','));
 
-            try {
-                const res = moduleVars.crypto[func](...args);
+                        return reject(new Error(error));
+                    }
 
-                if (typeof res !== 'object' || res instanceof moduleVars.crypto.VectorString) {
-                    return resolve(tryVectorStringToArray(res));
-                } else {
-                    Object.keys(res).forEach((key) => {
-                        res[key] = tryVectorStringToArray(res[key]);
-                    });
+                    if (result.length === 1) {
+                        return resolve(result[0]);
+                    }
 
-                    return resolve(res);
+                    return resolve(result);
                 }
+
+                const error = format('0x04: %s(%s): %s', method,
+                    exchange_json() ? args_to_obj(args) : args.join(','), result);
+
+                return reject(new Error(error));
             } catch (e) {
-                return reject(new Error('Underlying cryptographic method failure'));
+                /**
+                 * If we threw an error on a check/verify method, then it is very likely
+                 * because we were supplied with invalid values that cannot be caught
+                 * by an emscripten build without enabling exception catching
+                 */
+                if (method.indexOf('check') !== -1 || method.indexOf('verify') !== -1) {
+                    return resolve(false);
+                }
+
+                const error = format('0x02: %s(%s): %s', method,
+                    exchange_json() ? args_to_obj(args) : args.join(','), e.toString());
+
+                return reject(new Error(error));
             }
         } else {
-            return reject(new Error('Could not locate method in underlying Cryptographic library'));
+            const error = format('0x01: Method Not Found. %s(%s)', method, args.join(','));
+
+            return reject(new Error(error));
         }
     });
-}
-
-/**
- * @ignore
- */
-function loadBrowserWASM (): boolean {
-    if (typeof window === 'undefined') {
-        return false;
-    }
-
-    try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const Self = window.TurtleCoinCrypto();
-
-        if (Object.getOwnPropertyNames(Self).length === 0 ||
-            typeof Self.cn_fast_hash === 'undefined') {
-            return false;
-        }
-
-        moduleVars.crypto = Self;
-        moduleVars.type = CryptoType.WASM;
-
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-/**
- * @ignore
- */
-function loadNativeAddon (): boolean {
-    try {
-        const Self = require('bindings')('turtlecoin-crypto.node');
-
-        if (Object.getOwnPropertyNames(Self).length === 0 ||
-            typeof Self.cn_fast_hash === 'undefined') {
-            return false;
-        }
-
-        moduleVars.crypto = Self;
-        moduleVars.type = CryptoType.NODEADDON;
-
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-/**
- * @ignore
- */
-function loadNativeJS (): boolean {
-    try {
-        const Self = require('./turtlecoin-crypto.js')();
-
-        if (Object.getOwnPropertyNames(Self).length === 0 ||
-            typeof Self.cn_fast_hash === 'undefined') {
-            return false;
-        }
-
-        moduleVars.crypto = Self;
-        moduleVars.type = CryptoType.JS;
-
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-/**
- * @ignore
- */
-function loadWASMJS (): boolean {
-    if (typeof window === 'undefined') {
-        return false;
-    }
-
-    try {
-        const Self = require('./turtlecoin-crypto-wasm.js')();
-
-        if (Object.getOwnPropertyNames(Self).length === 0) {
-            return false;
-        }
-
-        moduleVars.crypto = Self;
-        moduleVars.type = CryptoType.WASMJS;
-
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-/**
- * @ignore
- */
-function isHex (value: string): boolean {
-    if (value.length % 2 !== 0) {
-        return false;
-    }
-
-    const regex = new RegExp('^[0-9a-fA-F]{' + value.length + '}$');
-
-    return regex.test(value);
-}
-
-/**
- * @ignore
- */
-function isHex64 (value: string): boolean {
-    return (isHex(value) && value.length === 64);
-}
-
-/**
- * @ignore
- */
-function isHex128 (value: string): boolean {
-    return (isHex(value) && value.length === 128);
-}
-
-/**
- * @ignore
- */
-function isUInt (value: number) {
-    return (value === toInt(value) && toInt(value) >= 0);
-}
-
-/**
- * @ignore
- */
-function toInt (value: number | string): number | boolean {
-    if (typeof value === 'number') {
-        return value;
-    } else {
-        const tmp = parseInt(value, 10);
-        if (tmp.toString().length === value.toString().length) {
-            return tmp;
-        }
-    }
-
-    return false;
 }

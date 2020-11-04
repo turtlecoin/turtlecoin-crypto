@@ -1,3 +1,4 @@
+// Copyright (c) 2014-2020, The Bitcoin Core developers
 // Copyright (c) 2020-2021, The TurtleCoin Developers
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -24,18 +25,16 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#include "hashing.h"
+#include "serializer.h"
 
-#include "base58.h"
-#include "bulletproofs.h"
-#include "bulletproofsplus.h"
-#include "crypto_common.h"
-#include "multisig.h"
-#include "ring_signature_arcturus.h"
-#include "ring_signature_borromean.h"
-#include "ring_signature_clsag.h"
-#include "ringct.h"
-#include "signature.h"
+namespace Crypto::Base58
+{
+    [[nodiscard]] std::tuple<bool, std::vector<uint8_t>> decode(const std::string &input);
 
-#endif // CRYPTO_H
+    [[nodiscard]] std::tuple<bool, std::vector<uint8_t>> decode_check(const std::string &input);
+
+    [[nodiscard]] std::string encode(std::vector<uint8_t> input);
+
+    [[nodiscard]] std::string encode_check(const std::vector<uint8_t> &input);
+} // namespace Crypto::Base58

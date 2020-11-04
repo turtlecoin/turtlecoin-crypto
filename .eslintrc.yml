@@ -1,29 +1,25 @@
 env:
   browser: true
-  es2020: true
+  es2021: true
   node: true
 extends:
   - standard
 parser: '@typescript-eslint/parser'
 parserOptions:
-  ecmaVersion: 11
+  ecmaVersion: 12
   sourceType: module
 plugins:
   - '@typescript-eslint'
 rules: {
   indent: ["error", 4, {
-    SwitchCase: 1
+     SwitchCase: 1
   }],
   linebreak-style: ["off", "unix"],
-  quotes: ["error","single"],
-  semi: ["error","always"],
-  max-len: ["error", {
-    code: 120,
-  }],
+  quotes: ["error", "single"],
+  semi: ["error", "always"],
   camelcase: off,
-  no-unused-vars: off,
-  "@typescript-eslint/no-explicit-any": off,
-  "@typescript-eslint/no-namespace": off,
-  "@typescript-eslint/no-var-requires": off,
-  "@typescript-eslint/explicit-module-boundary-types": off
+  max-len: ["error", {
+    code: 120
+  }],
+  no-unused-vars: off
 }

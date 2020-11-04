@@ -16,6 +16,6 @@
     "typescript/**/*.ts"
   ],
   "exclude": [
-    "tests/"
+    "test/"
   ]
 }

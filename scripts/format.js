@@ -1,97 +1,95 @@
 /* Copied from TurtleCoin main repo at https://github.com/TurtleCoin/TurtleCoin */
 
-const { promisify } = require('util')
-const childProcess = require('child_process')
-const fs = require('fs')
+const { promisify } = require('util');
+const childProcess = require('child_process');
+const fs = require('fs');
 
-const access = promisify(fs.access)
-const readdir = promisify(fs.readdir)
-const stat = promisify(fs.stat)
-const exec = promisify(childProcess.exec)
+const access = promisify(fs.access);
+const readdir = promisify(fs.readdir);
+const stat = promisify(fs.stat);
+const exec = promisify(childProcess.exec);
 
 /* The directories to run our formatting on, recursively */
-const directoriesToFormat = ['include', 'src', 'tests']
+const directoriesToFormat = ['include', 'src'];
 
 /* Filetypes to run the formatter on */
-const fileTypes = ['.h', '.cpp', '.c']
+const fileTypes = ['.h', '.cpp', '.c', '.hpp'];
 
-/* The name of the clang-format binary. In some distros this has the version
-   appended. */
-const binaryName = 'clang-format';
+const binaryPath = require('path').resolve(process.cwd(), './node_modules/.bin/clang-format');
 
 (async () => {
-  const success = await main()
+    const success = await main();
 
-  if (success) {
-    console.log('\nFormatting complete.')
-  } else {
-    console.log('\nFormatting aborted.')
-  }
-})()
+    if (success) {
+        console.log('\nFormatting complete.');
+    } else {
+        console.log('\nFormatting aborted.');
+    }
+})();
 
 async function main () {
-  /* Check we're in the write folder and the directories exist */
-  for (const directory of directoriesToFormat) {
-    try {
-      await access(directory)
-    } catch (err) {
-      console.log(`Failed to find ${directory} directory, probably in the wrong folder.`)
-      console.log('Make sure to run from the root folder, like so: node scripts/format.js')
-      return false
+    /* Check we're in the write folder and the directories exist */
+    for (const directory of directoriesToFormat) {
+        try {
+            await access(directory);
+        } catch (err) {
+            console.log(`Failed to find ${directory} directory, probably in the wrong folder.`);
+            console.log('Make sure to run from the root folder, like so: node scripts/format.js');
+            return false;
+        }
     }
-  }
 
-  let filePaths = []
+    let filePaths = [];
 
-  /* Gather the files */
-  for (const directory of directoriesToFormat) {
-    const files = await getFiles(directory)
-    filePaths = filePaths.concat(files)
-  }
+    /* Gather the files */
+    for (const directory of directoriesToFormat) {
+        const files = await getFiles(directory);
+        filePaths = filePaths.concat(files);
+    }
 
-  /* Filter out non code files */
-  filePaths = filePaths.filter((file) => {
-    return fileTypes.some((extension) => file.endsWith(extension))
-  })
+    /* Filter out non code files */
+    filePaths = filePaths.filter((file) => {
+        return fileTypes.some((extension) => file.endsWith(extension));
+    });
 
-  console.log(`Found ${filePaths.length} files to format!`)
+    console.log(`Found ${filePaths.length} files to format!`);
 
-  /* Format each file */
-  for (const file of filePaths) {
-    await formatFile(file)
-  }
+    /* Format each file */
+    for (const file of filePaths) {
+        await formatFile(file);
+    }
 
-  return true
+    return true;
 }
 
 async function getFiles (directory) {
-  const directoryContents = await readdir(directory)
+    const directoryContents = await readdir(directory);
 
-  let allFiles = []
+    let allFiles = [];
 
-  for (const file of directoryContents) {
-    const fullPath = directory + '/' + file
+    for (const file of directoryContents) {
+        const fullPath = directory + '/' + file;
 
-    const fileStats = await stat(fullPath)
+        const fileStats = await stat(fullPath);
 
-    /* This is a directory, lets recurse */
-    if (fileStats.isDirectory()) {
-      const moreFiles = await getFiles(fullPath)
-      allFiles = allFiles.concat(moreFiles)
-    } else {
-      allFiles.push(fullPath)
+        /* This is a directory, lets recurse */
+        if (fileStats.isDirectory()) {
+            const moreFiles = await getFiles(fullPath);
+            allFiles = allFiles.concat(moreFiles);
+        } else {
+            allFiles.push(fullPath);
+        }
     }
-  }
 
-  return allFiles
+    return allFiles;
 }
 
 async function formatFile (filePath) {
-  try {
-    console.log(`Formatting ${filePath}`)
+    try {
+        console.log(`Formatting ${filePath}`);
 
-    await exec(`${binaryName} -i ${filePath}`)
-  } catch (err) {
-    console.log(`Error formatting ${filePath}: ${err}`)
-  }
+        await exec(`${binaryPath} -i ${filePath}`);
+    } catch (err) {
+        console.log(`Error formatting ${filePath}: ${err}`);
+    }
 }

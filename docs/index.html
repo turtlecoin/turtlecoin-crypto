@@ -3,10 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>turtlecoin-crypto</title>
-	<meta name="description" content="Documentation for turtlecoin-crypto">
+	<title>@turtlecoin/crypto</title>
+	<meta name="description" content="Documentation for @turtlecoin/crypto">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -22,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">turtlecoin-crypto</a>
+					<a href="index.html" class="title">@turtlecoin/crypto</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -47,12 +48,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
-			<h1>turtlecoin-crypto</h1>
+			<h1>Project @turtlecoin/crypto</h1>
 		</div>
 	</div>
 </header>
@@ -64,8 +60,7 @@
 				<a href="#turtlecoin-standalone-cryptography-library" id="turtlecoin-standalone-cryptography-library" style="color: inherit; text-decoration: none;">
 					<h1>TurtleCoin: Standalone Cryptography Library</h1>
 				</a>
-				<p><a href="https://nodei.co/npm/turtlecoin-crypto/"><img src="https://nodei.co/npm/turtlecoin-crypto.png?downloads=true&stars=true" alt="NPM"></a></p>
-				<p><img src="https://img.shields.io/badge/node-%3E%3D6-blue.svg" alt="Prerequisite"> <a href="https://github.com/turtlecoin/turtlecoin-crypto/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a> <a href="https://github.com/turtlecoin/turtlecoin-crypto/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-yellow.svg" alt="License: GPL-3.0"></a> <a href="https://twitter.com/_TurtleCoin"><img src="https://img.shields.io/twitter/follow/_TurtleCoin.svg?style=social" alt="Twitter: TurtlePay"></a></p>
+				<p><img src="https://img.shields.io/badge/node-%3E%3D12-blue.svg" alt="Prerequisite"> <a href="https://github.com/turtlecoin/turtlecoin-crypto/graphs/commit-activity"><img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance"></a> <a href="https://github.com/turtlecoin/turtlecoin-crypto/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-BSD--3-green.svg" alt="License: BSD-3"></a> <a href="https://twitter.com/_TurtleCoin"><img src="https://img.shields.io/twitter/follow/_TurtleCoin.svg?style=social" alt="Twitter: _TurtleCoin"></a></p>
 				<a href="#master-build-status" id="master-build-status" style="color: inherit; text-decoration: none;">
 					<h4>Master Build Status</h4>
 				</a>
@@ -74,55 +69,138 @@
 					<h4>Development Build Status</h4>
 				</a>
 				<p><a href="https://github.com/turtlecoin/turtlecoin-crypto/actions"><img src="https://github.com/turtlecoin/turtlecoin-crypto/workflows/CI%20Build%20Tests/badge.svg?branch=development" alt="Build Status"></a></p>
-				<p>This repository contains the necessary files to compile the cryptography library used within <a href="https://turtlecoin.lol">TurtleCoin</a> as a standalone library that can be included in various other projects in a variety of development environments, including:</p>
+				<p>This repository a standalone cryptographic primitive wrapper library that can be included in various other projects in a variety of development environments, including:</p>
 				<ul>
-					<li>Node.js &gt;= 6.x</li>
+					<li>Node.js &gt;= 12.x</li>
 					<li>C++</li>
-					<li>C# (via C++ shared library &amp; P/Invoke)</li>
-					<li>Native Javascript</li>
 					<li>WASM</li>
+					<li>Javascript asm.js</li>
 				</ul>
+				<a href="#features" id="features" style="color: inherit; text-decoration: none;">
+					<h3>Features</h3>
+				</a>
+				<ul>
+					<li>Three Core Structure Types<ul>
+							<li><code>crypto_scalar_t</code>: Elliptic Curve Scalar</li>
+							<li><code>crypto_point_t</code>: Elliptic Curve Point<ul>
+									<li>Caching of commonly used <code>ge</code> types</li>
+								</ul>
+							</li>
+							<li><code>crypto_hash_t</code>: 256-bit hash</li>
+						</ul>
+					</li>
+					<li>SHA3 (256-bit) [not keccak ie. cn_fast_hash]<ul>
+							<li>SHA3 KDF via <code>sha3_slow_hash()</code></li>
+						</ul>
+					</li>
+					<li>ED25519 Key Generation &amp; Manipulation<ul>
+							<li>Deterministic Subwallet Key Generation</li>
+							<li>Deterministic Secondary Key Generation (View Key)</li>
+						</ul>
+					</li>
+					<li>Message Digest Signing<ul>
+							<li>Multisig Supported</li>
+						</ul>
+					</li>
+					<li>Borromean Ring Signatures<ul>
+							<li>Multisig Supported</li>
+						</ul>
+					</li>
+					<li>CLSAG Ring Signatures<ul>
+							<li>Multisig Supported</li>
+						</ul>
+					</li>
+					<li>RingCT<ul>
+							<li>Pedersen Commitments</li>
+							<li>Pseudo Commitments</li>
+							<li>Blinding Factors</li>
+							<li>Amount Masking</li>
+						</ul>
+					</li>
+					<li>Bulletproof Range Proofs<ul>
+							<li>Variable bit length proofs (1 to 64 bits)</li>
+							<li>No limits to number of values proved or verified in a single call</li>
+							<li>Batch Verification</li>
+							<li>Implements caching of common points for faster repeat calls to <code>prove()</code> and <code>verify()</code></li>
+						</ul>
+					</li>
+					<li>Bulletproof+ Range Proofs<ul>
+							<li>Variable bit length proofs (1 to 64 bits)</li>
+							<li>No limits to number of values proved or verified in a single call</li>
+							<li>Batch Verification</li>
+							<li>Implements caching of common points for faster repeat calls to <code>prove()</code> and <code>verify()</code></li>
+						</ul>
+					</li>
+					<li>Arcturus Proofs (Ring Signatures)<ul>
+							<li>Proving &amp; Verification</li>
+							<li><strong>Multisig in Development</strong></li>
+						</ul>
+					</li>
+					<li>Scalar Transcripts (C++ Only)</li>
+					<li>Byte/Binary Serialization &amp; De-Serialization (C++ only)</li>
+					<li>Structure to/from JSON provided via RapidJSON (C++ only)</li>
+					<li>Structure to/from hexadecimal encoded string representations (C++ only)</li>
+					<li>Human Readable Code<ul>
+							<li>Overloaded structures keep the code clean</li>
+						</ul>
+					</li>
+					<li>One Header for all <code>./include/crypto.h</code></li>
+				</ul>
+				<a href="#this-library-is-not-compatible-with-turtlecoin-pre-200" id="this-library-is-not-compatible-with-turtlecoin-pre-200" style="color: inherit; text-decoration: none;">
+					<h3>This library is NOT compatible with TurtleCoin pre-2.0.0</h3>
+				</a>
+				<p>It is a brand new, from scratch implementation of the concepts implemented within. It contains library specific hash domains, challenge constructions, seeds, and other changes that make it practically 100% incompatible with any other library or implementation. Wallets generated with this wrapper are deterministically generated in an entirely different way and are not compatible with legacy implementations.</p>
+				<p>Do not open issues when this library does not work with TurtleCoin pre-2.0.0 or any other CryptoNote based project -- they will be closed. Legacy support and alternate implementations are not within the scope of this project.</p>
 				<a href="#javascript-library" id="javascript-library" style="color: inherit; text-decoration: none;">
 					<h2>Javascript Library</h2>
 				</a>
 				<p><strong>Note:</strong> We build prebuilds of the Node.js native addon module as well as the WASM/JS binaries that are included for distribution with the NPM installed version of this package to speed up your development efforts.</p>
+				<p>If the prebuild for your system does not exist, it will compile the Node.js native addon module using CMake automatically.</p>
 				<a href="#dependencies" id="dependencies" style="color: inherit; text-decoration: none;">
 					<h3>Dependencies</h3>
 				</a>
 				<ul>
-					<li><a href="https://nodejs.org">Node.js</a> &gt;= +6.x LTS (or Node v11)</li>
+					<li><a href="https://nodejs.org">Node.js</a> &gt;= +12.x LTS (or Node v12)</li>
+					<li>Compiler supporting C++17 (gcc/clang/etc)</li>
 				</ul>
-				<a href="#windows-if-not-using-prebuilds" id="windows-if-not-using-prebuilds" style="color: inherit; text-decoration: none;">
-					<h4>Windows (if not using prebuilds)</h4>
+				<a href="#nodejs--typescript--javascript-installation" id="nodejs--typescript--javascript-installation" style="color: inherit; text-decoration: none;">
+					<h3>Node.js / Typescript / Javascript Installation</h3>
 				</a>
-				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
-					<h5>Prerequisites</h5>
+				<a href="#yarn" id="yarn" style="color: inherit; text-decoration: none;">
+					<h4>Yarn</h4>
 				</a>
-				<p>Read very careful if you want this to work right the first time.</p>
-				<ol>
-					<li><p>Open a <em>Windows Powershell</em> console as <strong>Administrator</strong></p>
-					</li>
-					<li><p>Run the command: <code>npm install -g windows-build-tools --vs2015</code>
-						<strong><em>This will take a while. Sit tight.</em></strong></p>
-					</li>
-				</ol>
-				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
-					<h3>Installation</h3>
+				<pre><code class="language-bash"><span style="color: #000000">yarn add @turtlecoin/crypto</span>
+</code></pre>
+				<a href="#npm" id="npm" style="color: inherit; text-decoration: none;">
+					<h4>NPM</h4>
 				</a>
-				<pre><code class="language-bash">npm install turtlecoin-crypto</code></pre>
+				<pre><code class="language-bash"><span style="color: #000000">npm install @turtlecoin/crypto</span>
+</code></pre>
 				<a href="#intialization" id="intialization" style="color: inherit; text-decoration: none;">
 					<h3>Intialization</h3>
 				</a>
 				<a href="#typescript" id="typescript" style="color: inherit; text-decoration: none;">
 					<h4>TypeScript</h4>
 				</a>
-				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> { Crypto } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;turtlecoin-crypto&#x27;</span>;
-<span class="hljs-keyword">const</span> TurtleCoinCrypto = <span class="hljs-keyword">new</span> Crypto();</code></pre>
+				<pre><code class="language-javascript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Crypto</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@turtlecoin/crypto&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">(</span><span style="color: #0000FF">async</span><span style="color: #000000">() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">crypto</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Crypto</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">crypto</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">();</span>
+<span style="color: #000000">})</span>
+</code></pre>
 				<a href="#commonjs" id="commonjs" style="color: inherit; text-decoration: none;">
 					<h4>CommonJS</h4>
 				</a>
-				<pre><code class="language-javascript"><span class="hljs-keyword">const</span> Crypto = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;turtlecoin-crypto&#x27;</span>).Crypto
-<span class="hljs-keyword">const</span> TurtleCoinCrypto = <span class="hljs-keyword">new</span> Crypto()</code></pre>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">Crypto</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;turtlecoin-crypto&#039;</span><span style="color: #000000">).</span><span style="color: #001080">Crypto</span>
+
+<span style="color: #000000">(</span><span style="color: #0000FF">async</span><span style="color: #000000">() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">crypto</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Crypto</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">crypto</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">();</span>
+<span style="color: #000000">})</span>
+</code></pre>
 				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
 					<h4>Documentation</h4>
 				</a>
@@ -130,205 +208,71 @@
 				<a href="#c-library" id="c-library" style="color: inherit; text-decoration: none;">
 					<h2>C++ Library</h2>
 				</a>
-				<a href="#how-to-compile" id="how-to-compile" style="color: inherit; text-decoration: none;">
-					<h3>How To Compile</h3>
+				<p>A CMakeLists.txt file enables easy builds on most systems. </p>
+				<p>The CMake build system builds an optimized static library for you. </p>
+				<p>However, it is best to simply include this project in your project as a dependency with your CMake project.</p>
+				<p>Please reference your system documentation on how to compile with CMake.</p>
+				<p>To use this library in your project(s) simply link against the build target and include the following in your relevant source or header file(s).</p>
+				<pre><code class="language-c++">#include &lt;crypto.h&gt;</code></pre>
+				<a href="#documentation-1" id="documentation-1" style="color: inherit; text-decoration: none;">
+					<h3>Documentation</h3>
 				</a>
-				<a href="#build-optimization" id="build-optimization" style="color: inherit; text-decoration: none;">
-					<h4>Build Optimization</h4>
+				<p>C++ API documentation can be found in the headers (.h)</p>
+				<a href="#cloning-this-repository" id="cloning-this-repository" style="color: inherit; text-decoration: none;">
+					<h2>Cloning this Repository</h2>
 				</a>
-				<p>The CMake build system will, by default, create optimized <em>native</em> builds for your particular system type when you build the software. Using this method, the binaries created provide a better experience and all together faster performance.</p>
-				<p>However, if you wish to create <em>portable</em> binaries that can be shared between systems, specify <code>-DARCH=default</code> in your CMake arguments during the build process. Note that <em>portable</em> binaries will have a noticable difference in performance than <em>native</em> binaries. For this reason, it is always best to build for your particuar system if possible.</p>
-				<a href="#linux" id="linux" style="color: inherit; text-decoration: none;">
-					<h4>Linux</h4>
+				<p>This repository uses submodules, make sure you pull those before doing anything if you are cloning this project.</p>
+				<pre><code class="language-bash"><span style="color: #000000">git clone https://github.com/turtlecoin/turtlecoin-crypto</span>
+<span style="color: #795E26">cd</span><span style="color: #000000"> turtlecoin-crypto</span>
+<span style="color: #000000">git submodule init</span>
+<span style="color: #000000">git submodule update --recursive</span>
+</code></pre>
+				<a href="#as-a-dependency" id="as-a-dependency" style="color: inherit; text-decoration: none;">
+					<h3>As a dependency</h3>
 				</a>
-				<a href="#ubuntu-using-gcc" id="ubuntu-using-gcc" style="color: inherit; text-decoration: none;">
-					<h5>Ubuntu, using GCC</h5>
-				</a>
-				<pre><code class="language-bash">sudo add-apt-repository ppa:ubuntu-toolchain-r/<span class="hljs-built_in">test</span> -y
-sudo apt-get update
-sudo apt-get install aptitude -y
-sudo aptitude install -y build-essential git cmake
-git <span class="hljs-built_in">clone</span> -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-<span class="hljs-built_in">cd</span> turtlecoin-crypto
-mkdir build
-<span class="hljs-built_in">cd</span> build
-cmake ..
-make -j</code></pre>
-				<p>The static library will be built as <code>libturtlecoin-crypto.a</code> in the build folder.</p>
-				<a href="#ubuntu-using-clang" id="ubuntu-using-clang" style="color: inherit; text-decoration: none;">
-					<h5>Ubuntu, using Clang</h5>
-				</a>
-				<pre><code class="language-bash">sudo add-apt-repository ppa:ubuntu-toolchain-r/<span class="hljs-built_in">test</span> -y
-wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -</code></pre>
-				<p>You need to modify the below command for your version of ubuntu - see <a href="https://apt.llvm.org/">https://apt.llvm.org/</a></p>
-				<ul>
-					<li><p>Ubuntu 14.04 (Trusty)</p>
-					</li>
-					<li><p><code>sudo add-apt-repository &quot;deb https://apt.llvm.org/trusty/ llvm-toolchain-trusty 6.0 main&quot;</code></p>
-					</li>
-					<li><p>Ubuntu 16.04 (Xenial)</p>
-					</li>
-					<li><p><code>sudo add-apt-repository &quot;deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial 6.0 main&quot;</code></p>
-					</li>
-					<li><p>Ubuntu 18.04 (Bionic)</p>
-					</li>
-					<li><p><code>sudo add-apt-repository &quot;deb https://apt.llvm.org/bionic/ llvm-toolchain-bionic 6.0 main&quot;</code></p>
-					</li>
-				</ul>
-				<pre><code class="language-bash">sudo apt-get update
-sudo apt-get install aptitude -y
-sudo aptitude install -y -o Aptitude::ProblemResolver::SolutionCost=<span class="hljs-string">&#x27;100*canceled-actions,200*removals&#x27;</span>
-sudo aptitude install build-essential clang-6.0 libstdc++-7-dev git cmake
-<span class="hljs-built_in">export</span> CC=clang-6.0
-<span class="hljs-built_in">export</span> CXX=clang++-6.0
-git <span class="hljs-built_in">clone</span> -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-<span class="hljs-built_in">cd</span> turtlecoin-crypto
-mkdir build
-<span class="hljs-built_in">cd</span> build
-cmake ..
-make -j</code></pre>
-				<p>The following library files will be created in the <code>build</code> folder:</p>
-				<ul>
-					<li><code>libturtlecoin-crypto-static.a</code></li>
-				</ul>
-				<a href="#generic-linux" id="generic-linux" style="color: inherit; text-decoration: none;">
-					<h5>Generic Linux</h5>
-				</a>
-				<p>Ensure you have the dependencies listed above.</p>
-				<p>If you want to use clang, ensure you set the environment variables <code>CC</code> and <code>CXX</code>.
-				See the ubuntu instructions for an example.</p>
-				<pre><code class="language-bash">git <span class="hljs-built_in">clone</span> -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-<span class="hljs-built_in">cd</span> turtlecoin-crypto
-mkdir build
-<span class="hljs-built_in">cd</span> build
-cmake ..
-make -j</code></pre>
-				<p>The following library files will be created in the <code>build</code> folder:</p>
-				<ul>
-					<li><code>libturtlecoin-crypto-static.a</code></li>
-				</ul>
-				<a href="#osxapple-using-clang" id="osxapple-using-clang" style="color: inherit; text-decoration: none;">
-					<h4>OSX/Apple, using Clang</h4>
-				</a>
-				<a href="#prerequisites-1" id="prerequisites-1" style="color: inherit; text-decoration: none;">
-					<h5>Prerequisites</h5>
-				</a>
-				<ul>
-					<li>Install XCode and Developer Tools.</li>
-				</ul>
-				<a href="#building" id="building" style="color: inherit; text-decoration: none;">
-					<h5>Building</h5>
-				</a>
-				<pre><code class="language-bash"><span class="hljs-built_in">which</span> brew || /usr/bin/ruby -e <span class="hljs-string">&quot;<span class="hljs-subst">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>&quot;</span>
-brew install --force cmake boost llvm
-<span class="hljs-built_in">export</span> CC=/usr/<span class="hljs-built_in">local</span>/opt/llvm/bin/clang
-<span class="hljs-built_in">export</span> CXX=/usr/<span class="hljs-built_in">local</span>/opt/llvm/bin/clang++
-git <span class="hljs-built_in">clone</span> -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-<span class="hljs-built_in">cd</span> turtlecoin-crypto
-mkdir build
-<span class="hljs-built_in">cd</span> build
-cmake ..
-make</code></pre>
-				<p>The following library files will be created in the <code>build</code> folder:</p>
-				<ul>
-					<li><code>libturtlecoin-crypto-static.a</code></li>
-				</ul>
-				<a href="#windows" id="windows" style="color: inherit; text-decoration: none;">
-					<h4>Windows</h4>
-				</a>
-				<a href="#prerequisites-2" id="prerequisites-2" style="color: inherit; text-decoration: none;">
-					<h5>Prerequisites</h5>
-				</a>
-				<ul>
-					<li>Install <a href="https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&amp;rel=15&amp;page=inlineinstall">Visual Studio 2017 Community Edition</a></li>
-					<li>When installing Visual Studio, it is <strong>required</strong> that you install <strong>Desktop development with C++</strong></li>
-				</ul>
-				<a href="#building-1" id="building-1" style="color: inherit; text-decoration: none;">
-					<h5>Building</h5>
-				</a>
-				<ul>
-					<li>From the start menu, open &#39;x64 Native Tools Command Prompt for vs2017&#39;.<pre><code>cd &lt;your_turtlecoin-crypto_directory&gt;
-mkdir build
-cd build
-set PATH=&quot;C:<span class="hljs-symbol">\P</span>rogram Files (x86)<span class="hljs-symbol">\M</span>icrosoft Visual Studio<span class="hljs-symbol">\2</span>017<span class="hljs-symbol">\C</span>ommunity<span class="hljs-symbol">\C</span>ommon7<span class="hljs-symbol">\I</span>DE<span class="hljs-symbol">\C</span>ommonExtensions<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\C</span>Make<span class="hljs-symbol">\C</span>Make<span class="hljs-symbol">\b</span>in&quot;;<span class="hljs-variable">%PATH%</span>
-cmake -G &quot;Visual Studio 15 2017 Win64&quot; ..</code></pre>
-					</li>
-				</ul>
-				<p><strong>Note:</strong> If you have errors on this step about not being able to find the some libraries, you may need to update your cmake. Open &#39;Visual Studio Installer&#39; and click &#39;Update&#39;.</p>
-				<p><code>MSBuild turtlecoin-crypto.sln /p:Configuration=Release /m</code></p>
-				<p>The following library files will be created in the <code>build/Release</code> folder:</p>
-				<ul>
-					<li><code>turtlecoin-crypto-static.lib</code></li>
-					<li><code>turtlecoin-crypto-shared.lib</code></li>
-					<li><code>turtlecoin-crypto-shared.dll</code></li>
-				</ul>
-				<a href="#native-javascript-amp-wasm" id="native-javascript-amp-wasm" style="color: inherit; text-decoration: none;">
-					<h2>Native Javascript &amp; WASM</h2>
-				</a>
-				<a href="#prerequisites-3" id="prerequisites-3" style="color: inherit; text-decoration: none;">
-					<h3>Prerequisites</h3>
-				</a>
-				<p>You will need the following packages:</p>
-				<ul>
-					<li>CMake (2.8 or higher), make, and git.</li>
-				</ul>
-				<a href="#compiling" id="compiling" style="color: inherit; text-decoration: none;">
-					<h3>Compiling</h3>
-				</a>
-				<pre><code class="language-bash">git <span class="hljs-built_in">clone</span> -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-<span class="hljs-built_in">cd</span> turtlecoin-crypto
-<span class="hljs-built_in">source</span> ./build_js.sh</code></pre>
-				<p>This script will install the necessary dependencies on your machine and then proceed to compile the library to Native Javascript and WASM.</p>
-				<p>The following library files will be created in the <code>jsbuild</code> folder:</p>
-				<ul>
-					<li>Native Javascript<ul>
-							<li><code>turtlecoin-crypto.js</code></li>
-						</ul>
-					</li>
-					<li>WASM<ul>
-							<li><code>turtlecoin-crypto-wasm.js</code></li>
-						</ul>
-					</li>
-				</ul>
+				<pre><code class="language-bash"><span style="color: #000000">git submodule add https://github.com/turtlecoin/turtlecoin-crypto external/turtlecoin-crypto</span>
+</code></pre>
 				<a href="#thanks" id="thanks" style="color: inherit; text-decoration: none;">
 					<h2>Thanks</h2>
 				</a>
-				<p>Cryptonote Developers, Bytecoin Developers, Monero Developers, Forknote Project, TurtleCoin Community</p>
-				<a href="#copypasta-for-license-when-editing-files" id="copypasta-for-license-when-editing-files" style="color: inherit; text-decoration: none;">
-					<h2>Copypasta for license when editing files</h2>
+				<p>The TurtleCoin Community</p>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
 				</a>
-				<p>Hi TurtleCoin contributor, thanks for forking and sending back Pull Requests. Extensive docs about contributing are in the works or elsewhere. For now this is the bit we need to get into all the files we touch. Please add it to the top of the files.</p>
-				<pre><code><span class="hljs-comment">// Copyright (c) 2012-2017, The CryptoNote developers, The Bytecoin developers</span>
-<span class="hljs-comment">// Copyright (c) 2014-2018, The Monero Project</span>
-<span class="hljs-comment">// Copyright (c) 2018-2019, The TurtleCoin Developers</span>
-<span class="hljs-comment">//</span>
-<span class="hljs-comment">// Please see the included LICENSE file for more information.</span></code></pre>
+				<p>External references are provided via libraries in the Public Domain (Unlicense) and/or MIT from their respective parties.</p>
+				<p>This wrapper library is provided under the BSD-3-Clause license found in the LICENSE file.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum">
-						<a href="enums/cryptotype.html" class="tsd-kind-icon">Crypto<wbr>Type</a>
+						<a href="enums/librarytype.html" class="tsd-kind-icon">Library<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/crypto.html" class="tsd-kind-icon">Crypto</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/icryptoconfig.html" class="tsd-kind-icon">ICrypto<wbr>Config</a>
+						<a href="interfaces/iconfig.html" class="tsd-kind-icon">IConfig</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/ikeypair.html" class="tsd-kind-icon">IKey<wbr>Pair</a>
+						<a href="interfaces/crypto_arcturus_signature_t.html" class="tsd-kind-icon">crypto_<wbr>arcturus_<wbr>signature_<wbr>t</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/ipreparedringsignatures.html" class="tsd-kind-icon">IPrepared<wbr>Ring<wbr>Signatures</a>
+						<a href="interfaces/crypto_bulletproof_plus_t.html" class="tsd-kind-icon">crypto_<wbr>bulletproof_<wbr>plus_<wbr>t</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/crypto_bulletproof_t.html" class="tsd-kind-icon">crypto_<wbr>bulletproof_<wbr>t</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/crypto_clsag_signature_t.html" class="tsd-kind-icon">crypto_<wbr>clsag_<wbr>signature_<wbr>t</a>
 					</li>
 				</ul>
 			</nav>

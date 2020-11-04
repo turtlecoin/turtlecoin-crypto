@@ -24,18 +24,38 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#ifndef CRYPTO_STRING_TOOLS_H
+#define CRYPTO_STRING_TOOLS_H
 
-#include "base58.h"
-#include "bulletproofs.h"
-#include "bulletproofsplus.h"
-#include "crypto_common.h"
-#include "multisig.h"
-#include "ring_signature_arcturus.h"
-#include "ring_signature_borromean.h"
-#include "ring_signature_clsag.h"
-#include "ringct.h"
-#include "signature.h"
+#include "json_helper.h"
 
-#endif // CRYPTO_H
+#include <algorithm>
+#include <cstdint>
+#include <exception>
+#include <iostream>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
+#define DEBUG_PRINT(val) std::cout << #val << ": " << val << std::endl
+
+namespace Crypto::StringTools
+{
+    /**
+     * Converts a hexadecimal string to a vector of uint8_t
+     * @param text
+     * @return
+     */
+    std::vector<uint8_t> from_hex(const std::string &text);
+
+    /**
+     * Converts a void pointer of the given length into a hexadecimal string
+     * @param data
+     * @param length
+     * @return
+     */
+    std::string to_hex(const void *data, size_t length);
+} // namespace Crypto::StringTools
+
+#endif // CRYPTO_STRING_TOOLS_H

@@ -1,3 +1,18 @@
-[submodule "emsdk"]
-	path = emsdk
-	url = https://github.com/brandonlehmann/emsdk
+[submodule "external/sha3"]
+	path = external/sha3
+	url = https://github.com/turtlecoin/sha3
+[submodule "external/ed25519"]
+	path = external/ed25519
+	url = https://github.com/turtlecoin/ed25519
+[submodule "external/rapidjson"]
+	path = external/rapidjson
+	url = https://github.com/tencent/rapidjson
+[submodule "external/emsdk"]
+	path = external/emsdk
+	url = https://github.com/turtlecoin/emsdk
+[submodule "external/argon2"]
+	path = external/argon2
+	url = https://github.com/turtlecoin/argon2
+[submodule "external/uint256_t"]
+	path = external/uint256_t
+	url = https://github.com/turtlecoin/uint256_t

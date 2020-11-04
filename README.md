@@ -2,9 +2,7 @@
 
 # TurtleCoin: Standalone Cryptography Library
 
-[![NPM](https://nodei.co/npm/turtlecoin-crypto.png?downloads=true&stars=true)](https://nodei.co/npm/turtlecoin-crypto/)
-
-![Prerequisite](https://img.shields.io/badge/node-%3E%3D6-blue.svg) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/turtlecoin/turtlecoin-crypto/graphs/commit-activity) [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-yellow.svg)](https://github.com/turtlecoin/turtlecoin-crypto/blob/master/LICENSE) [![Twitter: TurtlePay](https://img.shields.io/twitter/follow/_TurtleCoin.svg?style=social)](https://twitter.com/_TurtleCoin)
+![Prerequisite](https://img.shields.io/badge/node-%3E%3D12-blue.svg) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/turtlecoin/turtlecoin-crypto/graphs/commit-activity) [![License: BSD-3](https://img.shields.io/badge/License-BSD--3-green.svg)](https://github.com/turtlecoin/turtlecoin-crypto/blob/master/LICENSE) [![Twitter: _TurtleCoin](https://img.shields.io/twitter/follow/_TurtleCoin.svg?style=social)](https://twitter.com/_TurtleCoin)
 
 #### Master Build Status
 [![Build Status](https://github.com/turtlecoin/turtlecoin-crypto/workflows/CI%20Build%20Tests/badge.svg?branch=master)](https://github.com/turtlecoin/turtlecoin-crypto/actions)
@@ -12,37 +10,84 @@
 #### Development Build Status
 [![Build Status](https://github.com/turtlecoin/turtlecoin-crypto/workflows/CI%20Build%20Tests/badge.svg?branch=development)](https://github.com/turtlecoin/turtlecoin-crypto/actions)
 
-This repository contains the necessary files to compile the cryptography library used within [TurtleCoin](https://turtlecoin.lol) as a standalone library that can be included in various other projects in a variety of development environments, including:
+This repository a standalone cryptographic primitive wrapper library that can be included in various other projects in a variety of development environments, including:
 
-* Node.js >= 6.x
+* Node.js >= 12.x
 * C++
-* C# (via C++ shared library & P/Invoke)
-* Native Javascript
 * WASM
+* Javascript asm.js
+
+### Features
+
+* Three Core Structure Types
+  * `crypto_scalar_t`: Elliptic Curve Scalar
+  * `crypto_point_t`: Elliptic Curve Point
+    * Caching of commonly used `ge` types
+  * `crypto_hash_t`: 256-bit hash
+* SHA3 (256-bit) [not keccak ie. cn_fast_hash]
+  * SHA3 KDF via `sha3_slow_hash()`
+* ED25519 Key Generation & Manipulation
+  * Deterministic Subwallet Key Generation
+  * Deterministic Secondary Key Generation (View Key)
+* Message Digest Signing
+  * Multisig Supported
+* Borromean Ring Signatures
+  * Multisig Supported
+* CLSAG Ring Signatures
+  * Multisig Supported
+* RingCT
+  * Pedersen Commitments
+  * Pseudo Commitments
+  * Blinding Factors
+  * Amount Masking
+* Bulletproof Range Proofs
+  * Variable bit length proofs (1 to 64 bits)
+  * No limits to number of values proved or verified in a single call
+  * Batch Verification
+  * Implements caching of common points for faster repeat calls to `prove()` and `verify()`
+* Bulletproof+ Range Proofs
+  * Variable bit length proofs (1 to 64 bits)
+  * No limits to number of values proved or verified in a single call
+  * Batch Verification
+  * Implements caching of common points for faster repeat calls to `prove()` and `verify()`
+* Arcturus Proofs (Ring Signatures)
+  * Proving & Verification
+  * **Multisig in Development**
+* Scalar Transcripts (C++ Only)
+* Byte/Binary Serialization & De-Serialization (C++ only)
+* Structure to/from JSON provided via RapidJSON (C++ only)
+* Structure to/from hexadecimal encoded string representations (C++ only)
+* Human Readable Code
+  * Overloaded structures keep the code clean
+* One Header for all `./include/crypto.h`
+
+### This library is NOT compatible with TurtleCoin pre-2.0.0
+
+It is a brand new, from scratch implementation of the concepts implemented within. It contains library specific hash domains, challenge constructions, seeds, and other changes that make it practically 100% incompatible with any other library or implementation. Wallets generated with this wrapper are deterministically generated in an entirely different way and are not compatible with legacy implementations.
+
+Do not open issues when this library does not work with TurtleCoin pre-2.0.0 or any other CryptoNote based project -- they will be closed. Legacy support and alternate implementations are not within the scope of this project.
 
 ## Javascript Library
 
 **Note:** We build prebuilds of the Node.js native addon module as well as the WASM/JS binaries that are included for distribution with the NPM installed version of this package to speed up your development efforts.
 
+If the prebuild for your system does not exist, it will compile the Node.js native addon module using CMake automatically.
+
 ### Dependencies
 
-* [Node.js](https://nodejs.org) >= +6.x LTS (or Node v11)
+* [Node.js](https://nodejs.org) >= +12.x LTS (or Node v12)
+* Compiler supporting C++17 (gcc/clang/etc)
 
-#### Windows (if not using prebuilds)
+### Node.js / Typescript / Javascript Installation
 
-##### Prerequisites
-
-Read very careful if you want this to work right the first time.
-
-1) Open a *Windows Powershell* console as **Administrator**
-
-2) Run the command: `npm install -g windows-build-tools --vs2015`
-   ***This will take a while. Sit tight.***
-
-### Installation
-
+#### Yarn
 ```bash
-npm install turtlecoin-crypto
+yarn add @turtlecoin/crypto
+```
+
+#### NPM
+```bash
+npm install @turtlecoin/crypto
 ```
 
 ### Intialization
@@ -50,15 +95,25 @@ npm install turtlecoin-crypto
 #### TypeScript
 
 ```javascript
-import { Crypto } from 'turtlecoin-crypto';
-const TurtleCoinCrypto = new Crypto();
+import { Crypto } from '@turtlecoin/crypto';
+
+(async() => {
+    const crypto = new Crypto();
+    
+    await crypto.initialize();
+})
 ```
 
 #### CommonJS
 
 ```javascript
 const Crypto = require('turtlecoin-crypto').Crypto
-const TurtleCoinCrypto = new Crypto()
+
+(async() => {
+    const crypto = new Crypto();
+    
+    await crypto.initialize();
+})
 ```
 
 #### Documentation
@@ -67,179 +122,46 @@ You can find the full TypeScript/JS documentation for this library [here](https:
 
 ## C++ Library
 
-### How To Compile
+A CMakeLists.txt file enables easy builds on most systems. 
 
-#### Build Optimization
+The CMake build system builds an optimized static library for you. 
 
-The CMake build system will, by default, create optimized *native* builds for your particular system type when you build the software. Using this method, the binaries created provide a better experience and all together faster performance.
+However, it is best to simply include this project in your project as a dependency with your CMake project.
 
-However, if you wish to create *portable* binaries that can be shared between systems, specify `-DARCH=default` in your CMake arguments during the build process. Note that *portable* binaries will have a noticable difference in performance than *native* binaries. For this reason, it is always best to build for your particuar system if possible.
+Please reference your system documentation on how to compile with CMake.
 
-#### Linux
+To use this library in your project(s) simply link against the build target and include the following in your relevant source or header file(s).
 
-##### Ubuntu, using GCC
+```c++
+#include <crypto.h>
+```
+
+### Documentation
+
+C++ API documentation can be found in the headers (.h)
+
+## Cloning this Repository
+
+This repository uses submodules, make sure you pull those before doing anything if you are cloning this project.
 
 ```bash
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-sudo apt-get update
-sudo apt-get install aptitude -y
-sudo aptitude install -y build-essential git cmake
-git clone -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
+git clone https://github.com/turtlecoin/turtlecoin-crypto
 cd turtlecoin-crypto
-mkdir build
-cd build
-cmake ..
-make -j
+git submodule init
+git submodule update --recursive
 ```
 
-The static library will be built as `libturtlecoin-crypto.a` in the build folder.
-
-##### Ubuntu, using Clang
-
+### As a dependency
 ```bash
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+git submodule add https://github.com/turtlecoin/turtlecoin-crypto external/turtlecoin-crypto
 ```
-
-You need to modify the below command for your version of ubuntu - see https://apt.llvm.org/
-
-* Ubuntu 14.04 (Trusty)
-- `sudo add-apt-repository "deb https://apt.llvm.org/trusty/ llvm-toolchain-trusty 6.0 main"`
-
-* Ubuntu 16.04 (Xenial)
-- `sudo add-apt-repository "deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial 6.0 main"`
-
-* Ubuntu 18.04 (Bionic)
-- `sudo add-apt-repository "deb https://apt.llvm.org/bionic/ llvm-toolchain-bionic 6.0 main"`
-
-```bash
-sudo apt-get update
-sudo apt-get install aptitude -y
-sudo aptitude install -y -o Aptitude::ProblemResolver::SolutionCost='100*canceled-actions,200*removals'
-sudo aptitude install build-essential clang-6.0 libstdc++-7-dev git cmake
-export CC=clang-6.0
-export CXX=clang++-6.0
-git clone -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-cd turtlecoin-crypto
-mkdir build
-cd build
-cmake ..
-make -j
-```
-
-The following library files will be created in the `build` folder:
-
-* `libturtlecoin-crypto-static.a`
-
-##### Generic Linux
-
-Ensure you have the dependencies listed above.
-
-If you want to use clang, ensure you set the environment variables `CC` and `CXX`.
-See the ubuntu instructions for an example.
-
-```bash
-git clone -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-cd turtlecoin-crypto
-mkdir build
-cd build
-cmake ..
-make -j
-```
-
-The following library files will be created in the `build` folder:
-
-* `libturtlecoin-crypto-static.a`
-
-#### OSX/Apple, using Clang
-
-##### Prerequisites
-
-- Install XCode and Developer Tools.
-
-##### Building
-
-```bash
-which brew || /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew install --force cmake boost llvm
-export CC=/usr/local/opt/llvm/bin/clang
-export CXX=/usr/local/opt/llvm/bin/clang++
-git clone -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-cd turtlecoin-crypto
-mkdir build
-cd build
-cmake ..
-make
-```
-
-The following library files will be created in the `build` folder:
-
-* `libturtlecoin-crypto-static.a`
-
-#### Windows
-
-##### Prerequisites
-
-- Install [Visual Studio 2017 Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15&page=inlineinstall)
-- When installing Visual Studio, it is **required** that you install **Desktop development with C++**
-
-##### Building
-
-- From the start menu, open 'x64 Native Tools Command Prompt for vs2017'.
-```
-cd <your_turtlecoin-crypto_directory>
-mkdir build
-cd build
-set PATH="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin";%PATH%
-cmake -G "Visual Studio 15 2017 Win64" ..
-```
-
-**Note:** If you have errors on this step about not being able to find the some libraries, you may need to update your cmake. Open 'Visual Studio Installer' and click 'Update'.
-
-`MSBuild turtlecoin-crypto.sln /p:Configuration=Release /m`
-
-The following library files will be created in the `build/Release` folder:
-
-* `turtlecoin-crypto-static.lib`
-* `turtlecoin-crypto-shared.lib`
-* `turtlecoin-crypto-shared.dll`
-
-## Native Javascript & WASM
-
-### Prerequisites
-
-You will need the following packages:
-
-* CMake (2.8 or higher), make, and git.
-
-### Compiling
-
-```bash
-git clone -b master --single-branch https://github.com/turtlecoin/turtlecoin-crypto
-cd turtlecoin-crypto
-source ./build_js.sh
-```
-
-This script will install the necessary dependencies on your machine and then proceed to compile the library to Native Javascript and WASM.
-
-The following library files will be created in the `jsbuild` folder:
-
-* Native Javascript
-  * `turtlecoin-crypto.js`
-* WASM
-  * `turtlecoin-crypto-wasm.js`
 
 ## Thanks
-Cryptonote Developers, Bytecoin Developers, Monero Developers, Forknote Project, TurtleCoin Community
+The TurtleCoin Community
 
-## Copypasta for license when editing files
 
-Hi TurtleCoin contributor, thanks for forking and sending back Pull Requests. Extensive docs about contributing are in the works or elsewhere. For now this is the bit we need to get into all the files we touch. Please add it to the top of the files.
+## License
 
-```
-// Copyright (c) 2012-2017, The CryptoNote developers, The Bytecoin developers
-// Copyright (c) 2014-2018, The Monero Project
-// Copyright (c) 2018-2019, The TurtleCoin Developers
-//
-// Please see the included LICENSE file for more information.
-```
+External references are provided via libraries in the Public Domain (Unlicense) and/or MIT from their respective parties.
+
+This wrapper library is provided under the BSD-3-Clause license found in the LICENSE file.
