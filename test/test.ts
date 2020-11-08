@@ -24,7 +24,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import Crypto, { crypto_bulletproof_plus_t, crypto_bulletproof_t, crypto_borromean_signature_t } from '../typescript';
+import Crypto, { crypto_bulletproof_plus_t, crypto_bulletproof_t } from '../typescript';
 import { describe, it, before } from 'mocha';
 import * as assert from 'assert';
 import { sha3_256 } from 'js-sha3';
@@ -431,9 +431,14 @@ describe('Cryptographic Tests', async () => {
 
     describe('Ring Signatures', async () => {
         let message_digest: string, public_ephemeral: string,
-            secret_ephemeral: string, key_image: string, public_keys: string[];
+            secret_ephemeral: string, key_image: string, public_keys: string[],
+            key_image2: string;
 
-        const RING_SIZE = 6;
+        // commitment info
+        let input_blinding: string, input_commitment: string, public_commitments: string[],
+            pseudo_blinding: string, pseudo_commitment: string;
+
+        const RING_SIZE = 8;
         const REAL_OUTPUT_INDEX = 3;
 
         before(async () => {
@@ -443,92 +448,202 @@ describe('Cryptographic Tests', async () => {
 
             key_image = await crypto.generate_key_image(public_ephemeral, secret_ephemeral);
 
+            key_image2 = await crypto.generate_key_image_v2(secret_ephemeral);
+
             public_keys = await crypto.random_points(RING_SIZE);
 
             public_keys[REAL_OUTPUT_INDEX] = public_ephemeral;
+
+            input_blinding = await crypto.random_scalar();
+
+            input_commitment = await crypto.generate_pedersen_commitment(input_blinding, 100);
+
+            public_commitments = await crypto.random_points(RING_SIZE);
+
+            public_commitments[REAL_OUTPUT_INDEX] = input_commitment;
+
+            const [blindings, commitments] =
+                await crypto.generate_pseudo_commitments([100],
+                    await crypto.random_scalars(1));
+
+            pseudo_blinding = blindings[0];
+
+            pseudo_commitment = commitments[0];
         });
 
         describe('Borromean', async () => {
             it('Generate Ring Signature', async () => {
                 const signature = await crypto.borromean_generate_ring_signature(
-                    message_digest, secret_ephemeral, public_keys);
+                    message_digest,
+                    secret_ephemeral,
+                    public_keys);
 
-                assert(await crypto.borromean_check_ring_signature(
-                    message_digest, key_image, public_keys, signature));
+                const pass = await crypto.borromean_check_ring_signature(
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    signature);
+
+                assert(pass === true);
             });
 
             it('Prepare Ring Signature', async () => {
                 const prepared = await crypto.borromean_prepare_ring_signature(
-                    message_digest, key_image, public_keys, REAL_OUTPUT_INDEX);
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    REAL_OUTPUT_INDEX);
 
                 const signature = await crypto.borromean_complete_ring_signature(
-                    secret_ephemeral, REAL_OUTPUT_INDEX, prepared);
+                    secret_ephemeral,
+                    REAL_OUTPUT_INDEX,
+                    prepared);
 
-                assert(await crypto.borromean_check_ring_signature(
-                    message_digest, key_image, public_keys, signature));
+                const pass = await crypto.borromean_check_ring_signature(
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    signature);
+
+                assert(pass === true);
             });
         });
 
         describe('CLSAG', async () => {
             it('Generate Ring Signature', async () => {
                 const signature = await crypto.clsag_generate_ring_signature(
-                    message_digest, secret_ephemeral, public_keys);
+                    message_digest,
+                    secret_ephemeral,
+                    public_keys);
 
-                assert(await crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature));
+                const pass = await crypto.clsag_check_ring_signature(
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    signature);
+
+                assert(pass === true);
             });
 
             it('Prepare Ring Signature', async () => {
                 const [prepared, h, mu_P] = await crypto.clsag_prepare_ring_signature(
-                    message_digest, key_image, public_keys, REAL_OUTPUT_INDEX);
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    REAL_OUTPUT_INDEX);
 
                 const signature = await crypto.clsag_complete_ring_signature(
-                    secret_ephemeral, REAL_OUTPUT_INDEX, prepared, h, mu_P);
+                    secret_ephemeral,
+                    REAL_OUTPUT_INDEX,
+                    prepared,
+                    h,
+                    mu_P);
 
-                assert(await crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature));
+                const pass = await crypto.clsag_check_ring_signature(
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    signature);
+
+                assert(pass === true);
             });
         });
 
         describe('CLSAG with Commitments', async () => {
-            let input_blinding: string, input_commitment: string, public_commitments: string[],
-                pseudo_blinding: string, psuedo_commitment: string;
-
-            before(async () => {
-                input_blinding = await crypto.random_scalar();
-
-                input_commitment = await crypto.generate_pedersen_commitment(input_blinding, 100);
-
-                public_commitments = await crypto.random_points(RING_SIZE);
-
-                public_commitments[REAL_OUTPUT_INDEX] = input_commitment;
-
-                const [blindings, commitments] =
-                    await crypto.generate_pseudo_commitments([100],
-                        await crypto.random_scalars(1));
-
-                pseudo_blinding = blindings[0];
-
-                psuedo_commitment = commitments[0];
-            });
-
             it('Generate Ring Signature', async () => {
                 const signature = await crypto.clsag_generate_ring_signature(
-                    message_digest, secret_ephemeral, public_keys,
-                    input_blinding, public_commitments, pseudo_blinding, psuedo_commitment);
+                    message_digest,
+                    secret_ephemeral,
+                    public_keys,
+                    input_blinding,
+                    public_commitments,
+                    pseudo_blinding,
+                    pseudo_commitment);
 
-                assert(await crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature,
-                    public_commitments));
+                const pass = await crypto.clsag_check_ring_signature(
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    signature,
+                    public_commitments);
+
+                assert(pass === true);
             });
 
             it('Prepare Ring Signature', async () => {
                 const [prepared, h, mu_P] = await crypto.clsag_prepare_ring_signature(
-                    message_digest, key_image, public_keys, REAL_OUTPUT_INDEX,
-                    input_blinding, public_commitments, pseudo_blinding, psuedo_commitment);
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    REAL_OUTPUT_INDEX,
+                    input_blinding,
+                    public_commitments,
+                    pseudo_blinding,
+                    pseudo_commitment);
 
                 const signature = await crypto.clsag_complete_ring_signature(
-                    secret_ephemeral, 3, prepared, h, mu_P);
+                    secret_ephemeral,
+                    3,
+                    prepared,
+                    h,
+                    mu_P);
 
-                assert(await crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature,
-                    public_commitments));
+                const pass = await crypto.clsag_check_ring_signature(
+                    message_digest,
+                    key_image,
+                    public_keys,
+                    signature,
+                    public_commitments);
+
+                assert(pass === true);
+            });
+        });
+
+        describe('Triptych', async () => {
+            it('Generate Ring Signature', async () => {
+                const signature = await crypto.triptych_generate_ring_signature(
+                    message_digest,
+                    secret_ephemeral,
+                    public_keys,
+                    input_blinding,
+                    public_commitments,
+                    pseudo_blinding,
+                    pseudo_commitment);
+
+                const pass = await crypto.triptych_check_ring_signature(
+                    message_digest,
+                    key_image2,
+                    public_keys,
+                    signature,
+                    public_commitments);
+
+                assert(pass === true);
+            });
+
+            it('Prepare Ring Signature', async () => {
+                const [prepared, xpow] = await crypto.triptych_prepare_ring_signature(
+                    message_digest,
+                    key_image2,
+                    public_keys,
+                    REAL_OUTPUT_INDEX,
+                    input_blinding,
+                    public_commitments,
+                    pseudo_blinding,
+                    pseudo_commitment);
+
+                const signature = await crypto.triptych_complete_ring_signature(
+                    secret_ephemeral,
+                    prepared,
+                    xpow);
+
+                const pass = await crypto.triptych_check_ring_signature(
+                    message_digest,
+                    key_image2,
+                    public_keys,
+                    signature,
+                    public_commitments);
+
+                assert(pass === true);
             });
         });
     });
@@ -588,73 +703,83 @@ describe('Cryptographic Tests', async () => {
         });
     });
 
-    describe('Bulletproofs', async () => {
-        let proof: crypto_bulletproof_t, commitments: string[];
+    describe('Range Proofs', async () => {
+        describe('Bulletproofs', async () => {
+            let proof: crypto_bulletproof_t, commitments: string[];
 
-        it('Prove', async () => {
-            [proof, commitments] = await crypto.bulletproofs_prove(
-                [10000], await crypto.random_scalars(1));
+            it('Prove', async () => {
+                [proof, commitments] = await crypto.bulletproofs_prove(
+                    [10000], await crypto.random_scalars(1));
 
-            assert(await crypto.bulletproofs_verify([proof], [commitments]));
+                assert(await crypto.bulletproofs_verify([proof], [commitments]));
+            });
+
+            it('Batched Verification', async () => {
+                const valid = await crypto.bulletproofs_verify(
+                    [proof, proof], [commitments, commitments]);
+
+                assert(valid);
+            });
+
+            it('Big Batch Verification', async () => {
+                const valid = await crypto.bulletproofs_verify(
+                    [proof, proof, proof, proof, proof, proof],
+                    [commitments, commitments, commitments, commitments, commitments, commitments]);
+
+                assert(valid);
+            });
+
+            it('Fail Verification', async () => {
+                const fake_commitments = await crypto.random_points(1);
+
+                assert(!await crypto.bulletproofs_verify([proof], [fake_commitments]));
+            });
         });
 
-        it('Batched Verification', async () => {
-            const valid = await crypto.bulletproofs_verify(
-                [proof, proof], [commitments, commitments]);
+        describe('Bulletproofs+', async () => {
+            let proof: crypto_bulletproof_plus_t, commitments: string[];
 
-            assert(valid);
-        });
+            it('Prove', async () => {
+                [proof, commitments] = await crypto.bulletproofsplus_prove(
+                    [10000], await crypto.random_scalars(1));
 
-        it('Big Batch Verification', async () => {
-            const valid = await crypto.bulletproofs_verify(
-                [proof, proof, proof, proof, proof, proof],
-                [commitments, commitments, commitments, commitments, commitments, commitments]);
+                const pass = await crypto.bulletproofsplus_verify([proof], [commitments]);
 
-            assert(valid);
-        });
+                assert(pass === true);
+            });
 
-        it('Fail Verification', async () => {
-            const fake_commitments = await crypto.random_points(1);
+            it('Batched Verification', async () => {
+                const pass = await crypto.bulletproofsplus_verify(
+                    [proof, proof], [commitments, commitments]);
 
-            assert(!await crypto.bulletproofs_verify([proof], [fake_commitments]));
-        });
-    });
+                assert(pass === true);
+            });
 
-    describe('Bulletproofs+', async () => {
-        let proof: crypto_bulletproof_plus_t, commitments: string[];
+            it('Big Batch Verification', async () => {
+                const pass = await crypto.bulletproofsplus_verify(
+                    [proof, proof, proof, proof, proof, proof],
+                    [commitments, commitments, commitments, commitments, commitments, commitments]);
 
-        it('Prove', async () => {
-            [proof, commitments] = await crypto.bulletproofsplus_prove(
-                [10000], await crypto.random_scalars(1));
+                assert(pass === true);
+            });
 
-            assert(await crypto.bulletproofsplus_verify([proof], [commitments]));
-        });
+            it('Fail Verification', async () => {
+                const fake_commitments = await crypto.random_points(1);
 
-        it('Batched Verification', async () => {
-            const valid = await crypto.bulletproofsplus_verify(
-                [proof, proof], [commitments, commitments]);
+                const pass = await crypto.bulletproofsplus_verify([proof], [fake_commitments]);
 
-            assert(valid);
-        });
-
-        it('Big Batch Verification', async () => {
-            const valid = await crypto.bulletproofsplus_verify(
-                [proof, proof, proof, proof, proof, proof],
-                [commitments, commitments, commitments, commitments, commitments, commitments]);
-
-            assert(valid);
-        });
-
-        it('Fail Verification', async () => {
-            const fake_commitments = await crypto.random_points(1);
-
-            assert(!await crypto.bulletproofsplus_verify([proof], [fake_commitments]));
+                assert(pass === false);
+            });
         });
     });
 
     describe('Multisig', async () => {
         let party1: Participant, party2: Participant, party3: Participant;
         const output_index = 3;
+
+        // commitment info
+        let input_blinding: string, input_commitment: string, public_commitments: string[],
+            pseudo_blinding: string, pseudo_commitment: string;
 
         const generate_party = async (): Promise<Participant> => {
             const wallet_seed = await crypto.random_hash();
@@ -725,7 +850,10 @@ describe('Cryptographic Tests', async () => {
             public_keys[output_index] = public_ephemeral;
 
             const [prepared, h, mu_P] = await crypto.clsag_prepare_ring_signature(
-                message_digest, key_image, public_keys, output_index);
+                message_digest,
+                key_image,
+                public_keys,
+                output_index);
 
             const keys: string[] = [];
 
@@ -735,10 +863,61 @@ describe('Cryptographic Tests', async () => {
                 keys.push(key);
             }
 
-            const signature = await crypto.clsag_complete_ring_signature(derivation_scalar, output_index,
-                prepared, h, mu_P, keys);
+            const signature = await crypto.clsag_complete_ring_signature(
+                derivation_scalar,
+                output_index,
+                prepared,
+                h,
+                mu_P,
+                keys);
 
-            return crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature);
+            return crypto.clsag_check_ring_signature(
+                message_digest,
+                key_image,
+                public_keys,
+                signature);
+        };
+
+        const generate_clsag_com = async (derivation_scalar: string, public_ephemeral: string, key_image: string,
+            ...parties: Participant[]): Promise<boolean> => {
+            const message_digest = await crypto.random_scalar();
+
+            const public_keys = await crypto.random_points(4);
+
+            public_keys[output_index] = public_ephemeral;
+
+            const [prepared, h, mu_P] = await crypto.clsag_prepare_ring_signature(
+                message_digest,
+                key_image,
+                public_keys,
+                output_index,
+                input_blinding,
+                public_commitments,
+                pseudo_blinding,
+                pseudo_commitment);
+
+            const keys: string[] = [];
+
+            for (const party of parties) {
+                const key = await crypto.clsag_generate_partial_signing_scalar(mu_P, party.spend.secret);
+
+                keys.push(key);
+            }
+
+            const signature = await crypto.clsag_complete_ring_signature(
+                derivation_scalar,
+                output_index,
+                prepared,
+                h,
+                mu_P,
+                keys);
+
+            return crypto.clsag_check_ring_signature(
+                message_digest,
+                key_image,
+                public_keys,
+                signature,
+                public_commitments);
         };
 
         const generate_key_image = async (derivation_scalar: string, public_ephemeral: string,
@@ -763,6 +942,22 @@ describe('Cryptographic Tests', async () => {
             party2 = await generate_party();
 
             party3 = await generate_party();
+
+            input_blinding = await crypto.random_scalar();
+
+            input_commitment = await crypto.generate_pedersen_commitment(input_blinding, 100);
+
+            public_commitments = await crypto.random_points(4);
+
+            public_commitments[output_index] = input_commitment;
+
+            const [blindings, commitments] =
+                await crypto.generate_pseudo_commitments([100],
+                    await crypto.random_scalars(1));
+
+            pseudo_blinding = blindings[0];
+
+            pseudo_commitment = commitments[0];
         });
 
         describe('N/N', async () => {
@@ -873,6 +1068,36 @@ describe('Cryptographic Tests', async () => {
                 });
             });
 
+            describe('Generate v2 Key Image from Partial Key Images', async () => {
+                it('Fail #1', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #2', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #3', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #1 & #2', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #1 & #3', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #2 & #3', async function () {
+                    return this.skip();
+                });
+
+                it('Succeed #1 & #2 & #3', async function () {
+                    return this.skip();
+                });
+            });
+
             describe('Borromean Ring Signature from Partial Signing Keys', async () => {
                 it('Fail #1', async () => {
                     assert(!await generate_borromean(derivation_scalar, public_ephemeral, key_image,
@@ -944,6 +1169,73 @@ describe('Cryptographic Tests', async () => {
                 it('Succeed #1 & #2 & #3', async () => {
                     assert(await generate_clsag(derivation_scalar, public_ephemeral, key_image,
                         party1, party2, party3));
+                });
+            });
+
+            describe('CLSAG Ring Signature w/ Commitments from Partial Signing Keys', async () => {
+                it('Fail #1', async () => {
+                    assert(!await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party1));
+                });
+
+                it('Fail #2', async () => {
+                    assert(!await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party2));
+                });
+
+                it('Fail #3', async () => {
+                    assert(!await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party3));
+                });
+
+                it('Fail #1 & #2', async () => {
+                    assert(!await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party1, party2));
+                });
+
+                it('Fail #1 & #3', async () => {
+                    assert(!await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party1, party3));
+                });
+
+                it('Fail #2 & #3', async () => {
+                    assert(!await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party1, party2));
+                });
+
+                it('Succeed #1 & #2 & #3', async () => {
+                    assert(await generate_clsag_com(derivation_scalar, public_ephemeral, key_image,
+                        party1, party2, party3));
+                });
+            });
+
+            describe('Triptych Ring Signature from Partial Signing Keys', async () => {
+                it('Fail #1', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #2', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #3', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #1 & #2', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #1 & #3', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #2 & #3', async function () {
+                    return this.skip();
+                });
+
+                it('Succeed #1 & #2 & #3', async function () {
+                    return this.skip();
                 });
             });
         });
@@ -1215,6 +1507,36 @@ describe('Cryptographic Tests', async () => {
 
                 it('Succeed #1 & #2 & #3', async () => {
                     assert(await execute_clsag(party1, party2, party3));
+                });
+            });
+
+            describe('Triptych Ring Signature from Partial Signing Keys', async () => {
+                it('Fail #1', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #2', async function () {
+                    return this.skip();
+                });
+
+                it('Fail #3', async function () {
+                    return this.skip();
+                });
+
+                it('Succeed #1 & #2', async function () {
+                    return this.skip();
+                });
+
+                it('Succeed #1 & #3', async function () {
+                    return this.skip();
+                });
+
+                it('Succeed #2 & #3', async function () {
+                    return this.skip();
+                });
+
+                it('Succeed #1 & #2 & #3', async function () {
+                    return this.skip();
                 });
             });
         });

@@ -30,6 +30,7 @@ import {
     crypto_bulletproof_plus_t,
     crypto_borromean_signature_t,
     crypto_clsag_signature_t,
+    crypto_triptych_signature_t,
     IConfig,
     LibraryType,
     LibraryTypeName,
@@ -43,6 +44,7 @@ export {
     crypto_bulletproof_plus_t,
     crypto_borromean_signature_t,
     crypto_clsag_signature_t,
+    crypto_triptych_signature_t,
     IConfig,
     LibraryType
 };
@@ -100,6 +102,13 @@ export default class Crypto {
     }
 
     /**
+     * Retrieves the current user configuration
+     */
+    public get userConfig (): IConfig {
+        return userConfig;
+    }
+
+    /**
      * Returns a human readable form of the underlying cryptographic module name
      */
     public static get library_name (): string {
@@ -118,13 +127,6 @@ export default class Crypto {
      */
     public static get is_native (): boolean {
         return runtime_configuration.type === LibraryType.NODEADDON;
-    }
-
-    /**
-     * Retrieves the current user configuration
-     */
-    public get userConfig (): IConfig {
-        return userConfig;
     }
 
     /**
@@ -381,8 +383,11 @@ export default class Crypto {
      * @param real_output_index
      */
     public async borromean_prepare_ring_signature (
-        message_digest: string, key_image: string,
-        public_keys: string[], real_output_index: number): Promise<crypto_borromean_signature_t> {
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        real_output_index: number
+    ): Promise<crypto_borromean_signature_t> {
         const result = await execute('borromean_prepare_ring_signature', message_digest, key_image,
             public_keys, real_output_index);
 
@@ -395,7 +400,9 @@ export default class Crypto {
      * @param blinding_factors
      */
     public async bulletproofs_prove (
-        amounts: number[], blinding_factors: string[]): Promise<[crypto_bulletproof_t, string[]]> {
+        amounts: number[],
+        blinding_factors: string[]
+    ): Promise<[crypto_bulletproof_t, string[]]> {
         const [proof, commitments] = await execute('bulletproofs_prove', amounts, blinding_factors);
 
         return [JSON.parse(proof), commitments];
@@ -407,7 +414,9 @@ export default class Crypto {
      * @param commitments
      */
     public async bulletproofs_verify (
-        proofs: crypto_bulletproof_t[], commitments: string[][]): Promise<boolean> {
+        proofs: crypto_bulletproof_t[],
+        commitments: string[][]
+    ): Promise<boolean> {
         const proofs_array = JSON.stringify(proofs);
 
         return execute('bulletproofs_verify', proofs_array, commitments);
@@ -419,7 +428,9 @@ export default class Crypto {
      * @param blinding_factors
      */
     public async bulletproofsplus_prove (
-        amounts: number[], blinding_factors: string[]): Promise<[crypto_bulletproof_plus_t, string[]]> {
+        amounts: number[],
+        blinding_factors: string[]
+    ): Promise<[crypto_bulletproof_plus_t, string[]]> {
         const [proof, commitments] = await execute('bulletproofsplus_prove', amounts, blinding_factors);
 
         return [JSON.parse(proof), commitments];
@@ -431,7 +442,9 @@ export default class Crypto {
      * @param commitments
      */
     public async bulletproofsplus_verify (
-        proofs: crypto_bulletproof_plus_t[], commitments: string[][]): Promise<boolean> {
+        proofs: crypto_bulletproof_plus_t[],
+        commitments: string[][]
+    ): Promise<boolean> {
         const proofs_array = JSON.stringify(proofs);
 
         return execute('bulletproofsplus_verify', proofs_array, commitments);
@@ -444,10 +457,14 @@ export default class Crypto {
      * @param public_keys
      * @param signature
      * @param commitments
-     * @param pseudo_commitment
+     * @param commitments
      */
-    public async clsag_check_ring_signature (message_digest: string, key_image: string, public_keys: string[],
-        signature: crypto_clsag_signature_t, commitments: string[] = []
+    public async clsag_check_ring_signature (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        signature: crypto_clsag_signature_t,
+        commitments: string[] = []
     ): Promise<boolean> {
         const sig = JSON.stringify(signature);
 
@@ -464,9 +481,14 @@ export default class Crypto {
      * @param mu_P
      * @param partial_signing_scalars
      */
-    public async clsag_complete_ring_signature (signing_scalar: string, real_output_index: number,
-        signature: crypto_clsag_signature_t, h: string[],
-        mu_P: string, partial_signing_scalars: string[] = []): Promise<crypto_clsag_signature_t> {
+    public async clsag_complete_ring_signature (
+        signing_scalar: string,
+        real_output_index: number,
+        signature: crypto_clsag_signature_t,
+        h: string[],
+        mu_P: string,
+        partial_signing_scalars: string[] = []
+    ): Promise<crypto_clsag_signature_t> {
         const sig = JSON.stringify(signature);
 
         const result = await execute('clsag_complete_ring_signature',
@@ -481,7 +503,9 @@ export default class Crypto {
      * @param secret_spend_key
      */
     public async clsag_generate_partial_signing_scalar (
-        mu_P: string, secret_spend_key: string): Promise<string> {
+        mu_P: string,
+        secret_spend_key: string
+    ): Promise<string> {
         return execute('clsag_generate_partial_signing_scalar', mu_P, secret_spend_key);
     }
 
@@ -495,10 +519,15 @@ export default class Crypto {
      * @param pseudo_blinding_factor
      * @param pseudo_commitment
      */
-    public async clsag_generate_ring_signature (message_digest: string, secret_ephemeral: string,
-        public_keys: string[], input_blinding_factor: string = '',
-        public_commitments: string[] = [], pseudo_blinding_factor: string = '',
-        pseudo_commitment: string = ''): Promise<crypto_clsag_signature_t> {
+    public async clsag_generate_ring_signature (
+        message_digest: string,
+        secret_ephemeral: string,
+        public_keys: string[],
+        input_blinding_factor = '',
+        public_commitments: string[] = [],
+        pseudo_blinding_factor = '',
+        pseudo_commitment = ''
+    ): Promise<crypto_clsag_signature_t> {
         const result = await execute('clsag_generate_ring_signature',
             message_digest,
             secret_ephemeral,
@@ -522,10 +551,15 @@ export default class Crypto {
      * @param pseudo_blinding_factor
      * @param pseudo_commitment
      */
-    public async clsag_prepare_ring_signature (message_digest: string, key_image: string, public_keys: string[],
+    public async clsag_prepare_ring_signature (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
         real_output_index: number,
-        input_blinding_factor: string = '', public_commitments: string[] = [],
-        pseudo_blinding_factor: string = '', pseudo_commitment: string = ''
+        input_blinding_factor = '',
+        public_commitments: string[] = [],
+        pseudo_blinding_factor = '',
+        pseudo_commitment = ''
     ): Promise<[crypto_clsag_signature_t, string[], string]> {
         const [signature, h, mu_P] = await execute('clsag_prepare_ring_signature',
             message_digest,
@@ -541,6 +575,128 @@ export default class Crypto {
     }
 
     /**
+     * Checks the Triptych proof presented
+     * @param message_digest
+     * @param key_image
+     * @param public_keys
+     * @param signature
+     * @param commitments
+     */
+    public async triptych_check_ring_signature (message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        signature: crypto_triptych_signature_t,
+        commitments: string[]
+    ): Promise<boolean> {
+        const sig = JSON.stringify(signature);
+
+        return execute('triptych_check_ring_signature', message_digest, key_image, public_keys, sig, commitments);
+    }
+
+    /**
+     * Completes the prepared Triptych proof
+     * @param signing_scalar
+     * @param signature
+     * @param xpow
+     * @param partial_signing_scalars
+     */
+    public async triptych_complete_ring_signature (
+        signing_scalar: string,
+        signature: crypto_triptych_signature_t,
+        xpow: string,
+        partial_signing_scalars: string[] = []
+    ): Promise<crypto_triptych_signature_t> {
+        const sig = JSON.stringify(signature);
+
+        const result = await execute('triptych_complete_ring_signature',
+            signing_scalar,
+            sig,
+            xpow,
+            partial_signing_scalars);
+
+        return JSON.parse(result);
+    }
+
+    /**
+     * Generates a partial signing scalar that is a factor of a full signing scalar and typically
+     * used by multisig wallets -- input data is supplied from prepare_ring_signature
+     * @param spend_secret_key
+     * @param xpow
+     */
+    public async triptych_generate_partial_signing_scalar (
+        spend_secret_key: string,
+        xpow: string
+    ): Promise<string> {
+        return execute('triptych_generate_partial_signing_scalar', spend_secret_key, xpow);
+    }
+
+    /**
+     * Generates a Triptych proof using the secrets provided
+     * @param message_digest
+     * @param secret_ephemeral
+     * @param public_keys
+     * @param input_blinding_factor
+     * @param public_commitments
+     * @param pseudo_blinding_factor
+     * @param pseudo_commitment
+     */
+    public async triptych_generate_ring_signature (
+        message_digest: string,
+        secret_ephemeral: string,
+        public_keys: string[],
+        input_blinding_factor: string,
+        public_commitments: string[],
+        pseudo_blinding_factor: string,
+        pseudo_commitment: string
+    ): Promise<crypto_triptych_signature_t> {
+        const result = await execute('triptych_generate_ring_signature',
+            message_digest,
+            secret_ephemeral,
+            public_keys,
+            input_blinding_factor,
+            public_commitments,
+            pseudo_blinding_factor,
+            pseudo_commitment);
+
+        return JSON.parse(result);
+    }
+
+    /**
+     * Prepares a Triptych proof using the primitive values provided
+     * Must be completed via complete_ring_signature before it will validate
+     * @param message_digest
+     * @param key_image
+     * @param public_keys
+     * @param real_output_index
+     * @param input_blinding_factor
+     * @param public_commitments
+     * @param pseudo_blinding_factor
+     * @param pseudo_commitment
+     */
+    public async triptych_prepare_ring_signature (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        real_output_index: number,
+        input_blinding_factor: string,
+        public_commitments: string[],
+        pseudo_blinding_factor: string,
+        pseudo_commitment: string
+    ): Promise<[crypto_triptych_signature_t, string]> {
+        const [signature, xpow] = await execute('triptych_prepare_ring_signature',
+            message_digest,
+            key_image,
+            public_keys,
+            real_output_index,
+            input_blinding_factor,
+            public_commitments,
+            pseudo_blinding_factor,
+            pseudo_commitment);
+
+        return [JSON.parse(signature), xpow];
+    }
+
+    /**
      * Calculates the H() of the provided value
      * @param input
      * @param iterations
@@ -548,7 +704,11 @@ export default class Crypto {
      * @param threads
      */
     public async argon2d (
-        input: string, iterations: number = 1, memory: number = 256, threads: number = 1): Promise<string> {
+        input: string,
+        iterations = 1,
+        memory = 256,
+        threads = 1
+    ): Promise<string> {
         return execute('argon2d', input, iterations, memory, threads);
     }
 
@@ -560,7 +720,11 @@ export default class Crypto {
      * @param threads
      */
     public async argon2i (
-        input: string, iterations: number = 1, memory: number = 256, threads: number = 1): Promise<string> {
+        input: string,
+        iterations = 1,
+        memory = 256,
+        threads = 1
+    ): Promise<string> {
         return execute('argon2i', input, iterations, memory, threads);
     }
 
@@ -572,7 +736,11 @@ export default class Crypto {
      * @param threads
      */
     public async argon2id (
-        input: string, iterations: number = 1, memory: number = 256, threads: number = 1): Promise<string> {
+        input: string,
+        iterations = 1,
+        memory = 256,
+        threads = 1
+    ): Promise<string> {
         return execute('argon2id', input, iterations, memory, threads);
     }
 
@@ -589,7 +757,10 @@ export default class Crypto {
      * @param input
      * @param iterations
      */
-    public async sha3_slow_hash (input: string, iterations: number = 0): Promise<string> {
+    public async sha3_slow_hash (
+        input: string,
+        iterations = 0
+    ): Promise<string> {
         return execute('sha3_slow_hash', input, iterations);
     }
 
@@ -609,7 +780,11 @@ export default class Crypto {
      * @param path
      */
     public async root_hash_from_branch (
-        branches: string[], depth: number, leaf: string, path: number): Promise<string> {
+        branches: string[],
+        depth: number,
+        leaf: string,
+        path: number
+    ): Promise<string> {
         return execute('root_hash_from_branch', branches, depth, leaf, path);
     }
 
@@ -696,7 +871,9 @@ export default class Crypto {
      * @param our_secret_key
      */
     public async generate_multisig_secret_key (
-        their_public_key: string, our_secret_key: string): Promise<string> {
+        their_public_key: string,
+        our_secret_key: string
+    ): Promise<string> {
         return execute('generate_multisig_secret_key', their_public_key, our_secret_key);
     }
 
@@ -706,7 +883,9 @@ export default class Crypto {
      * @param our_secret_key
      */
     public async generate_multisig_secret_keys (
-        their_public_keys: string[], our_secret_key: string): Promise<string[]> {
+        their_public_keys: string[],
+        our_secret_key: string
+    ): Promise<string[]> {
         return execute('generate_multisig_secret_keys', their_public_keys, our_secret_key);
     }
 
@@ -731,7 +910,10 @@ export default class Crypto {
      * @param participants
      * @param threshold
      */
-    public async rounds_required (participants: number, threshold: number): Promise<number> {
+    public async rounds_required (
+        participants: number,
+        threshold: number
+    ): Promise<number> {
         return execute('rounds_required', participants, threshold);
     }
 
@@ -743,7 +925,10 @@ export default class Crypto {
      * @param transaction_fee
      */
     public async check_commitments_parity (
-        pseudo_commitments: string[], output_commitments: string[], transaction_fee: number): Promise<boolean> {
+        pseudo_commitments: string[],
+        output_commitments: string[],
+        transaction_fee: number
+    ): Promise<boolean> {
         return execute('check_commitments_parity', pseudo_commitments, output_commitments, transaction_fee);
     }
 
@@ -768,7 +953,10 @@ export default class Crypto {
      * @param blinding_factor
      * @param amount
      */
-    public async generate_pedersen_commitment (blinding_factor: string, amount: number): Promise<string> {
+    public async generate_pedersen_commitment (
+        blinding_factor: string,
+        amount: number
+    ): Promise<string> {
         return execute('generate_pedersen_commitment', blinding_factor, amount);
     }
 
@@ -778,7 +966,9 @@ export default class Crypto {
      * @param output_blinding_factors
      */
     public async generate_pseudo_commitments (
-        input_amounts: number[], output_blinding_factors: string[]): Promise<[string[], string[]]> {
+        input_amounts: number[],
+        output_blinding_factors: string[]
+    ): Promise<[string[], string[]]> {
         return execute('generate_pseudo_commitments', input_amounts, output_blinding_factors);
     }
 
@@ -796,7 +986,9 @@ export default class Crypto {
      * @param amount
      */
     public async toggle_masked_amount (
-        amount_mask: string, amount: string | number | BigInteger.BigInteger): Promise<BigInteger.BigInteger> {
+        amount_mask: string,
+        amount: string | number | BigInteger.BigInteger
+    ): Promise<BigInteger.BigInteger> {
         if (typeof amount !== 'string') {
             const writer = new Writer();
 
@@ -828,7 +1020,10 @@ export default class Crypto {
      * @param signature
      */
     public async check_signature (
-        message_digest: string, public_key: string, signature: string): Promise<boolean> {
+        message_digest: string,
+        public_key: string,
+        signature: string
+    ): Promise<boolean> {
         return execute('check_signature', message_digest, public_key, signature);
     }
 
@@ -839,7 +1034,9 @@ export default class Crypto {
      * @param partial_signing_scalars
      */
     public async complete_signature (
-        signing_scalar: string | undefined, signature: string, partial_signing_scalars: string[] = []
+        signing_scalar: string | undefined,
+        signature: string,
+        partial_signing_scalars: string[] = []
     ): Promise<string> {
         if (!signing_scalar) {
             signing_scalar = ''.padStart(64, '0');
@@ -853,7 +1050,10 @@ export default class Crypto {
      * @param signature
      * @param secret_spend_key
      */
-    public generate_partial_signing_scalar (signature: string, secret_spend_key: string): Promise<string> {
+    public generate_partial_signing_scalar (
+        signature: string,
+        secret_spend_key: string
+    ): Promise<string> {
         return execute('generate_partial_signing_scalar', signature, secret_spend_key);
     }
 
@@ -862,7 +1062,10 @@ export default class Crypto {
      * @param message_digest
      * @param secret_key
      */
-    public generate_signature (message_digest: string, secret_key: string): Promise<string> {
+    public generate_signature (
+        message_digest: string,
+        secret_key: string
+    ): Promise<string> {
         return execute('generate_signature', message_digest, secret_key);
     }
 
@@ -871,7 +1074,10 @@ export default class Crypto {
      * @param message_digest
      * @param public_key
      */
-    public prepare_signature (message_digest: string, public_key: string): Promise<string> {
+    public prepare_signature (
+        message_digest: string,
+        public_key: string
+    ): Promise<string> {
         return execute('prepare_signature', message_digest, public_key);
     }
 
@@ -937,7 +1143,10 @@ export default class Crypto {
      * @param derivation
      * @param output_index
      */
-    public async derivation_to_scalar (derivation: string, output_index: number): Promise<string> {
+    public async derivation_to_scalar (
+        derivation: string,
+        output_index: number
+    ): Promise<string> {
         return execute('derivation_to_scalar', derivation, output_index);
     }
 
@@ -946,7 +1155,10 @@ export default class Crypto {
      * @param derivation_scalar
      * @param public_key
      */
-    public async derive_public_key (derivation_scalar: string, public_key: string): Promise<string> {
+    public async derive_public_key (
+        derivation_scalar: string,
+        public_key: string
+    ): Promise<string> {
         return execute('derive_public_key', derivation_scalar, public_key);
     }
 
@@ -955,7 +1167,10 @@ export default class Crypto {
      * @param derivation_scalar
      * @param secret_key
      */
-    public async derive_secret_key (derivation_scalar: string, secret_key: string): Promise<string> {
+    public async derive_secret_key (
+        derivation_scalar: string,
+        secret_key: string
+    ): Promise<string> {
         return execute('derive_secret_key', derivation_scalar, secret_key);
     }
 
@@ -964,7 +1179,10 @@ export default class Crypto {
      * @param public_key
      * @param secret_key
      */
-    public async generate_key_derivation (public_key: string, secret_key: string): Promise<string> {
+    public async generate_key_derivation (
+        public_key: string,
+        secret_key: string
+    ): Promise<string> {
         return execute('generate_key_derivation', public_key, secret_key);
     }
 
@@ -975,7 +1193,10 @@ export default class Crypto {
      * @param partial_key_images
      */
     public async generate_key_image (
-        public_emphemeral: string, secret_ephemeral: string, partial_key_images: string[] = []): Promise<string> {
+        public_emphemeral: string,
+        secret_ephemeral: string,
+        partial_key_images: string[] = []
+    ): Promise<string> {
         return execute('generate_key_image', public_emphemeral, secret_ephemeral, partial_key_images);
     }
 
@@ -1023,7 +1244,9 @@ export default class Crypto {
      * @param subwallet_index
      */
     public async generate_wallet_spend_keys (
-        wallet_seed: string, subwallet_index: number = 0): Promise<[string, string]> {
+        wallet_seed: string,
+        subwallet_index = 0
+    ): Promise<[string, string]> {
         return execute('generate_wallet_spend_keys', wallet_seed, subwallet_index);
     }
 
@@ -1074,7 +1297,7 @@ export default class Crypto {
      * Generates an array of random hashes
      * @param count
      */
-    public async random_hashes (count: number = 1): Promise<string[]> {
+    public async random_hashes (count = 1): Promise<string[]> {
         return execute('random_hashes', count);
     }
 
@@ -1089,7 +1312,7 @@ export default class Crypto {
      * Generates an array of random points on the curve
      * @param count
      */
-    public async random_points (count: number = 1): Promise<string[]> {
+    public async random_points (count = 1): Promise<string[]> {
         return execute('random_points', count);
     }
 
@@ -1104,7 +1327,7 @@ export default class Crypto {
      * Generates an array of random scalar values
      * @param count
      */
-    public async random_scalars (count: number = 1): Promise<string[]> {
+    public async random_scalars (count = 1): Promise<string[]> {
         return execute('random_scalars', count);
     }
 
@@ -1135,7 +1358,10 @@ export default class Crypto {
      * @param public_ephemeral
      */
     public async underive_public_key (
-        derivation: string, output_index: number, public_ephemeral: string): Promise<string> {
+        derivation: string,
+        output_index: number,
+        public_ephemeral: string
+    ): Promise<string> {
         return execute('underive_public_key', derivation, output_index, public_ephemeral);
     }
 }

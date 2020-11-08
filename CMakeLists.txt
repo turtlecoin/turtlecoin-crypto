@@ -61,7 +61,7 @@ endif()
 
 option(DEBUG_PRINT "Enable debug print statements" OFF)
 if (DEFINED ENV{DEBUG_PRINT})
-    set(BUILD_DEBUG $ENV{DEBUG_PRINT})
+    set(DEBUG_PRINT $ENV{DEBUG_PRINT})
 endif()
 if(DEBUG_PRINT)
     add_compile_definitions(DEBUG_PRINT=1)
@@ -122,6 +122,7 @@ set(SOURCES
     src/ringct.cpp
     src/ring_signature_borromean.cpp
     src/ring_signature_clsag.cpp
+    src/ring_signature_triptych.cpp
     src/signature.cpp
     src/string_tools.cpp
 )

@@ -403,7 +403,7 @@ int main()
 
     crypto_secret_key_t secret_ephemeral;
 
-    crypto_key_image_t key_image;
+    crypto_key_image_t key_image, key_image2;
 
     {
         std::cout << std::endl << "Stealth Checks..." << std::endl;
@@ -475,6 +475,17 @@ int main()
         }
 
         std::cout << "generate_key_image: " << key_image << std::endl;
+
+        key_image2 = Crypto::generate_key_image_v2(secret_ephemeral);
+
+        if (!key_image2.check_subgroup())
+        {
+            std::cout << "Invalid Key Image!" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << "generate_key_image_v2: " << key_image2 << std::endl;
     }
 
     // Single Signature
@@ -619,6 +630,60 @@ int main()
         }
 
         std::cout << "CLSAG::check_ring_signature: Passed!" << std::endl;
+    }
+
+    // Triptych
+    {
+        std::cout << std::endl << std::endl << "Triptych Ring Signature" << std::endl;
+
+        auto public_keys = Crypto::random_points(RING_SIZE);
+
+        public_keys[RING_SIZE / 2] = public_ephemeral;
+
+        const auto input_blinding = Crypto::random_scalar();
+
+        const auto input_commitment = Crypto::RingCT::generate_pedersen_commitment(input_blinding, 100);
+
+        std::vector<crypto_pedersen_commitment_t> public_commitments = Crypto::random_points(RING_SIZE);
+
+        public_commitments[RING_SIZE / 2] = input_commitment;
+
+        const auto [ps_blindings, ps_commitments] =
+            Crypto::RingCT::generate_pseudo_commitments({100}, Crypto::random_scalars(1));
+
+        const auto [gen_sucess, signature] = Crypto::RingSignature::Triptych::generate_ring_signature(
+            SHA3_HASH,
+            secret_ephemeral,
+            public_keys,
+            input_blinding,
+            public_commitments,
+            ps_blindings[0],
+            ps_commitments[0]);
+
+        if (!gen_sucess)
+        {
+            std::cout << "Triptych::generate_ring_signature: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << "Triptych::generate_ring_signature: Passed!" << std::endl;
+
+        std::cout << signature << std::endl;
+
+        std::cout << "Encoded Size: " << signature.size() << std::endl
+                  << signature.to_string() << std::endl
+                  << std::endl;
+
+        if (!Crypto::RingSignature::Triptych::check_ring_signature(
+                SHA3_HASH, key_image2, public_keys, signature, public_commitments))
+        {
+            std::cout << "Triptych::check_ring_signature: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << "Triptych::check_ring_signature: Passed!" << std::endl;
     }
 
     // RingCT Basics
@@ -962,6 +1027,59 @@ int main()
                         SHA3_HASH, image, public_keys, signature, public_commitments);
                 },
                 "Crypto::RingSignature::CLSAG::check_ring_signature[commitments]",
+                100);
+        }
+
+        // Triptych
+        {
+            auto public_keys = Crypto::random_points(RING_SIZE);
+
+            public_keys[RING_SIZE / 2] = public_ephemeral;
+
+            crypto_triptych_signature_t signature;
+
+            const auto image = Crypto::generate_key_image_v2(secret_ephemeral);
+
+            const auto input_blinding = Crypto::random_scalar();
+
+            const auto input_commitment = Crypto::RingCT::generate_pedersen_commitment(input_blinding, 100);
+
+            std::vector<crypto_pedersen_commitment_t> public_commitments = Crypto::random_points(RING_SIZE);
+
+            public_commitments[RING_SIZE / 2] = input_commitment;
+
+            const auto [ps_blindings, ps_commitments] =
+                Crypto::RingCT::generate_pseudo_commitments({100}, Crypto::random_scalars(1));
+
+            std::cout << std::endl;
+
+            benchmark(
+                [&public_keys,
+                 &secret_ephemeral,
+                 &signature,
+                 &input_blinding,
+                 &public_commitments,
+                 &ps_blindings = ps_blindings,
+                 &ps_commitments = ps_commitments]() {
+                    const auto [success, sig] = Crypto::RingSignature::Triptych::generate_ring_signature(
+                        SHA3_HASH,
+                        secret_ephemeral,
+                        public_keys,
+                        input_blinding,
+                        public_commitments,
+                        ps_blindings[0],
+                        ps_commitments[0]);
+                    signature = sig;
+                },
+                "Crypto::RingSignature::Triptych::generate_ring_signature",
+                100);
+
+            benchmark(
+                [&public_keys, &image, &signature, &public_commitments, &ps_commitments = ps_commitments]() {
+                    Crypto::RingSignature::Triptych::check_ring_signature(
+                        SHA3_HASH, image, public_keys, signature, public_commitments);
+                },
+                "Crypto::RingSignature::Triptych::check_ring_signature",
                 100);
         }
 

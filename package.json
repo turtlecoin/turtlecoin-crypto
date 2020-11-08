@@ -8,6 +8,7 @@
     "docs": "./node_modules/.bin/typedoc && touch docs/.nojekyll && git restore docs/CNAME",
     "clean-addon": "./node_modules/.bin/cmake-js clean",
     "build-node": "npm run clean-addon && env BUILD_NODEJS=1 ./node_modules/.bin/cmake-js compile",
+    "build-node-debug": "npm run clean-addon && env BUILD_NODEJS=1 DEBUG_PRINT=1 ./node_modules/.bin/cmake-js compile",
     "build-ts": "./node_modules/.bin/tsc",
     "build-js": "./scripts/build_js.sh",
     "conditional-build-js": "test -f .gitsource && yarn build-js || echo \"SKIP: NOT GIT SOURCE\"",

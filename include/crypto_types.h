@@ -207,8 +207,10 @@ struct crypto_point_t
 
             return check_value.check();
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return false;
         }
     }
@@ -901,8 +903,10 @@ struct crypto_scalar_t
 
             return check_value.check();
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return false;
         }
     }

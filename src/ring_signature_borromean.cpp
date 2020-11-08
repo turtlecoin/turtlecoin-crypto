@@ -119,13 +119,22 @@ namespace Crypto::RingSignature::Borromean
 
                 SCALAR_OR_THROW(sig.LR.R);
             }
+
+            for (const auto &partial_signing_scalar : partial_signing_scalars)
+            {
+                SCALAR_OR_THROW(partial_signing_scalar);
+            }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return {false, {}};
         }
 
         std::vector<crypto_signature_t> finalized_signature(signature);
+
+        const auto partial_scalar = generate_partial_signing_scalar(real_output_index, signature, signing_scalar);
 
         /**
          * If we have the full signing scalar (secret_ephemeral) then we can complete the signature quickly
@@ -133,26 +142,10 @@ namespace Crypto::RingSignature::Borromean
         if (partial_signing_scalars.empty())
         {
             // s[i].R = [alpha_scalar - (p * sL)] mod l
-            finalized_signature[real_output_index].LR.R -= (signing_scalar * signature[real_output_index].LR.L);
-
-            return {true, finalized_signature};
+            finalized_signature[real_output_index].LR.R -= partial_scalar;
         }
         else /** Otherwise, we're using partial signing scalars (multisig) */
         {
-            try
-            {
-                for (const auto &partial_signing_scalar : partial_signing_scalars)
-                {
-                    SCALAR_OR_THROW(partial_signing_scalar);
-                }
-            }
-            catch (...)
-            {
-                return {false, {}};
-            }
-
-            const auto partial_scalar = generate_partial_signing_scalar(real_output_index, signature, signing_scalar);
-
             // create a copy of our partial signing scalars for computation and handling
             crypto_scalar_vector_t keys(partial_signing_scalars);
 
@@ -179,9 +172,9 @@ namespace Crypto::RingSignature::Borromean
              */
             // s[i].R = [alpha_scalar - p]
             finalized_signature[real_output_index].LR.R -= derived_scalar;
-
-            return {true, crypto_borromean_signature_t(finalized_signature, borromean_signature.offsets)};
         }
+
+        return {true, crypto_borromean_signature_t(finalized_signature, borromean_signature.offsets)};
     }
 
     crypto_scalar_t generate_partial_signing_scalar(
@@ -218,8 +211,10 @@ namespace Crypto::RingSignature::Borromean
         {
             SCALAR_OR_THROW(secret_ephemeral);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return {false, {}};
         }
 

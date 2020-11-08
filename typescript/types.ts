@@ -110,6 +110,22 @@ export interface crypto_clsag_signature_t {
     offsets?: number[];
 }
 
+export interface crypto_triptych_signature_t {
+    commitment_image: string;
+    pseudo_commitment: string;
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+    X: string[];
+    Y: string[];
+    f: string[][];
+    zA: string;
+    zC: string;
+    z: string;
+    offsets?: number[];
+}
+
 /**
  * Defines all of the user overrideable crypto methods
  */
@@ -124,102 +140,263 @@ export interface IConfig {
     cn_base58_decode?: (base58: string) => Promise<string>;
     cn_base58_decode_check?: (base58: string) => Promise<string>;
 
-    borromean_check_ring_signature?:
-        (message_digest: string, key_image: string, public_keys: string[],
-         signature: crypto_borromean_signature_t) => Promise<boolean>;
-    borromean_complete_ring_signature?:
-        (signing_scalar: string, real_output_index: number, signature: crypto_borromean_signature_t,
-         partial_signing_scalars: string[]) => Promise<crypto_borromean_signature_t>;
-    borromean_generate_partial_signing_scalar?:
-        (real_output_index: number, signature: crypto_borromean_signature_t, secret_spend_key: string
+    borromean_check_ring_signature?: (
+        message_digest: string,
+         key_image: string,
+        public_keys: string[],
+         signature: crypto_borromean_signature_t
+    ) => Promise<boolean>;
+    borromean_complete_ring_signature?: (
+        signing_scalar: string,
+        real_output_index: number,
+        signature: crypto_borromean_signature_t,
+         partial_signing_scalars: string[]
+    ) => Promise<crypto_borromean_signature_t>;
+    borromean_generate_partial_signing_scalar?: (
+        real_output_index: number,
+        signature: crypto_borromean_signature_t,
+        secret_spend_key: string
         ) => Promise<string>;
-    borromean_generate_ring_signature?:
-        (message_digest: string, secret_ephemeral: string, public_keys: string[]
+    borromean_generate_ring_signature?: (
+        message_digest: string,
+        secret_ephemeral: string,
+        public_keys: string[]
         ) => Promise<crypto_borromean_signature_t>;
-    borromean_prepare_ring_signature?:
-        (message_digest: string, key_image: string, public_keys: string[], real_output_index: number
+    borromean_prepare_ring_signature?: (
+            message_digest: string,
+            key_image: string,
+            public_keys: string[],
+            real_output_index: number
         ) => Promise<crypto_borromean_signature_t>;
 
-    bulletproofs_prove?: (amounts: number[], blinding_factors: string[]) => Promise<[crypto_bulletproof_t, string[]]>;
-    bulletproofs_verify?: (proofs: crypto_bulletproof_t[], commitments: string[][]) => Promise<boolean>;
+    bulletproofs_prove?: (
+        amounts: number[],
+        blinding_factors: string[]
+    ) => Promise<[crypto_bulletproof_t, string[]]>;
+    bulletproofs_verify?: (
+        proofs: crypto_bulletproof_t[],
+        commitments: string[][]
+    ) => Promise<boolean>;
 
-    bulletproofsplus_prove?:
-        (amounts: number[], blinding_factors: string[]) => Promise<[crypto_bulletproof_plus_t, string[]]>;
-    bulletproofsplus_verify?: (proofs: crypto_bulletproof_plus_t[], commitments: string[][]) => Promise<boolean>;
+    bulletproofsplus_prove?: (
+            amounts: number[],
+            blinding_factors: string[]
+    ) => Promise<[crypto_bulletproof_plus_t, string[]]>;
+    bulletproofsplus_verify?: (
+        proofs: crypto_bulletproof_plus_t[],
+        commitments: string[][]
+    ) => Promise<boolean>;
 
-    clsag_check_ring_signature?:
-        (message_digest: string, key_image: string, public_keys: string[], signature: crypto_clsag_signature_t,
-         commitments: string[]) => Promise<boolean>;
-    clsag_complete_ring_signature?:
-        (signing_scalar: string, real_output_index: number, signature: crypto_clsag_signature_t,
-         h: string[], mu_P: string, partial_signing_scalars: string[]) => Promise<crypto_clsag_signature_t>;
-    clsag_generate_partial_signing_scalar?: (mu_P: string, secret_spend_key: string) => Promise<string>;
-    clsag_generate_ring_signature?:
-        (message_digest: string, secret_ephemeral: string, public_keys: string[],
-         input_blinding_factor: string, public_commitments: string[],
-         pseudo_blinding_factor: string, pseudo_commitment: string) => Promise<crypto_clsag_signature_t>;
-    clsag_prepare_ring_signature?:
-        (message_digest: string, key_image: string, public_keys: string[], real_output_index: number,
-         input_blinding_factor: string, public_commitments: string[],
-         pseudo_blinding_factor: string, pseudo_commitment: string
+    clsag_check_ring_signature?: (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        signature: crypto_clsag_signature_t,
+         commitments: string[]
+    ) => Promise<boolean>;
+    clsag_complete_ring_signature?: (
+        signing_scalar: string,
+        real_output_index: number,
+        signature: crypto_clsag_signature_t,
+         h: string[],
+        mu_P: string,
+        partial_signing_scalars: string[]
+    ) => Promise<crypto_clsag_signature_t>;
+    clsag_generate_partial_signing_scalar?: (
+        mu_P: string,
+        secret_spend_key: string
+    ) => Promise<string>;
+    clsag_generate_ring_signature?: (
+        message_digest: string,
+        secret_ephemeral: string,
+        public_keys: string[],
+         input_blinding_factor: string,
+        public_commitments: string[],
+         pseudo_blinding_factor: string,
+        pseudo_commitment: string
+    ) => Promise<crypto_clsag_signature_t>;
+    clsag_prepare_ring_signature?: (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        real_output_index: number,
+         input_blinding_factor: string,
+        public_commitments: string[],
+         pseudo_blinding_factor: string,
+        pseudo_commitment: string
         ) => Promise<[crypto_clsag_signature_t, string[], string]>;
 
-    argon2d?: (input: string, iterations: number, memory: number, threads: number) => Promise<string>;
-    argon2i?: (input: string, iterations: number, memory: number, threads: number) => Promise<string>;
-    argon2id?: (input: string, iterations: number, memory: number, threads: number) => Promise<string>;
+    triptych_check_ring_signature?: (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        signature: crypto_triptych_signature_t,
+        commitments: string[]
+    ) => Promise<boolean>;
+    triptych_complete_ring_signature?: (
+        signing_scalar: string,
+        signature: crypto_triptych_signature_t,
+        xpow: string,
+        partial_signing_scalars: string[]
+    ) => Promise<crypto_triptych_signature_t>;
+    triptych_generate_partial_signing_scalar?: (
+        spend_secret_key: string,
+        xpow: string
+    ) => Promise<string>;
+    triptych_generate_ring_signature?: (
+        message_digest: string,
+        secret_ephemeral: string,
+        public_keys: string[],
+        input_blinding_factor: string,
+        public_commitments: string[],
+        pseudo_blinding_factor: string,
+        pseudo_commitment: string
+    ) => Promise<crypto_triptych_signature_t>;
+    triptych_prepare_ring_signature?: (
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        real_output_index: number,
+        input_blinding_factor: string,
+        public_commitments: string[],
+        pseudo_blinding_factor: string,
+        pseudo_commitment: string
+    ) => Promise<[crypto_triptych_signature_t, string]>;
+
+    argon2d?: (
+        input: string,
+        iterations: number,
+        memory: number,
+        threads: number
+    ) => Promise<string>;
+    argon2i?: (
+        input: string,
+        iterations: number,
+        memory: number,
+        threads: number
+    ) => Promise<string>;
+    argon2id?: (
+        input: string,
+        iterations: number,
+        memory: number,
+        threads: number
+    ) => Promise<string>;
     sha3?: (input: string) => Promise<string>;
-    sha3_slow_hash?: (input: string, iterations: number) => Promise<string>;
+    sha3_slow_hash?: (
+        input: string,
+        iterations: number
+    ) => Promise<string>;
     root_hash?: (hashes: string[]) => Promise<string>;
-    root_hash_from_branch?: (branches: string[], depth: number, leaf: string, path: number) => Promise<string>;
+    root_hash_from_branch?: (
+        branches: string[],
+        depth: number,
+        leaf: string,
+        path: number
+    ) => Promise<string>;
     tree_branch?: (hashes: string[]) => Promise<string[]>;
     tree_depth?: (count: number) => Promise<number>;
 
-    generate_multisig_secret_key?: (their_public_key: string, our_secret_key: string) => Promise<string>;
-    generate_multisig_secret_keys?: (their_public_keys: string[], our_secret_key: string) => Promise<string[]>;
+    generate_multisig_secret_key?: (
+        their_public_key: string,
+        our_secret_key: string
+    ) => Promise<string>;
+    generate_multisig_secret_keys?: (
+        their_public_keys: string[],
+        our_secret_key: string
+    ) => Promise<string[]>;
     generate_shared_public_key?: (public_keys: string[]) => Promise<string>;
     generate_shared_secret_key?: (secret_keys: string[]) => Promise<string>;
-    rounds_required?: (participants: number, threshold: number) => Promise<number>;
+    rounds_required?: (
+        participants: number,
+        threshold: number
+    ) => Promise<number>;
 
     mnemonics_calculate_checksum_index?: (words: string[]) => Promise<number>;
     mnemonics_decode?: (words: string[]) => Promise<[string, BigInteger.BigInteger]>;
-    mnemonics_encode?:
-        (seed: string, timestamp: number | BigInteger.BigInteger, auto_timestamp: boolean) => Promise<string[]>;
+    mnemonics_encode?: (
+        seed: string,
+        timestamp: number | BigInteger.BigInteger,
+        auto_timestamp: boolean
+    ) => Promise<string[]>;
     mnemonics_word_index?: (word: string) => Promise<number>;
     mnemonics_word_list?: () => Promise<string[]>;
     mnemonics_word_list_trimmed?: () => Promise<string[]>;
 
-    check_commitments_parity?:
-        (pseudo_commitments: string[], output_commitments: string[], transaction_fee: number) => Promise<boolean>;
-    generate_amount_mask?:
-        (derivation_scalar: string) => Promise<string>;
+    check_commitments_parity?: (
+        pseudo_commitments: string[],
+        output_commitments: string[],
+        transaction_fee: number
+    ) => Promise<boolean>;
+    generate_amount_mask?: (derivation_scalar: string) => Promise<string>;
     generate_commitment_blinding_factor?: (derivation_scalar: string) => Promise<string>;
-    generate_pedersen_commitment?: (blinding_factor: string, amount: number) => Promise<string>;
-    generate_pseudo_commitments?:
-        (input_amounts: number[], output_blinding_factors: string[]) => Promise<[string[], string[]]>
+    generate_pedersen_commitment?: (
+        blinding_factor: string,
+        amount: number
+    ) => Promise<string>;
+    generate_pseudo_commitments?: (
+        input_amounts: number[],
+        output_blinding_factors: string[]
+    ) => Promise<[string[], string[]]>
     generate_transaction_fee_commitment?: (amount: number) => Promise<string>;
-    toggle_masked_amount?:
-        (amount_mask: string, amount: string | number | BigInteger.BigInteger) => Promise<BigInteger.BigInteger>;
+    toggle_masked_amount?: (
+        amount_mask: string,
+        amount: string | number | BigInteger.BigInteger
+    ) => Promise<BigInteger.BigInteger>;
 
-    check_signature?: (message_digest: string, public_key: string, signature: string) => Promise<boolean>;
-    complete_signature?:
-        (signing_scalar: string | undefined, signature: string, partial_signing_scalars: string[]) => Promise<string>;
-    generate_partial_signing_scalar?: (signature: string, secret_spend_key: string) => Promise<string>;
-    generate_signature?: (message_digest: string, secret_key: string) => Promise<string>;
-    prepare_signature?: (message_digest: string, public_key: string) => Promise<string>;
+    check_signature?: (
+        message_digest: string,
+        public_key: string,
+        signature: string
+    ) => Promise<boolean>;
+    complete_signature?: (
+        signing_scalar: string | undefined,
+        signature: string,
+        partial_signing_scalars: string[]
+    ) => Promise<string>;
+    generate_partial_signing_scalar?: (
+        signature: string,
+        secret_spend_key: string
+    ) => Promise<string>;
+    generate_signature?: (
+        message_digest: string,
+        secret_key: string
+    ) => Promise<string>;
+    prepare_signature?: (
+        message_digest: string,
+        public_key: string
+    ) => Promise<string>;
 
     calculate_base2_exponent?: (value: number) => Promise<number>;
     check_point?: (point: string) => Promise<boolean>;
     check_scalar?: (scalar: string) => Promise<boolean>;
-    derivation_to_scalar?: (derivation: string, output_index: number) => Promise<string>;
-    derive_public_key?: (derivation_scalar: string, public_key: string) => Promise<string>;
-    derive_secret_key?: (derivation_scalar: string, secret_key: string) => Promise<string>;
-    generate_key_derivation?: (public_key: string, secret_key: string) => Promise<string>;
-    generate_key_image?:
-        (public_ephemeral: string, secret_ephemeral: string, partial_key_images: string[]) => Promise<string>;
+    derivation_to_scalar?: (
+        derivation: string,
+        output_index: number
+    ) => Promise<string>;
+    derive_public_key?: (
+        derivation_scalar: string,
+        public_key: string
+    ) => Promise<string>;
+    derive_secret_key?: (
+        derivation_scalar: string,
+        secret_key: string
+    ) => Promise<string>;
+    generate_key_derivation?: (
+        public_key: string,
+        secret_key: string
+    ) => Promise<string>;
+    generate_key_image?: (
+        public_ephemeral: string,
+        secret_ephemeral: string,
+        partial_key_images: string[]
+    ) => Promise<string>;
     generate_key_image_v2?: (secret_ephemeral: string) => Promise<string>;
     generate_keys?: () => Promise<[string, string]>;
     generate_wallet_seed?: (entropy: string) => Promise<[string, string[], BigInteger.BigInteger]>;
-    generate_wallet_spend_keys?: (secret_spend_key: string, subwallet_index: number) => Promise<[string, string]>;
+    generate_wallet_spend_keys?: (
+        secret_spend_key: string,
+        subwallet_index: number
+    ) => Promise<[string, string]>;
     generate_wallet_view_keys?: (secret_spend_key: string) => Promise<[string, string]>;
     hash_to_point?: (input: string) => Promise<string>;
     hash_to_scalar?: (input: string) => Promise<string>;
@@ -230,7 +407,11 @@ export interface IConfig {
     random_scalars?: (count: number) => Promise<string[]>;
     restore_wallet_seed?: (words: string[]) => Promise<[string, BigInteger.BigInteger]>;
     secret_key_to_public_key?: (secret_key: string) => Promise<string>;
-    underive_public_key?: (derivation: string, output_index: number, public_ephemeral: string) => Promise<string>;
+    underive_public_key?: (
+        derivation: string,
+        output_index: number,
+        public_ephemeral: string
+    ) => Promise<string>;
 
     [key: string]: any;
 }

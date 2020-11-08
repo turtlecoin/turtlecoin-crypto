@@ -110,10 +110,16 @@ namespace Crypto::RangeProofs::BulletproofsPlus
             crypto_point_vector_t Hi,
             crypto_scalar_vector_t a,
             crypto_scalar_vector_t b,
-            const crypto_scalar_t alpha,
-            const crypto_scalar_t y,
-            const Crypto::crypto_scalar_transcript_t &tr):
-            Gi(std::move(Gi)), Hi(std::move(Hi)), a(std::move(a)), b(std::move(b)), alpha(alpha), y(y), tr(tr)
+            const crypto_scalar_t &alpha,
+            const crypto_scalar_t &y,
+            Crypto::crypto_scalar_transcript_t tr):
+            Gi(std::move(Gi)),
+            Hi(std::move(Hi)),
+            a(std::move(a)),
+            b(std::move(b)),
+            alpha(alpha),
+            y(y),
+            tr(std::move(tr))
         {
         }
 
@@ -356,8 +362,10 @@ namespace Crypto::RangeProofs::BulletproofsPlus
 
             return {crypto_bulletproof_plus_t(A, A1, B, r1, s1, d1, L, R), V.points};
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             goto try_again;
         }
     }

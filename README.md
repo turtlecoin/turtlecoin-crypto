@@ -60,6 +60,9 @@ This repository a standalone cryptographic primitive wrapper library that can be
   * Multisig Supported
 * [CLSAG](https://eprint.iacr.org/2019/654.pdf) Ring Signatures
   * Multisig Supported
+  * Optional use of pedersen commitment to zero proving
+* [Triptych](https://eprint.iacr.org/2020/018.pdf) Ring Signatures
+  * Multisig **partially** supported
 * [RingCT](https://eprint.iacr.org/2015/1098.pdf)
   * [Pedersen Commitments](https://www.cs.cornell.edu/courses/cs754/2001fa/129.PDF)
   * Pseudo Commitments

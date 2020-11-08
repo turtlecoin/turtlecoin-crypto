@@ -211,8 +211,9 @@ template<typename T> static inline T get_crypto_t(const Nan::FunctionCallbackInf
         {
             result = value;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -251,8 +252,9 @@ template<typename T> static inline std::vector<T> get_vector(const v8::Local<v8:
             {
                 results.push_back(value);
             }
-            catch (...)
+            catch (const std::exception &e)
             {
+                PRINTF(e.what())
             }
         }
     }
@@ -438,8 +440,9 @@ NAN_METHOD(base58_encode)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -466,8 +469,9 @@ NAN_METHOD(base58_encode_check)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -499,8 +503,9 @@ NAN_METHOD(base58_decode)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -532,8 +537,9 @@ NAN_METHOD(base58_decode_check)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -564,8 +570,9 @@ NAN_METHOD(cn_base58_encode)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -592,8 +599,9 @@ NAN_METHOD(cn_base58_encode_check)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -625,8 +633,9 @@ NAN_METHOD(cn_base58_decode)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -658,8 +667,9 @@ NAN_METHOD(cn_base58_decode_check)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -707,8 +717,9 @@ NAN_METHOD(bulletproofs_prove)
 
             Nan::Set(result, 2, to_v8_array(commitments));
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -742,8 +753,9 @@ NAN_METHOD(bulletproofs_verify)
 
             result = Nan::New(success);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -792,8 +804,9 @@ NAN_METHOD(bulletproofsplus_prove)
 
             Nan::Set(result, 2, to_v8_array(commitments));
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -827,8 +840,9 @@ NAN_METHOD(bulletproofsplus_verify)
 
             result = Nan::New(success);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -893,8 +907,9 @@ NAN_METHOD(derivation_to_scalar)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -921,8 +936,9 @@ NAN_METHOD(derive_public_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -949,8 +965,9 @@ NAN_METHOD(derive_secret_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -979,7 +996,7 @@ NAN_METHOD(generate_key_derivation)
         }
         catch (const std::exception &e)
         {
-            std::cout << e.what() << std::endl;
+            PRINTF(e.what())
         }
     }
 
@@ -1008,8 +1025,9 @@ NAN_METHOD(generate_key_image)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1034,8 +1052,9 @@ NAN_METHOD(generate_key_image_v2)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1058,8 +1077,9 @@ NAN_METHOD(generate_keys)
 
         Nan::Set(result, 2, STR_TO_NAN_VAL(secret_key.to_string()));
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(result);
@@ -1091,8 +1111,9 @@ NAN_METHOD(generate_wallet_seed)
 
         Nan::Set(result, 3, STR_TO_NAN_VAL(writer.to_string()));
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(result);
@@ -1120,8 +1141,9 @@ NAN_METHOD(generate_wallet_spend_keys)
 
             Nan::Set(result, 2, STR_TO_NAN_VAL(secret_key.to_string()));
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1148,8 +1170,9 @@ NAN_METHOD(generate_wallet_view_keys)
 
             Nan::Set(result, 2, STR_TO_NAN_VAL(secret_key.to_string()));
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1176,8 +1199,9 @@ NAN_METHOD(hash_to_point)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1204,8 +1228,9 @@ NAN_METHOD(hash_to_scalar)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1228,8 +1253,9 @@ NAN_METHOD(pow2_round)
 
         success = true;
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(prepare(success, result));
@@ -1258,8 +1284,9 @@ NAN_METHOD(random_hashes)
 
         success = true;
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(prepare(success, result));
@@ -1288,8 +1315,9 @@ NAN_METHOD(random_points)
 
         success = true;
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(prepare(success, result));
@@ -1318,8 +1346,9 @@ NAN_METHOD(random_scalars)
 
         success = true;
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(prepare(success, result));
@@ -1352,8 +1381,9 @@ NAN_METHOD(restore_wallet_seed)
                 Nan::Set(result, 2, STR_TO_NAN_VAL(writer.to_string()));
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1378,8 +1408,9 @@ NAN_METHOD(secret_key_to_public_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1408,8 +1439,9 @@ NAN_METHOD(underive_public_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1447,8 +1479,9 @@ NAN_METHOD(argon2d)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1482,8 +1515,9 @@ NAN_METHOD(argon2i)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1517,8 +1551,9 @@ NAN_METHOD(argon2id)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1545,8 +1580,9 @@ NAN_METHOD(sha3)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1575,8 +1611,9 @@ NAN_METHOD(sha3_slow_hash)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1601,8 +1638,9 @@ NAN_METHOD(tree_branch)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1636,8 +1674,9 @@ NAN_METHOD(root_hash)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1668,8 +1707,9 @@ NAN_METHOD(root_hash_from_branch)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1701,8 +1741,9 @@ NAN_METHOD(mnemonics_calculate_checksum_index)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1736,8 +1777,9 @@ NAN_METHOD(mnemonics_decode)
                 Nan::Set(result, 2, STR_TO_NAN_VAL(writer.to_string()));
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1770,8 +1812,9 @@ NAN_METHOD(mnemonics_encode)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1799,8 +1842,9 @@ NAN_METHOD(mnemonics_word_index)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1821,8 +1865,9 @@ NAN_METHOD(mnemonics_word_list)
 
         success = true;
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(prepare(success, result));
@@ -1842,8 +1887,9 @@ NAN_METHOD(mnemonics_word_list_trimmed)
 
         success = true;
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(prepare(success, result));
@@ -1873,8 +1919,9 @@ NAN_METHOD(generate_multisig_secret_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1901,8 +1948,9 @@ NAN_METHOD(generate_multisig_secret_keys)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1927,8 +1975,9 @@ NAN_METHOD(generate_shared_public_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1953,8 +2002,9 @@ NAN_METHOD(generate_shared_secret_key)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -1994,8 +2044,9 @@ NAN_METHOD(check_commitments_parity)
     {
         success = Crypto::RingCT::check_commitments_parity(pseudo_commitments, output_commitments, transaction_fee);
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what())
     }
 
     info.GetReturnValue().Set(Nan::New(success));
@@ -2019,8 +2070,9 @@ NAN_METHOD(generate_amount_mask)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2045,8 +2097,9 @@ NAN_METHOD(generate_commitment_blinding_factor)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2073,8 +2126,9 @@ NAN_METHOD(generate_pedersen_commitment)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2104,8 +2158,9 @@ NAN_METHOD(generate_pseudo_commitments)
 
             Nan::Set(result, 2, to_v8_array(commitments));
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2148,8 +2203,9 @@ NAN_METHOD(toggle_masked_amount)
                 success = true;
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2183,8 +2239,9 @@ NAN_METHOD(borromean_check_ring_signature)
             success = Crypto::RingSignature::Borromean::check_ring_signature(
                 message_digest, key_image, public_keys, signature);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2229,8 +2286,9 @@ NAN_METHOD(borromean_complete_ring_signature)
 
             success = method_success;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2264,8 +2322,9 @@ NAN_METHOD(borromean_generate_partial_signing_scalar)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2304,8 +2363,9 @@ NAN_METHOD(borromean_generate_ring_signature)
 
             success = method_success;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2346,8 +2406,9 @@ NAN_METHOD(borromean_prepare_ring_signature)
 
             success = method_success;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2383,8 +2444,9 @@ NAN_METHOD(clsag_check_ring_signature)
             success = Crypto::RingSignature::CLSAG::check_ring_signature(
                 message_digest, key_image, public_keys, signature, commitments);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2433,8 +2495,9 @@ NAN_METHOD(clsag_complete_ring_signature)
 
             success = method_success;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2462,8 +2525,9 @@ NAN_METHOD(clsag_generate_partial_signing_scalar)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2516,8 +2580,9 @@ NAN_METHOD(clsag_generate_ring_signature)
 
             success = method_success;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2577,8 +2642,242 @@ NAN_METHOD(clsag_prepare_ring_signature)
                 Nan::Set(result, 3, STR_TO_NAN_VAL(mu_P.to_string()));
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(result);
+}
+
+/**
+ * Mapped methods from ring_signature_triptych.cpp
+ */
+
+NAN_METHOD(triptych_check_ring_signature)
+{
+    bool success = false;
+
+    const auto message_digest = get<std::string>(info, 0);
+
+    const auto key_image = get<std::string>(info, 1);
+
+    const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
+
+    const auto signature_obj = get<std::string>(info, 3);
+
+    const auto commitments = get_vector<crypto_pedersen_commitment_t>(info, 4);
+
+    if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !signature_obj.empty()
+        && !commitments.empty())
+    {
+        try
+        {
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_triptych_signature_t(body);
+
+            success = Crypto::RingSignature::Triptych::check_ring_signature(
+                message_digest, key_image, public_keys, signature, commitments);
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(Nan::New(success));
+}
+
+NAN_METHOD(triptych_complete_ring_signature)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto signing_scalar = get<std::string>(info, 0);
+
+    const auto signature_obj = get<std::string>(info, 1);
+
+    const auto xpow = get<std::string>(info, 2);
+
+    const auto partial_signing_scalars = get_vector<crypto_scalar_t>(info, 3);
+
+    if (!signing_scalar.empty() && !signature_obj.empty() && !xpow.empty())
+    {
+        try
+        {
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_triptych_signature_t(body);
+
+            const auto [method_success, sig] = Crypto::RingSignature::Triptych::complete_ring_signature(
+                signing_scalar, signature, xpow, partial_signing_scalars);
+
+            if (method_success)
+            {
+                JSON_INIT();
+
+                sig.toJSON(writer);
+
+                JSON_DUMP(json);
+
+                result = STR_TO_NAN_VAL(json);
+            }
+
+            success = method_success;
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(triptych_generate_partial_signing_scalar)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto spend_secret_key = get<std::string>(info, 0);
+
+    const auto xpow = get<std::string>(info, 1);
+
+    if (!spend_secret_key.empty() && !xpow.empty())
+    {
+        try
+        {
+            const auto partial_signing_key =
+                Crypto::RingSignature::Triptych::generate_partial_signing_scalar(spend_secret_key, xpow);
+
+            result = STR_TO_NAN_VAL(partial_signing_key.to_string());
+
+            success = true;
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(triptych_generate_ring_signature)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto message_digest = get<std::string>(info, 0);
+
+    const auto secret_ephemeral = get<std::string>(info, 1);
+
+    const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
+
+    const auto input_blinding_factor = get<std::string>(info, 3);
+
+    const auto public_commitments = get_vector<crypto_pedersen_commitment_t>(info, 4);
+
+    const auto pseudo_blinding_factor = get<std::string>(info, 5);
+
+    const auto pseudo_commitment = get<std::string>(info, 6);
+
+    if (!message_digest.empty() && !secret_ephemeral.empty() && !public_keys.empty() && !input_blinding_factor.empty()
+        && !public_commitments.empty() && !pseudo_blinding_factor.empty() && !pseudo_commitment.empty())
+    {
+        try
+        {
+            const auto [method_success, signature] = Crypto::RingSignature::Triptych::generate_ring_signature(
+                message_digest,
+                secret_ephemeral,
+                public_keys,
+                input_blinding_factor,
+                public_commitments,
+                pseudo_blinding_factor,
+                pseudo_commitment);
+
+            if (method_success)
+            {
+                JSON_INIT();
+
+                signature.toJSON(writer);
+
+                JSON_DUMP(json);
+
+                result = STR_TO_NAN_VAL(json);
+            }
+
+            success = method_success;
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(triptych_prepare_ring_signature)
+{
+    v8::Local<v8::Array> result = Nan::New<v8::Array>(3);
+
+    Nan::Set(result, 0, Nan::New(true));
+
+    const auto message_digest = get<std::string>(info, 0);
+
+    const auto key_image = get<std::string>(info, 1);
+
+    const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
+
+    const auto real_output_index = get<uint32_t>(info, 3);
+
+    const auto input_blinding_factor = get<std::string>(info, 4);
+
+    const auto public_commitments = get_vector<crypto_pedersen_commitment_t>(info, 5);
+
+    const auto pseudo_blinding_factor = get<std::string>(info, 6);
+
+    const auto pseudo_commitment = get<std::string>(info, 7);
+
+    if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !input_blinding_factor.empty()
+        && !public_commitments.empty() && !pseudo_blinding_factor.empty() && !pseudo_commitment.empty())
+    {
+        try
+        {
+            const auto [method_success, signature, xpow] = Crypto::RingSignature::Triptych::prepare_ring_signature(
+                message_digest,
+                key_image,
+                public_keys,
+                real_output_index,
+                input_blinding_factor,
+                public_commitments,
+                pseudo_blinding_factor,
+                pseudo_commitment);
+
+            if (method_success)
+            {
+                Nan::Set(result, 0, Nan::New(false));
+
+                JSON_INIT();
+
+                signature.toJSON(writer);
+
+                JSON_DUMP(json);
+
+                Nan::Set(result, 1, STR_TO_NAN_VAL(json));
+
+                Nan::Set(result, 2, STR_TO_NAN_VAL(xpow.to_string()));
+            }
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
         }
     }
 
@@ -2607,8 +2906,9 @@ NAN_METHOD(check_signature)
 
             result = Nan::New(success);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2637,8 +2937,9 @@ NAN_METHOD(complete_signature)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2666,8 +2967,9 @@ NAN_METHOD(generate_partial_signing_scalar)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2694,8 +2996,9 @@ NAN_METHOD(generate_signature)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2722,8 +3025,9 @@ NAN_METHOD(prepare_signature)
 
             success = true;
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
         }
     }
 
@@ -2909,6 +3213,19 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, clsag_generate_ring_signature);
 
         NAN_EXPORT(target, clsag_prepare_ring_signature);
+    }
+
+    // Mapped methods from ring_signature_triptych.cpp
+    {
+        NAN_EXPORT(target, triptych_check_ring_signature);
+
+        NAN_EXPORT(target, triptych_complete_ring_signature);
+
+        NAN_EXPORT(target, triptych_generate_partial_signing_scalar);
+
+        NAN_EXPORT(target, triptych_generate_ring_signature);
+
+        NAN_EXPORT(target, triptych_prepare_ring_signature);
     }
 
     // Mapped methods from signature.cpp

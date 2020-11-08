@@ -37,6 +37,7 @@
 #include "multisig.h"
 #include "ring_signature_borromean.h"
 #include "ring_signature_clsag.h"
+#include "ring_signature_triptych.h"
 #include "ringct.h"
 #include "signature.h"
 

@@ -170,6 +170,11 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#toggle_masked_amount" class="tsd-kind-icon">toggle_<wbr>masked_<wbr>amount</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#tree_branch" class="tsd-kind-icon">tree_<wbr>branch</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#tree_depth" class="tsd-kind-icon">tree_<wbr>depth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#triptych_check_ring_signature" class="tsd-kind-icon">triptych_<wbr>check_<wbr>ring_<wbr>signature</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#triptych_complete_ring_signature" class="tsd-kind-icon">triptych_<wbr>complete_<wbr>ring_<wbr>signature</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#triptych_generate_partial_signing_scalar" class="tsd-kind-icon">triptych_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#triptych_generate_ring_signature" class="tsd-kind-icon">triptych_<wbr>generate_<wbr>ring_<wbr>signature</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#triptych_prepare_ring_signature" class="tsd-kind-icon">triptych_<wbr>prepare_<wbr>ring_<wbr>signature</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#underive_public_key" class="tsd-kind-icon">underive_<wbr>public_<wbr>key</a></li>
 							</ul>
 						</section>
@@ -2508,6 +2513,209 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="triptych_check_ring_signature" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> triptych_<wbr>check_<wbr>ring_<wbr>signature</h3>
+					<div class="tsd-signature tsd-kind-icon">triptych_<wbr>check_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a>, commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a>, commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>message_digest: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>key_image: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>public_keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>signature: <a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a></h5>
+											</li>
+											<li>
+												<h5>commitments: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="triptych_complete_ring_signature" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> triptych_<wbr>complete_<wbr>ring_<wbr>signature</h3>
+					<div class="tsd-signature tsd-kind-icon">triptych_<wbr>complete_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>signing_scalar<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, signature<span class="tsd-signature-symbol">: </span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a>, xpow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, partial_signing_scalars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>signing_scalar<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, signature<span class="tsd-signature-symbol">: </span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a>, xpow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, partial_signing_scalars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>signing_scalar: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>signature: <a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a></h5>
+											</li>
+											<li>
+												<h5>xpow: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>partial_signing_scalars: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="triptych_generate_partial_signing_scalar" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> triptych_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</h3>
+					<div class="tsd-signature tsd-kind-icon">triptych_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>spend_secret_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xpow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>spend_secret_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, xpow<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>spend_secret_key: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>xpow: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="triptych_generate_ring_signature" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> triptych_<wbr>generate_<wbr>ring_<wbr>signature</h3>
+					<div class="tsd-signature tsd-kind-icon">triptych_<wbr>generate_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, secret_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, pseudo_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, pseudo_commitment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, secret_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, pseudo_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, pseudo_commitment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>message_digest: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>secret_ephemeral: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>public_keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>input_blinding_factor: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>public_commitments: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>pseudo_blinding_factor: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>pseudo_commitment: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="triptych_prepare_ring_signature" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> triptych_<wbr>prepare_<wbr>ring_<wbr>signature</h3>
+					<div class="tsd-signature tsd-kind-icon">triptych_<wbr>prepare_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, input_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, pseudo_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, pseudo_commitment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, input_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, pseudo_blinding_factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, pseudo_commitment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>message_digest: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>key_image: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>public_keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>real_output_index: <span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li>
+												<h5>input_blinding_factor: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>public_commitments: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>pseudo_blinding_factor: <span class="tsd-signature-type">string</span></h5>
+											</li>
+											<li>
+												<h5>pseudo_commitment: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="crypto_triptych_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_triptych_signature_t</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="underive_public_key" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> underive_<wbr>public_<wbr>key</h3>
 					<div class="tsd-signature tsd-kind-icon">underive_<wbr>public_<wbr>key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>derivation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, public_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
@@ -2793,6 +3001,21 @@
 								<a href="iconfig.html#tree_depth" class="tsd-kind-icon">tree_<wbr>depth</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#triptych_check_ring_signature" class="tsd-kind-icon">triptych_<wbr>check_<wbr>ring_<wbr>signature</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#triptych_complete_ring_signature" class="tsd-kind-icon">triptych_<wbr>complete_<wbr>ring_<wbr>signature</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#triptych_generate_partial_signing_scalar" class="tsd-kind-icon">triptych_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#triptych_generate_ring_signature" class="tsd-kind-icon">triptych_<wbr>generate_<wbr>ring_<wbr>signature</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#triptych_prepare_ring_signature" class="tsd-kind-icon">triptych_<wbr>prepare_<wbr>ring_<wbr>signature</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="iconfig.html#underive_public_key" class="tsd-kind-icon">underive_<wbr>public_<wbr>key</a>
 							</li>
 						</ul>
@@ -2810,6 +3033,9 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="crypto_clsag_signature_t.html" class="tsd-kind-icon">crypto_<wbr>clsag_<wbr>signature_<wbr>t</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="crypto_triptych_signature_t.html" class="tsd-kind-icon">crypto_<wbr>triptych_<wbr>signature_<wbr>t</a>
 					</li>
 				</ul>
 			</nav>

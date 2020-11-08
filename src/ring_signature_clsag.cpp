@@ -261,13 +261,22 @@ namespace Crypto::RingSignature::CLSAG
             }
 
             SCALAR_OR_THROW(mu_P);
+
+            for (const auto &partial_signing_scalar : partial_signing_scalars)
+            {
+                SCALAR_OR_THROW(partial_signing_scalar);
+            }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return {false, {}};
         }
 
         std::vector<crypto_scalar_t> finalized_signature(signature.scalars);
+
+        const auto partial_scalar = generate_partial_signing_scalar(mu_P, signing_scalar);
 
         /**
          * If we have the full signing scalar (secret_ephemeral) then we can complete the signature quickly
@@ -275,24 +284,10 @@ namespace Crypto::RingSignature::CLSAG
         if (partial_signing_scalars.empty())
         {
             // s = [alpha - (h[real_output_index] * (p * mu_P))] mod l
-            finalized_signature[real_output_index] -= (h[real_output_index] * signing_scalar * mu_P);
+            finalized_signature[real_output_index] -= (h[real_output_index] * partial_scalar);
         }
         else /** Otherwise, we're using partial signing scalars (multisig) */
         {
-            try
-            {
-                for (const auto &partial_signing_scalar : partial_signing_scalars)
-                {
-                    SCALAR_OR_THROW(partial_signing_scalar);
-                }
-            }
-            catch (...)
-            {
-                return {false, {}};
-            }
-
-            const auto partial_scalar = generate_partial_signing_scalar(mu_P, signing_scalar);
-
             // create a copy of our partial signing scalars for computation and handling
             crypto_scalar_vector_t keys(partial_signing_scalars);
 
@@ -345,8 +340,10 @@ namespace Crypto::RingSignature::CLSAG
         {
             SCALAR_OR_THROW(secret_ephemeral);
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return {false, {}};
         }
 
@@ -372,8 +369,10 @@ namespace Crypto::RingSignature::CLSAG
 
                     SCALAR_OR_THROW(pseudo_blinding_factor);
                 }
-                catch (...)
+                catch (const std::exception &e)
                 {
+                    PRINTF(e.what())
+
                     return {false, {}};
                 }
 
@@ -480,8 +479,10 @@ namespace Crypto::RingSignature::CLSAG
 
                 SCALAR_OR_THROW(pseudo_blinding_factor);
             }
-            catch (...)
+            catch (const std::exception &e)
             {
+                PRINTF(e.what())
+
                 return {false, {}, {}, {0}};
             }
 

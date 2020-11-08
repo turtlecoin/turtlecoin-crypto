@@ -33,21 +33,40 @@
 #include <cstdint>
 #include <exception>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #ifdef DEBUG_PRINT
-#define PRINTF(value) Crypto::StringTools::Debug::debug_printer(#value, value)
+#define PRINTF(value)                                                        \
+    {                                                                        \
+        std::stringstream ss;                                                \
+        ss << __FILE__ << "#" << std::to_string(__LINE__) << ": " << #value; \
+        Crypto::StringTools::Debug::debug_printer(ss.str(), value);          \
+    }
 #else
-#define PRINTF(value)
+#define PRINTF(value) \
+    {                 \
+        (void)value;  \
+    }
 #endif
 
 namespace Crypto::StringTools
 {
     namespace Debug
     {
+        /**
+         * Simple printer for debugging values
+         * @param name
+         * @param value
+         */
+        static inline void debug_print(const std::string &name, bool value)
+        {
+            std::cout << name << ": " << ((value) ? "true" : "false") << std::endl;
+        }
+
         /**
          * Simple printer for debugging values
          * @tparam Type

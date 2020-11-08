@@ -368,8 +368,10 @@ template<typename T> static inline std::vector<T> get_vector(const rapidjson::Va
             }
         }
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what());
+
         results.clear();
     }
 
@@ -416,8 +418,10 @@ static inline std::vector<uint64_t> get_uint64_t_vector(const rapidjson::Documen
             }
         }
     }
-    catch (...)
+    catch (const std::exception &e)
     {
+        PRINTF(e.what());
+
         results.clear();
     }
 
@@ -2506,6 +2510,224 @@ EMS_METHOD(clsag_prepare_ring_signature)
 }
 
 /**
+ * Mapped methods from ring_signature_triptych.cpp
+ */
+
+EMS_METHOD(triptych_check_ring_signature)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto message_digest = get<std::string>(info, 0);
+
+        const auto key_image = get<std::string>(info, 1);
+
+        const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
+
+        const auto signature_obj = get<std::string>(info, 3);
+
+        const auto commitments = get_vector<crypto_pedersen_commitment_t>(info, 4);
+
+        if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !signature_obj.empty()
+            && !commitments.empty())
+        {
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_triptych_signature_t(body);
+
+            const auto success = Crypto::RingSignature::Triptych::check_ring_signature(
+                message_digest, key_image, public_keys, signature, commitments);
+
+            return prepare(!success);
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(triptych_complete_ring_signature)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto signing_scalar = get<std::string>(info, 0);
+
+        const auto signature_obj = get<std::string>(info, 1);
+
+        const auto xpow = get<std::string>(info, 2);
+
+        const auto partial_signing_scalars = get_vector<crypto_scalar_t>(info, 3);
+
+        if (!signing_scalar.empty() && !signature_obj.empty() && !xpow.empty())
+        {
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_triptych_signature_t(body);
+
+            const auto [success, sig] = Crypto::RingSignature::Triptych::complete_ring_signature(
+                signing_scalar, signature, xpow, partial_signing_scalars);
+
+            if (success)
+            {
+                JSON_INIT();
+
+                sig.toJSON(writer);
+
+                JSON_DUMP(sig_json);
+
+                return prepare(success, sig_json);
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(triptych_generate_partial_signing_scalar)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto spend_secret_key = get<std::string>(info, 0);
+
+        const auto xpow = get<std::string>(info, 1);
+
+        if (!spend_secret_key.empty() && !xpow.empty())
+        {
+            const auto partial_signing_key =
+                Crypto::RingSignature::Triptych::generate_partial_signing_scalar(spend_secret_key, xpow);
+
+            return prepare(true, partial_signing_key.to_string());
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(triptych_generate_ring_signature)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto message_digest = get<std::string>(info, 0);
+
+        const auto secret_ephemeral = get<std::string>(info, 1);
+
+        const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
+
+        const auto input_blinding_factor = get<std::string>(info, 3);
+
+        const auto public_commitments = get_vector<crypto_pedersen_commitment_t>(info, 4);
+
+        const auto pseudo_blinding_factor = get<std::string>(info, 5);
+
+        const auto pseudo_commitment = get<std::string>(info, 6);
+
+        if (!message_digest.empty() && !secret_ephemeral.empty() && !public_keys.empty()
+            && !input_blinding_factor.empty() && !public_commitments.empty() && !pseudo_blinding_factor.empty()
+            && !pseudo_commitment.empty())
+        {
+            const auto [success, signature] = Crypto::RingSignature::Triptych::generate_ring_signature(
+                message_digest,
+                secret_ephemeral,
+                public_keys,
+                input_blinding_factor,
+                public_commitments,
+                pseudo_blinding_factor,
+                pseudo_commitment);
+
+            if (success)
+            {
+                JSON_INIT();
+
+                signature.toJSON(writer);
+
+                JSON_DUMP(sig_json);
+
+                return prepare(success, sig_json);
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(triptych_prepare_ring_signature)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto message_digest = get<std::string>(info, 0);
+
+        const auto key_image = get<std::string>(info, 1);
+
+        const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
+
+        const auto real_output_index = get<uint32_t>(info, 3);
+
+        const auto input_blinding_factor = get<std::string>(info, 4);
+
+        const auto public_commitments = get_vector<crypto_pedersen_commitment_t>(info, 5);
+
+        const auto pseudo_blinding_factor = get<std::string>(info, 6);
+
+        const auto pseudo_commitment = get<std::string>(info, 7);
+
+        if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !input_blinding_factor.empty()
+            && !public_commitments.empty() && !pseudo_blinding_factor.empty() && !pseudo_commitment.empty())
+        {
+            const auto [success, signature, xpow] = Crypto::RingSignature::Triptych::prepare_ring_signature(
+                message_digest,
+                key_image,
+                public_keys,
+                real_output_index,
+                input_blinding_factor,
+                public_commitments,
+                pseudo_blinding_factor,
+                pseudo_commitment);
+
+            if (success)
+            {
+                JSON_INIT();
+
+                signature.toJSON(writer);
+
+                JSON_DUMP(sig_json);
+
+                return prepare(success, sig_json, xpow.to_string());
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+/**
  * Mapped methods from signature.cpp
  */
 
@@ -2818,6 +3040,19 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(clsag_generate_ring_signature);
 
         EMS_EXPORT(clsag_prepare_ring_signature);
+    }
+
+    // Mapped methods from ring_signature_triptych.cpp
+    {
+        EMS_EXPORT(triptych_check_ring_signature);
+
+        EMS_EXPORT(triptych_complete_ring_signature);
+
+        EMS_EXPORT(triptych_generate_partial_signing_scalar);
+
+        EMS_EXPORT(triptych_generate_ring_signature);
+
+        EMS_EXPORT(triptych_prepare_ring_signature);
     }
 
     // Mapped methods from signature.cpp

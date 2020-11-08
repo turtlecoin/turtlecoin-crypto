@@ -334,8 +334,10 @@ namespace Crypto::Mnemonics
                 result.uint32(x);
             }
         }
-        catch (...)
+        catch (const std::exception &e)
         {
+            PRINTF(e.what())
+
             return {false, {}, {}};
         }
 
@@ -351,8 +353,9 @@ namespace Crypto::Mnemonics
             {
                 extra_data = reader.uint64();
             }
-            catch (...)
+            catch (const std::exception &e)
             {
+                PRINTF(e.what())
             }
         }
 
