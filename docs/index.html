@@ -80,58 +80,90 @@
 					<h3>Features</h3>
 				</a>
 				<ul>
-					<li>Three Core Structure Types<ul>
-							<li><code>crypto_scalar_t</code>: Elliptic Curve Scalar</li>
-							<li><code>crypto_point_t</code>: Elliptic Curve Point<ul>
-									<li>Caching of commonly used <code>ge</code> types</li>
+					<li>Core Structure Types<ul>
+							<li><code>crypto_hash_t</code>: 256-bit hash<ul>
+									<li>Aliases:<ul>
+											<li><code>crypto_seed_t</code></li>
+										</ul>
+									</li>
 								</ul>
 							</li>
-							<li><code>crypto_hash_t</code>: 256-bit hash</li>
+							<li><code>crypto_point_t</code>: Elliptic Curve Point<ul>
+									<li>Caching of commonly used <code>ge</code> types</li>
+									<li>Aliases:<ul>
+											<li><code>crypto_public_key_t</code></li>
+											<li><code>crypto_derivation_t</code></li>
+											<li><code>crypto_key_image_t</code></li>
+											<li><code>crypto_pedersen_commitment_t</code></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li><code>crypto_scalar_t</code>: Elliptic Curve Scalar<ul>
+									<li>Aliases:<ul>
+											<li><code>crypto_secret_key_t</code></li>
+											<li><code>crypto_blinding_factor_t</code></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+							<li><code>crypto_signature_t</code>: 512-bit message signature</li>
 						</ul>
 					</li>
-					<li>SHA3 (256-bit) [not keccak ie. cn_fast_hash]<ul>
-							<li>SHA3 KDF via <code>sha3_slow_hash()</code></li>
+					<li><a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">SHA3</a> (256-bit)<ul>
+							<li>Simple KDF via <code>sha3_slow_hash()</code></li>
 						</ul>
 					</li>
-					<li>ED25519 Key Generation &amp; Manipulation<ul>
+					<li><a href="https://github.com/P-H-C/phc-winner-argon2/blob/master/argon2-specs.pdf">Argon2</a> Hashing<ul>
+							<li>Argon2d</li>
+							<li>Argon2i</li>
+							<li>Argon2id</li>
+						</ul>
+					</li>
+					<li><a href="https://tools.ietf.org/html/draft-msporny-base58-02">Base58 Encoding</a><ul>
+							<li>With or Without Checksum Calculations/Checks</li>
+							<li><strong>Note:</strong> This implementation is <strong>not</strong> block-based and will not work with block-based Base58 encoding (ie. CryptoNote)</li>
+						</ul>
+					</li>
+					<li><a href="https://ed25519.cr.yp.to/ed25519-20110926.pdf">ED25519</a> Key Generation &amp; Manipulation<ul>
 							<li>Deterministic Subwallet Key Generation</li>
 							<li>Deterministic Secondary Key Generation (View Key)</li>
 						</ul>
 					</li>
-					<li>Message Digest Signing<ul>
+					<li><a href="https://tools.ietf.org/html/rfc8032">Message Signing</a><ul>
 							<li>Multisig Supported</li>
 						</ul>
 					</li>
-					<li>Borromean Ring Signatures<ul>
+					<li><a href="https://github.com/Blockstream/borromean_paper/raw/master/borromean_draft_0.01_34241bb.pdf">Borromean</a> Ring Signatures<ul>
 							<li>Multisig Supported</li>
 						</ul>
 					</li>
-					<li>CLSAG Ring Signatures<ul>
+					<li><a href="https://eprint.iacr.org/2019/654.pdf">CLSAG</a> Ring Signatures<ul>
 							<li>Multisig Supported</li>
 						</ul>
 					</li>
-					<li>RingCT<ul>
-							<li>Pedersen Commitments</li>
+					<li><a href="https://eprint.iacr.org/2015/1098.pdf">RingCT</a><ul>
+							<li><a href="https://www.cs.cornell.edu/courses/cs754/2001fa/129.PDF">Pedersen Commitments</a></li>
 							<li>Pseudo Commitments</li>
 							<li>Blinding Factors</li>
 							<li>Amount Masking</li>
 						</ul>
 					</li>
-					<li>Bulletproof Range Proofs<ul>
+					<li><a href="https://eprint.iacr.org/2017/1066.pdf">Bulletproofs</a> Range Proofs<ul>
 							<li>Variable bit length proofs (1 to 64 bits)</li>
 							<li>No limits to number of values proved or verified in a single call</li>
 							<li>Batch Verification</li>
 							<li>Implements caching of common points for faster repeat calls to <code>prove()</code> and <code>verify()</code></li>
 						</ul>
 					</li>
-					<li>Bulletproof+ Range Proofs<ul>
+					<li><a href="https://eprint.iacr.org/2020/735.pdf">Bulletproofs+</a> Range Proofs<ul>
 							<li>Variable bit length proofs (1 to 64 bits)</li>
 							<li>No limits to number of values proved or verified in a single call</li>
 							<li>Batch Verification</li>
 							<li>Implements caching of common points for faster repeat calls to <code>prove()</code> and <code>verify()</code></li>
 						</ul>
 					</li>
-					<li>Arcturus Proofs (Ring Signatures)<ul>
+					<li><a href="https://eprint.iacr.org/2020/312.pdf">Arcturus</a> Proofs (Ring Signatures)<ul>
 							<li>Proving &amp; Verification</li>
 							<li><strong>Multisig in Development</strong></li>
 						</ul>
@@ -144,7 +176,7 @@
 							<li>Overloaded structures keep the code clean</li>
 						</ul>
 					</li>
-					<li>One Header for all <code>./include/crypto.h</code></li>
+					<li>One Header for all <code>#include &lt;crypto.h&gt;</code></li>
 				</ul>
 				<a href="#this-library-is-not-compatible-with-turtlecoin-pre-200" id="this-library-is-not-compatible-with-turtlecoin-pre-200" style="color: inherit; text-decoration: none;">
 					<h3>This library is NOT compatible with TurtleCoin pre-2.0.0</h3>
@@ -212,7 +244,7 @@
 				<p>The CMake build system builds an optimized static library for you. </p>
 				<p>However, it is best to simply include this project in your project as a dependency with your CMake project.</p>
 				<p>Please reference your system documentation on how to compile with CMake.</p>
-				<p>To use this library in your project(s) simply link against the build target and include the following in your relevant source or header file(s).</p>
+				<p>To use this library in your project(s) simply link against the build target (<code>crypto-static</code>) and include the following in your relevant source or header file(s).</p>
 				<pre><code class="language-c++">#include &lt;crypto.h&gt;</code></pre>
 				<a href="#documentation-1" id="documentation-1" style="color: inherit; text-decoration: none;">
 					<h3>Documentation</h3>
@@ -222,15 +254,14 @@
 					<h2>Cloning this Repository</h2>
 				</a>
 				<p>This repository uses submodules, make sure you pull those before doing anything if you are cloning this project.</p>
-				<pre><code class="language-bash"><span style="color: #000000">git clone https://github.com/turtlecoin/turtlecoin-crypto</span>
+				<pre><code class="language-bash"><span style="color: #000000">git clone --recursive https://github.com/turtlecoin/turtlecoin-crypto</span>
 <span style="color: #795E26">cd</span><span style="color: #000000"> turtlecoin-crypto</span>
-<span style="color: #000000">git submodule init</span>
-<span style="color: #000000">git submodule update --recursive</span>
 </code></pre>
 				<a href="#as-a-dependency" id="as-a-dependency" style="color: inherit; text-decoration: none;">
 					<h3>As a dependency</h3>
 				</a>
 				<pre><code class="language-bash"><span style="color: #000000">git submodule add https://github.com/turtlecoin/turtlecoin-crypto external/turtlecoin-crypto</span>
+<span style="color: #000000">git submodule update --init --recursive</span>
 </code></pre>
 				<a href="#thanks" id="thanks" style="color: inherit; text-decoration: none;">
 					<h2>Thanks</h2>
@@ -239,8 +270,9 @@
 				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
 					<h2>License</h2>
 				</a>
-				<p>External references are provided via libraries in the Public Domain (Unlicense) and/or MIT from their respective parties.</p>
+				<p>External references are provided via libraries in the Public Domain (Unlicense), MIT, and/or BSD from their respective parties.</p>
 				<p>This wrapper library is provided under the BSD-3-Clause license found in the LICENSE file.</p>
+				<p>Please make sure when using this library that you follow the licensing requirements set forth in all licenses.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

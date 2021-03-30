@@ -19,38 +19,56 @@ This repository a standalone cryptographic primitive wrapper library that can be
 
 ### Features
 
-* Three Core Structure Types
-  * `crypto_scalar_t`: Elliptic Curve Scalar
+* Core Structure Types
+  * `crypto_hash_t`: 256-bit hash
+    * Aliases:
+      * `crypto_seed_t`
   * `crypto_point_t`: Elliptic Curve Point
     * Caching of commonly used `ge` types
-  * `crypto_hash_t`: 256-bit hash
-* SHA3 (256-bit) [not keccak ie. cn_fast_hash]
-  * SHA3 KDF via `sha3_slow_hash()`
-* ED25519 Key Generation & Manipulation
+    * Aliases:
+      * `crypto_public_key_t`
+      * `crypto_derivation_t`
+      * `crypto_key_image_t`
+      * `crypto_pedersen_commitment_t`
+  * `crypto_scalar_t`: Elliptic Curve Scalar
+    * Aliases:
+      * `crypto_secret_key_t`
+      * `crypto_blinding_factor_t`
+  * `crypto_signature_t`: 512-bit message signature
+* [SHA3](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf) (256-bit)
+  * Simple KDF via `sha3_slow_hash()`
+* [Argon2](https://github.com/P-H-C/phc-winner-argon2/blob/master/argon2-specs.pdf) Hashing
+  * Argon2d
+  * Argon2i
+  * Argon2id
+* [Base58 Encoding](https://tools.ietf.org/html/draft-msporny-base58-02)
+  * With or Without Checksum Calculations/Checks
+  * **Note:** This implementation is **not** block-based and will not work with block-based Base58 encoding (ie. CryptoNote)
+* [ED25519](https://ed25519.cr.yp.to/ed25519-20110926.pdf) Key Generation & Manipulation
   * Deterministic Subwallet Key Generation
   * Deterministic Secondary Key Generation (View Key)
-* Message Digest Signing
+* [Message Signing](https://tools.ietf.org/html/rfc8032)
   * Multisig Supported
-* Borromean Ring Signatures
+* [Borromean](https://github.com/Blockstream/borromean_paper/raw/master/borromean_draft_0.01_34241bb.pdf) Ring Signatures
   * Multisig Supported
-* CLSAG Ring Signatures
+* [CLSAG](https://eprint.iacr.org/2019/654.pdf) Ring Signatures
   * Multisig Supported
-* RingCT
-  * Pedersen Commitments
+* [RingCT](https://eprint.iacr.org/2015/1098.pdf)
+  * [Pedersen Commitments](https://www.cs.cornell.edu/courses/cs754/2001fa/129.PDF)
   * Pseudo Commitments
   * Blinding Factors
   * Amount Masking
-* Bulletproof Range Proofs
+* [Bulletproofs](https://eprint.iacr.org/2017/1066.pdf) Range Proofs
   * Variable bit length proofs (1 to 64 bits)
   * No limits to number of values proved or verified in a single call
   * Batch Verification
   * Implements caching of common points for faster repeat calls to `prove()` and `verify()`
-* Bulletproof+ Range Proofs
+* [Bulletproofs+](https://eprint.iacr.org/2020/735.pdf) Range Proofs
   * Variable bit length proofs (1 to 64 bits)
   * No limits to number of values proved or verified in a single call
   * Batch Verification
   * Implements caching of common points for faster repeat calls to `prove()` and `verify()`
-* Arcturus Proofs (Ring Signatures)
+* [Arcturus](https://eprint.iacr.org/2020/312.pdf) Proofs (Ring Signatures)
   * Proving & Verification
   * **Multisig in Development**
 * Scalar Transcripts (C++ Only)
@@ -59,7 +77,7 @@ This repository a standalone cryptographic primitive wrapper library that can be
 * Structure to/from hexadecimal encoded string representations (C++ only)
 * Human Readable Code
   * Overloaded structures keep the code clean
-* One Header for all `./include/crypto.h`
+* One Header for all `#include <crypto.h>`
 
 ### This library is NOT compatible with TurtleCoin pre-2.0.0
 
@@ -130,7 +148,7 @@ However, it is best to simply include this project in your project as a dependen
 
 Please reference your system documentation on how to compile with CMake.
 
-To use this library in your project(s) simply link against the build target and include the following in your relevant source or header file(s).
+To use this library in your project(s) simply link against the build target (`crypto-static`) and include the following in your relevant source or header file(s).
 
 ```c++
 #include <crypto.h>
@@ -145,15 +163,14 @@ C++ API documentation can be found in the headers (.h)
 This repository uses submodules, make sure you pull those before doing anything if you are cloning this project.
 
 ```bash
-git clone https://github.com/turtlecoin/turtlecoin-crypto
+git clone --recursive https://github.com/turtlecoin/turtlecoin-crypto
 cd turtlecoin-crypto
-git submodule init
-git submodule update --recursive
 ```
 
 ### As a dependency
 ```bash
 git submodule add https://github.com/turtlecoin/turtlecoin-crypto external/turtlecoin-crypto
+git submodule update --init --recursive
 ```
 
 ## Thanks
@@ -162,6 +179,8 @@ The TurtleCoin Community
 
 ## License
 
-External references are provided via libraries in the Public Domain (Unlicense) and/or MIT from their respective parties.
+External references are provided via libraries in the Public Domain (Unlicense), MIT, and/or BSD from their respective parties.
 
 This wrapper library is provided under the BSD-3-Clause license found in the LICENSE file.
+
+Please make sure when using this library that you follow the licensing requirements set forth in all licenses.
