@@ -127,6 +127,11 @@ export interface IConfig {
     base58_decode?: (base58: string) => Promise<string>;
     base58_decode_check?: (base58: string) => Promise<string>;
 
+    cn_base58_encode?: (hex: string) => Promise<string>;
+    cn_base58_encode_check?: (hex: string) => Promise<string>;
+    cn_base58_decode?: (base58: string) => Promise<string>;
+    cn_base58_decode_check?: (base58: string) => Promise<string>;
+
     arcturus_check_ring_signature?:
         (message_digest: string,
          public_keys: string[],

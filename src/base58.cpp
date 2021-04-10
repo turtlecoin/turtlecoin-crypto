@@ -49,6 +49,11 @@ namespace Crypto::Base58
 {
     std::tuple<bool, std::vector<uint8_t>> decode(const std::string &input)
     {
+        if (input.empty())
+        {
+            return {false, {}};
+        }
+
         const auto *data = input.c_str();
 
         // skip and count leading 1s
@@ -122,6 +127,11 @@ namespace Crypto::Base58
 
     std::tuple<bool, std::vector<uint8_t>> decode_check(const std::string &input)
     {
+        if (input.empty())
+        {
+            return {false, {}};
+        }
+
         auto [success, decoded] = decode(input);
 
         if (!success)
@@ -151,6 +161,11 @@ namespace Crypto::Base58
 
     std::string encode(std::vector<uint8_t> input)
     {
+        if (input.empty())
+        {
+            return std::string();
+        }
+
         // skip and count leading zeroes
         int zeroes = 0, length = 0;
 
@@ -215,6 +230,11 @@ namespace Crypto::Base58
 
     std::string encode_check(const std::vector<uint8_t> &input)
     {
+        if (input.empty())
+        {
+            return std::string();
+        }
+
         serializer_t writer;
 
         writer.bytes(input);

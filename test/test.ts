@@ -155,6 +155,46 @@ describe('Cryptographic Tests', async () => {
         });
     });
 
+    describe('CryptoNote Base58', async () => {
+        const INPUT_DATA = 'cfc765d905c65e2b61816dc1f0fd69f6f6779f36ed6239ac7e21ff51ef2c891e';
+
+        it('Encode', async () => {
+            const encoded = await crypto.cn_base58_encode(INPUT_DATA);
+
+            const decoded = await crypto.cn_base58_decode(encoded);
+
+            assert(decoded === INPUT_DATA);
+        });
+
+        it('Encode Fails', async () => {
+            const encoded = await crypto.cn_base58_encode(INPUT_DATA);
+
+            try {
+                await crypto.cn_base58_decode_check(encoded);
+
+                assert(false);
+            } catch {}
+        });
+
+        it('Encode Check', async () => {
+            const encoded = await crypto.cn_base58_encode_check(INPUT_DATA);
+
+            const decoded = await crypto.cn_base58_decode_check(encoded);
+
+            assert(decoded === INPUT_DATA);
+        });
+
+        it('Encode Check Fails', async () => {
+            const encoded = await crypto.cn_base58_encode_check(INPUT_DATA);
+
+            try {
+                await crypto.cn_base58_decode(encoded);
+
+                assert(false);
+            } catch {}
+        });
+    });
+
     describe('Fundamentals', async () => {
         it('Calculate Base2 Exponent', async () => {
             for (let i = 0; i < 16; ++i) {

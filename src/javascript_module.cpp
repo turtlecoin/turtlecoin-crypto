@@ -535,6 +535,124 @@ EMS_METHOD(base58_decode_check)
 }
 
 /**
+ * Mapped methods from cn_base58.cpp
+ */
+
+EMS_METHOD(cn_base58_encode)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto hex = get<std::string>(info, 0);
+
+        if (!hex.empty())
+        {
+            deserializer_t reader(hex);
+
+            const auto base58 = Crypto::CNBase58::encode(reader.unread_data());
+
+            return prepare(true, base58);
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(cn_base58_encode_check)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto hex = get<std::string>(info, 0);
+
+        if (!hex.empty())
+        {
+            deserializer_t reader(hex);
+
+            const auto base58 = Crypto::CNBase58::encode_check(reader.unread_data());
+
+            return prepare(true, base58);
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(cn_base58_decode)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto base58 = get<std::string>(info, 0);
+
+        if (!base58.empty())
+        {
+            const auto [success, decoded] = Crypto::CNBase58::decode(base58);
+
+            if (success)
+            {
+                serializer_t writer;
+
+                writer.bytes(decoded);
+
+                return prepare(true, writer.to_string());
+            }
+
+            return prepare(false, "");
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(cn_base58_decode_check)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto base58 = get<std::string>(info, 0);
+
+        if (!base58.empty())
+        {
+            const auto [success, decoded] = Crypto::CNBase58::decode_check(base58);
+
+            if (success)
+            {
+                serializer_t writer;
+
+                writer.bytes(decoded);
+
+                return prepare(true, writer.to_string());
+            }
+
+            return prepare(false, "");
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+/**
  * Mapped methods from bulletproofs.cpp
  */
 
@@ -2505,6 +2623,17 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(base58_decode);
 
         EMS_EXPORT(base58_decode_check);
+    }
+
+    // Mapped methods from cn_base58.cpp
+    {
+        EMS_EXPORT(cn_base58_encode);
+
+        EMS_EXPORT(cn_base58_encode_check);
+
+        EMS_EXPORT(cn_base58_decode);
+
+        EMS_EXPORT(cn_base58_decode_check);
     }
 
     // Mapped methods from bulletproofs.cpp

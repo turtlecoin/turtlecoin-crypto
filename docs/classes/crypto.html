@@ -135,6 +135,10 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#clsag_generate_partial_signing_scalar" class="tsd-kind-icon">clsag_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#clsag_generate_ring_signature" class="tsd-kind-icon">clsag_<wbr>generate_<wbr>ring_<wbr>signature</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#clsag_prepare_ring_signature" class="tsd-kind-icon">clsag_<wbr>prepare_<wbr>ring_<wbr>signature</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#cn_base58_decode" class="tsd-kind-icon">cn_<wbr>base58_<wbr>decode</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#cn_base58_decode_check" class="tsd-kind-icon">cn_<wbr>base58_<wbr>decode_<wbr>check</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#cn_base58_encode" class="tsd-kind-icon">cn_<wbr>base58_<wbr>encode</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#cn_base58_encode_check" class="tsd-kind-icon">cn_<wbr>base58_<wbr>encode_<wbr>check</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#complete_signature" class="tsd-kind-icon">complete_<wbr>signature</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#derivation_to_scalar" class="tsd-kind-icon">derivation_<wbr>to_<wbr>scalar</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#derive_public_key" class="tsd-kind-icon">derive_<wbr>public_<wbr>key</a></li>
@@ -1510,6 +1514,116 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../interfaces/crypto_clsag_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_clsag_signature_t</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cn_base58_decode" class="tsd-anchor"></a>
+					<h3>cn_<wbr>base58_<wbr>decode</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cn_<wbr>base58_<wbr>decode<span class="tsd-signature-symbol">(</span>base58<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes the CryptoNote Base58 encoded string into a hexadecimal encoded string</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>base58: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cn_base58_decode_check" class="tsd-anchor"></a>
+					<h3>cn_<wbr>base58_<wbr>decode_<wbr>check</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cn_<wbr>base58_<wbr>decode_<wbr>check<span class="tsd-signature-symbol">(</span>base58<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes the CryptoNote Base58 encoded string into a hexadecimal encoded string
+									as long as the checksum included matches the checksum expected</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>base58: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cn_base58_encode" class="tsd-anchor"></a>
+					<h3>cn_<wbr>base58_<wbr>encode</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cn_<wbr>base58_<wbr>encode<span class="tsd-signature-symbol">(</span>hex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Encodes the hexadecimal encoded string into a CryptoNote base58 encoded string</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hex: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cn_base58_encode_check" class="tsd-anchor"></a>
+					<h3>cn_<wbr>base58_<wbr>encode_<wbr>check</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cn_<wbr>base58_<wbr>encode_<wbr>check<span class="tsd-signature-symbol">(</span>hex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Encodes the hexadecimal encoded string into a CryptoNote base58 encoded string
+									and automatically includes a SHA3 checksum in the result</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hex: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2943,6 +3057,18 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="crypto.html#clsag_prepare_ring_signature" class="tsd-kind-icon">clsag_<wbr>prepare_<wbr>ring_<wbr>signature</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#cn_base58_decode" class="tsd-kind-icon">cn_<wbr>base58_<wbr>decode</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#cn_base58_decode_check" class="tsd-kind-icon">cn_<wbr>base58_<wbr>decode_<wbr>check</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#cn_base58_encode" class="tsd-kind-icon">cn_<wbr>base58_<wbr>encode</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#cn_base58_encode_check" class="tsd-kind-icon">cn_<wbr>base58_<wbr>encode_<wbr>check</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="crypto.html#complete_signature" class="tsd-kind-icon">complete_<wbr>signature</a>

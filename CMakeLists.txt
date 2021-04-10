@@ -94,6 +94,7 @@ set(SOURCES
     src/base58.cpp
     src/bulletproofs.cpp
     src/bulletproofsplus.cpp
+    src/cn_base58.cpp
     src/crypto_common.cpp
     src/hashing.cpp
     src/multisig.cpp

@@ -199,6 +199,72 @@ int main()
         std::cout << "Crypto::Base58[check]: Passed!" << std::endl << std::endl;
     }
 
+    // CryptoNote Base58 Test #1
+    {
+        const auto a = Crypto::random_point();
+
+        serializer_t writer;
+
+        writer.key(a);
+
+        const auto encoded = Crypto::CNBase58::encode(writer.vector());
+
+        const auto [success, decoded] = Crypto::CNBase58::decode(encoded);
+
+        if (!success)
+        {
+            std::cout << "Crypto::CNBase58: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        deserializer_t reader(decoded);
+
+        const auto check = reader.key<crypto_point_t>();
+
+        if (check != a)
+        {
+            std::cout << "Crypto::CNBase58: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << "Crypto::CNBase58: Passed!" << std::endl << std::endl;
+    }
+
+    // CryptoNote Base58 Test #2
+    {
+        const auto a = Crypto::random_point();
+
+        serializer_t writer;
+
+        writer.key(a);
+
+        const auto encoded = Crypto::CNBase58::encode_check(writer.vector());
+
+        const auto [success, decoded] = Crypto::CNBase58::decode_check(encoded);
+
+        if (!success)
+        {
+            std::cout << "Crypto::CNBase58[check]: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        deserializer_t reader(decoded);
+
+        const auto check = reader.key<crypto_point_t>();
+
+        if (check != a)
+        {
+            std::cout << "Crypto::CNBase58[check]: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << "Crypto::CNBase58[check]: Passed!" << std::endl << std::endl;
+    }
+
     // 2^n rounding test
     {
         const auto val = Crypto::pow2_round(13);

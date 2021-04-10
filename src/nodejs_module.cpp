@@ -529,6 +529,132 @@ NAN_METHOD(base58_decode_check)
 }
 
 /**
+ * Mapped methods from cn_base58.cpp
+ */
+
+NAN_METHOD(cn_base58_encode)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto hex = get<std::string>(info, 0);
+
+    if (!hex.empty())
+    {
+        try
+        {
+            deserializer_t reader(hex);
+
+            const auto base58 = Crypto::CNBase58::encode(reader.unread_data());
+
+            result = STR_TO_NAN_VAL(base58);
+
+            success = true;
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(cn_base58_encode_check)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto hex = get<std::string>(info, 0);
+
+    if (!hex.empty())
+    {
+        try
+        {
+            deserializer_t reader(hex);
+
+            const auto base58 = Crypto::CNBase58::encode_check(reader.unread_data());
+
+            result = STR_TO_NAN_VAL(base58);
+
+            success = true;
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(cn_base58_decode)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto base58 = get<std::string>(info, 0);
+
+    if (!base58.empty())
+    {
+        try
+        {
+            const auto [decode_success, decoded] = Crypto::CNBase58::decode(base58);
+
+            if (decode_success)
+            {
+                serializer_t writer;
+
+                writer.bytes(decoded);
+
+                result = STR_TO_NAN_VAL(writer.to_string());
+
+                success = true;
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(cn_base58_decode_check)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto base58 = get<std::string>(info, 0);
+
+    if (!base58.empty())
+    {
+        try
+        {
+            const auto [decode_success, decoded] = Crypto::CNBase58::decode_check(base58);
+
+            if (decode_success)
+            {
+                serializer_t writer;
+
+                writer.bytes(decoded);
+
+                result = STR_TO_NAN_VAL(writer.to_string());
+
+                success = true;
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+/**
  * Mapped methods from bulletproofs.cpp
  */
 
@@ -2595,6 +2721,17 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, base58_decode);
 
         NAN_EXPORT(target, base58_decode_check);
+    }
+
+    // Mapped methods from cn_base58.cpp
+    {
+        NAN_EXPORT(target, cn_base58_encode);
+
+        NAN_EXPORT(target, cn_base58_encode_check);
+
+        NAN_EXPORT(target, cn_base58_decode);
+
+        NAN_EXPORT(target, cn_base58_decode_check);
     }
 
     // Mapped methods from bulletproofs.cpp

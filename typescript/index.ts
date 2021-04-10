@@ -263,6 +263,40 @@ export class Crypto {
     }
 
     /**
+     * Encodes the hexadecimal encoded string into a CryptoNote base58 encoded string
+     * @param hex
+     */
+    public async cn_base58_encode (hex: string): Promise<string> {
+        return execute('cn_base58_encode', hex);
+    }
+
+    /**
+     * Encodes the hexadecimal encoded string into a CryptoNote base58 encoded string
+     * and automatically includes a SHA3 checksum in the result
+     * @param hex
+     */
+    public async cn_base58_encode_check (hex: string): Promise<string> {
+        return execute('cn_base58_encode_check', hex);
+    }
+
+    /**
+     * Decodes the CryptoNote Base58 encoded string into a hexadecimal encoded string
+     * @param base58
+     */
+    public async cn_base58_decode (base58: string): Promise<string> {
+        return execute('cn_base58_decode', base58);
+    }
+
+    /**
+     * Decodes the CryptoNote Base58 encoded string into a hexadecimal encoded string
+     * as long as the checksum included matches the checksum expected
+     * @param base58
+     */
+    public async cn_base58_decode_check (base58: string): Promise<string> {
+        return execute('cn_base58_decode_check', base58);
+    }
+
+    /**
      * Checks the Arcturus "ring signature" presented
      * @param message_digest
      * @param public_keys
