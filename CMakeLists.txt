@@ -97,6 +97,7 @@ set(SOURCES
     src/cn_base58.cpp
     src/crypto_common.cpp
     src/hashing.cpp
+    src/memory_helper.cpp
     src/multisig.cpp
     src/ringct.cpp
     src/ring_signature_arcturus.cpp

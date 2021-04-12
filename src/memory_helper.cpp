@@ -24,20 +24,20 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
-
-#include "base58.h"
-#include "bulletproofs.h"
-#include "bulletproofsplus.h"
-#include "cn_base58.h"
-#include "crypto_common.h"
 #include "memory_helper.h"
-#include "multisig.h"
-#include "ring_signature_arcturus.h"
-#include "ring_signature_borromean.h"
-#include "ring_signature_clsag.h"
-#include "ringct.h"
-#include "signature.h"
 
-#endif // CRYPTO_H
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
+
+void secure_erase(void *pointer, size_t length)
+{
+#ifdef _MSC_VER
+    SecureZeroMemory(pointer, length);
+#else
+    std::memset(pointer, 0, length);
+
+    // prevent compiler optimization
+    __asm__ __volatile__("" : : "r"(pointer) : "memory");
+#endif
+}

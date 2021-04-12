@@ -24,20 +24,28 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#ifndef CRYPTO_MEMORY_HELPER_H
+#define CRYPTO_MEMORY_HELPER_H
 
-#include "base58.h"
-#include "bulletproofs.h"
-#include "bulletproofsplus.h"
-#include "cn_base58.h"
-#include "crypto_common.h"
-#include "memory_helper.h"
-#include "multisig.h"
-#include "ring_signature_arcturus.h"
-#include "ring_signature_borromean.h"
-#include "ring_signature_clsag.h"
-#include "ringct.h"
-#include "signature.h"
+#include <cstring>
 
-#endif // CRYPTO_H
+/**
+ * Wipes the pointer memory such that the entire pointer is filled with 0s
+ *
+ * @param pointer
+ * @param length
+ */
+void secure_erase(void *pointer, size_t length);
+
+/**
+ * Wipes value memory such that the entire value is filled with 0s
+ *
+ * @tparam ValueType
+ * @param value
+ */
+template<typename ValueType> void secure_erase(ValueType &value)
+{
+    secure_erase(value, sizeof(value));
+}
+
+#endif

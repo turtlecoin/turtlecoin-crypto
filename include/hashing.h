@@ -27,6 +27,7 @@
 #ifndef CRYPTO_HASHING_H
 #define CRYPTO_HASHING_H
 
+#include "memory_helper.h"
 #include "serializer.h"
 #include "string_tools.h"
 
@@ -92,6 +93,11 @@ struct crypto_hash_t
         }
 
         from_string(j.GetString());
+    }
+
+    ~crypto_hash_t()
+    {
+        secure_erase(&bytes, sizeof(bytes));
     }
 
     unsigned char &operator[](int i)

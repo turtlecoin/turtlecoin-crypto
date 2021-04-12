@@ -27,6 +27,7 @@
 #ifndef CRYPTO_TYPES_H
 #define CRYPTO_TYPES_H
 
+#include "memory_helper.h"
 #include "serializer.h"
 #include "string_tools.h"
 
@@ -165,6 +166,15 @@ struct crypto_point_t
         }
 
         from_string(j.GetString());
+    }
+
+    ~crypto_point_t()
+    {
+        secure_erase(&bytes, sizeof(bytes));
+
+        secure_erase(&point3, sizeof(point3));
+
+        secure_erase(&cached_point, sizeof(cached_point));
     }
 
     /**
@@ -638,6 +648,11 @@ struct crypto_scalar_t
         {
             do_reduce();
         }
+    }
+
+    ~crypto_scalar_t()
+    {
+        secure_erase(&bytes, sizeof(bytes));
     }
 
     /**
@@ -1395,6 +1410,11 @@ struct crypto_signature_t
         }
 
         from_string(j.GetString());
+    }
+
+    ~crypto_signature_t()
+    {
+        secure_erase(&bytes, sizeof(bytes));
     }
 
     /**
