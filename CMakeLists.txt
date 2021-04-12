@@ -77,7 +77,7 @@ add_definitions(-DSTATICLIB)
 add_definitions(-DRAPIDJSON_HAS_STDSTRING)
 
 if(MSVC)
-    add_definitions("/EHsc -std:c++17 /DWIN32_LEAN_AND_MEAN /O2 /wd4267")
+    add_definitions("/EHsc -std:c++17 /DWIN32_LEAN_AND_MEAN /O2 /wd4267 /wd4996")
 endif()
 
 if(NOT MSVC)

@@ -84,10 +84,10 @@ void benchmark(T &&function, const std::string &functionName = "", const uint64_
 
         function();
 
-        const auto single_elapsed = (std::chrono::duration_cast<std::chrono::microseconds>(
-                                         std::chrono::high_resolution_clock::now() - single_iter_timer)
-                                         .count())
-                                    * 1;
+        const uint64_t single_elapsed = (std::chrono::duration_cast<std::chrono::microseconds>(
+                                             std::chrono::high_resolution_clock::now() - single_iter_timer)
+                                             .count())
+                                        * 1;
 
         if (single_elapsed > max)
         {
