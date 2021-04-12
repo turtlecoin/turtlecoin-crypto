@@ -72,16 +72,30 @@ namespace Crypto
             update(seed3, seed, seed2);
         }
 
+        /**
+         * Returns the challenge scalar given the current state of the transcript
+         *
+         * @return
+         */
         crypto_scalar_t challenge()
         {
             return state;
         }
 
+        /**
+         * Resets the transcript to its base state
+         */
         void reset()
         {
             state = TRANSCRIPT_BASE;
         }
 
+        /**
+         * Updates the transcript with the value provided
+         *
+         * @tparam T
+         * @param input
+         */
         template<typename T> void update(const T &input)
         {
             struct
@@ -97,6 +111,14 @@ namespace Crypto
             state = Crypto::hash_to_scalar(&buf, sizeof(buf));
         }
 
+        /**
+         * Updates the transcript with the values provided
+         *
+         * @tparam T
+         * @tparam U
+         * @param input
+         * @param input2
+         */
         template<typename T, typename U> void update(const T &input, const U &input2)
         {
             struct
@@ -115,6 +137,16 @@ namespace Crypto
             state = Crypto::hash_to_scalar(&buf, sizeof(buf));
         }
 
+        /**
+         * Updates the transcript with the values provided
+         *
+         * @tparam T
+         * @tparam U
+         * @tparam V
+         * @param input
+         * @param input2
+         * @param input3
+         */
         template<typename T, typename U, typename V> void update(const T &input, const U &input2, const V &input3)
         {
             struct
@@ -136,6 +168,18 @@ namespace Crypto
             state = Crypto::hash_to_scalar(&buf, sizeof(buf));
         }
 
+        /**
+         * Updates the transcript with the values provided
+         *
+         * @tparam T
+         * @tparam U
+         * @tparam V
+         * @tparam W
+         * @param input
+         * @param input2
+         * @param input3
+         * @param input4
+         */
         template<typename T, typename U, typename V, typename W>
         void update(const T &input, const U &input2, const V &input3, const W &input4)
         {
@@ -161,6 +205,11 @@ namespace Crypto
             state = Crypto::hash_to_scalar(&buf, sizeof(buf));
         }
 
+        /**
+         * Updates the transcript with the vector of values provided
+         *
+         * @param input
+         */
         void update(const std::vector<crypto_scalar_t> &input)
         {
             std::vector<crypto_scalar_t> tmp(1, state.data());
@@ -172,6 +221,11 @@ namespace Crypto
             state = Crypto::hash_to_scalar(tmp.data(), tmp.size() * sizeof(crypto_scalar_t));
         }
 
+        /**
+         * Updates the transcript with the vector of values provided
+         *
+         * @param input
+         */
         void update(const std::vector<crypto_point_t> &input)
         {
             std::vector<crypto_scalar_t> tmp(1, state.data());

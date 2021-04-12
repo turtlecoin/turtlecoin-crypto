@@ -29,11 +29,37 @@
 
 namespace Crypto::CNBase58
 {
+    /**
+     * Decodes the base58 encoded string into the raw bytes
+     *
+     * @param input
+     * @return
+     */
     [[nodiscard]] std::tuple<bool, std::vector<uint8_t>> decode(const std::string &input);
 
+    /**
+     * Decodes the Base58 encoded string into the raw bytes after confirming that
+     * the checksum value is correct for the raw bytes provided
+     *
+     * @param input
+     * @return
+     */
     [[nodiscard]] std::tuple<bool, std::vector<uint8_t>> decode_check(const std::string &input);
 
+    /**
+     * Encodes the raw bytes into a Base58 encoded string
+     *
+     * @param input
+     * @return
+     */
     [[nodiscard]] std::string encode(const std::vector<uint8_t> &input);
 
+    /**
+     * Encodes the raw bytes into a Base58 encoded string including a checksum that
+     * allows for ensuring that the raw bytes included inside were not altered
+     *
+     * @param input
+     * @return
+     */
     [[nodiscard]] std::string encode_check(const std::vector<uint8_t> &input);
 } // namespace Crypto::CNBase58

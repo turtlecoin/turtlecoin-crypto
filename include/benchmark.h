@@ -39,6 +39,9 @@
 #include <iomanip>
 #include <iostream>
 
+/**
+ * Prints the benchmark header for a "table" like setup
+ */
 void benchmark_header()
 {
     std::cout << std::setw(BENCHMARK_PREFIX_WIDTH) << "BENCHMARK TESTS"
@@ -47,6 +50,14 @@ void benchmark_header()
               << std::endl;
 }
 
+/**
+ * Performs a benchmark of the given function for the number of iterations specified
+ *
+ * @tparam T
+ * @param function
+ * @param functionName
+ * @param iterations
+ */
 template<typename T>
 void benchmark(T &&function, const std::string &functionName = "", const uint64_t iterations = PERFORMANCE_ITERATIONS)
 {
