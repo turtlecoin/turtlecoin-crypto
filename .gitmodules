@@ -6,7 +6,7 @@
 	url = https://github.com/turtlecoin/ed25519
 [submodule "external/rapidjson"]
 	path = external/rapidjson
-	url = https://github.com/tencent/rapidjson
+	url = https://github.com/turtlecoin/rapidjson
 [submodule "external/emsdk"]
 	path = external/emsdk
 	url = https://github.com/turtlecoin/emsdk
