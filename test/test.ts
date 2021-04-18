@@ -195,6 +195,41 @@ describe('Cryptographic Tests', async () => {
         });
     });
 
+    describe('Mnemonics', async () => {
+        const m_wallet_seed = 'f41f4de17ba1dd99a520f59e542a49a19cbc4f76e072cdf12205677685befd2a';
+        const m_mnemonic_phrase = 'write cream phone control planet version believe truck decade enhance ' +
+            'hundred save near sponsor assault foster mushroom apple picture doctor kiwi spawn shy table fall';
+        const m_checksum_index = 657;
+
+        it('Encode', async () => {
+            const phrase = await crypto.mnemonics_encode(m_wallet_seed);
+
+            assert(phrase.join(' ') === m_mnemonic_phrase);
+        });
+
+        it('Decode', async () => {
+            const seed = await crypto.mnemonics_decode(m_mnemonic_phrase.split(' '));
+
+            assert(seed === m_wallet_seed);
+        });
+
+        it('Calculate Checksum Index', async () => {
+            const partial_seed = m_mnemonic_phrase.split(' ').reverse();
+
+            partial_seed.shift();
+
+            const index = await crypto.mnemonics_calculate_checksum_index(partial_seed.reverse());
+
+            assert(index === m_checksum_index);
+        });
+
+        it('Word Index', async () => {
+            const index = await crypto.mnemonics_word_index('fall');
+
+            assert(index === m_checksum_index);
+        });
+    });
+
     describe('Fundamentals', async () => {
         it('Calculate Base2 Exponent', async () => {
             for (let i = 0; i < 16; ++i) {

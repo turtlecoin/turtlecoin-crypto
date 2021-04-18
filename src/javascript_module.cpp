@@ -177,6 +177,24 @@ static inline std::string prepare(bool success, const uint32_t value)
     END_RESULT()
 }
 
+static inline std::string prepare(bool success, const std::vector<std::string> &values1)
+{
+    INIT_RESULT()
+    {
+        writer.Bool(!success);
+
+        writer.StartArray();
+        {
+            for (const auto &value : values1)
+            {
+                writer.String(value);
+            }
+        }
+        writer.EndArray();
+    }
+    END_RESULT()
+}
+
 template<typename T> static inline std::string prepare(bool success, const std::vector<T> &values1)
 {
     INIT_RESULT()
@@ -1563,6 +1581,143 @@ EMS_METHOD(root_hash_from_branch)
 }
 
 /**
+ * Mapped methods from mnemonics.cpp
+ */
+
+EMS_METHOD(mnemonics_calculate_checksum_index)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto words = get_vector<std::string>(info, 0);
+
+        if (!words.empty())
+        {
+            const auto index = uint32_t(Crypto::Mnemonics::calculate_checksum_index(words));
+
+            if (index >= 0)
+            {
+                return prepare(true, index);
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(mnemonics_decode)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto words = get_vector<std::string>(info, 0);
+
+        if (!words.empty())
+        {
+            const auto [decode_success, decoded] = Crypto::Mnemonics::decode(words);
+
+            if (decode_success)
+            {
+                return prepare(true, decoded.to_string());
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(mnemonics_encode)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto seed = get<std::string>(info, 0);
+
+        if (!seed.empty())
+        {
+            const auto words = Crypto::Mnemonics::encode(seed);
+
+            return prepare(true, words);
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(mnemonics_word_index)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto word = get<std::string>(info, 0);
+
+        if (!word.empty())
+        {
+            const auto index = uint32_t(Crypto::Mnemonics::word_index(word));
+
+            if (index != -1)
+            {
+                return prepare(true, index);
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(mnemonics_word_list)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto words = Crypto::Mnemonics::word_list();
+
+        return prepare(true, words);
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(mnemonics_word_list_trimmed)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto words = Crypto::Mnemonics::word_list_trimmed();
+
+        return prepare(true, words);
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+/**
  * Mapped methods from multisig.cpp
  */
 
@@ -2718,6 +2873,21 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(root_hash);
 
         EMS_EXPORT(root_hash_from_branch);
+    }
+
+    // Mapped methods from mnemonics.cpp
+    {
+        EMS_EXPORT(mnemonics_calculate_checksum_index);
+
+        EMS_EXPORT(mnemonics_decode);
+
+        EMS_EXPORT(mnemonics_encode);
+
+        EMS_EXPORT(mnemonics_word_index);
+
+        EMS_EXPORT(mnemonics_word_list);
+
+        EMS_EXPORT(mnemonics_word_list_trimmed);
     }
 
     // Mapped methods from multisig.cpp

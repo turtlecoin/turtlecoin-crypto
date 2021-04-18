@@ -749,6 +749,52 @@ export class Crypto {
     }
 
     /**
+     * Calculates the checksum index position in the word list for the given set of words
+     * @param words
+     */
+    public async mnemonics_calculate_checksum_index (words: string[]): Promise<number> {
+        return execute('mnemonics_calculate_checksum_index', words);
+    }
+
+    /**
+     * Decodes a vector of mnemonic phrase words into the seed it represents
+     * @param words
+     */
+    public async mnemonics_decode (words: string[]): Promise<string> {
+        return execute('mnemonics_decode', words);
+    }
+
+    /**
+     * Encodes the given seed into a vector of mnemonic phrase words
+     * @param seed
+     */
+    public async mnemonics_encode (seed: string): Promise<string[]> {
+        return execute('mnemonics_encode', seed);
+    }
+
+    /**
+     * Finds the index of the given word in the word list or returns -1 if not found
+     * @param word
+     */
+    public async mnemonics_word_index (word: string): Promise<number> {
+        return execute('mnemonics_word_index', word);
+    }
+
+    /**
+     * Returns the full word list
+     */
+    public async mnemonics_word_list (): Promise<string[]> {
+        return execute('mnemonics_word_list');
+    }
+
+    /**
+     * Returns the full word list but trimmed to the minimum number of characters per word
+     */
+    public async mnemonics_word_list_trimmed (): Promise<string[]> {
+        return execute('mnemonics_word_list_trimmed');
+    }
+
+    /**
      * Generates the multisig secret key for the provided values
      * @param their_public_key
      * @param our_secret_key

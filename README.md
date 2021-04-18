@@ -47,6 +47,10 @@ This repository a standalone cryptographic primitive wrapper library that can be
 * [CryptoNote Base58 Encoding](https://tools.ietf.org/html/draft-msporny-base58-02)
   * With or Without Checksum Calculations/Checks
   * **Note:** This implementation is block-based and will not work with non block-based Base58 encoding (ie. TurtleCoin)
+* [Mnemonic](https://en.wikipedia.org/wiki/Mnemonic) Encoding
+  * [English language](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt)
+  * 24-word + 1 checksum (25 words total)
+  * Utilizes SHA3 instead of CRC32 for checksum generation
 * [ED25519](https://ed25519.cr.yp.to/ed25519-20110926.pdf) Key Generation & Manipulation
   * Deterministic Subwallet Key Generation
   * Deterministic Secondary Key Generation (View Key)

@@ -165,6 +165,12 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#hash_to_point" class="tsd-kind-icon">hash_<wbr>to_<wbr>point</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#hash_to_scalar" class="tsd-kind-icon">hash_<wbr>to_<wbr>scalar</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#mnemonics_calculate_checksum_index" class="tsd-kind-icon">mnemonics_<wbr>calculate_<wbr>checksum_<wbr>index</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#mnemonics_decode" class="tsd-kind-icon">mnemonics_<wbr>decode</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#mnemonics_encode" class="tsd-kind-icon">mnemonics_<wbr>encode</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#mnemonics_word_index" class="tsd-kind-icon">mnemonics_<wbr>word_<wbr>index</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#mnemonics_word_list" class="tsd-kind-icon">mnemonics_<wbr>word_<wbr>list</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#mnemonics_word_list_trimmed" class="tsd-kind-icon">mnemonics_<wbr>word_<wbr>list_<wbr>trimmed</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#pow2_round" class="tsd-kind-icon">pow2_<wbr>round</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#prepare_signature" class="tsd-kind-icon">prepare_<wbr>signature</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="crypto.html#random_hash" class="tsd-kind-icon">random_<wbr>hash</a></li>
@@ -2350,6 +2356,152 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mnemonics_calculate_checksum_index" class="tsd-anchor"></a>
+					<h3>mnemonics_<wbr>calculate_<wbr>checksum_<wbr>index</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>calculate_<wbr>checksum_<wbr>index<span class="tsd-signature-symbol">(</span>words<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calculates the checksum index position in the word list for the given set of words</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>words: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mnemonics_decode" class="tsd-anchor"></a>
+					<h3>mnemonics_<wbr>decode</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>decode<span class="tsd-signature-symbol">(</span>words<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes a vector of mnemonic phrase words into the seed it represents</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>words: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mnemonics_encode" class="tsd-anchor"></a>
+					<h3>mnemonics_<wbr>encode</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>encode<span class="tsd-signature-symbol">(</span>seed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Encodes the given seed into a vector of mnemonic phrase words</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>seed: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mnemonics_word_index" class="tsd-anchor"></a>
+					<h3>mnemonics_<wbr>word_<wbr>index</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>word_<wbr>index<span class="tsd-signature-symbol">(</span>word<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Finds the index of the given word in the word list or returns -1 if not found</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>word: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mnemonics_word_list" class="tsd-anchor"></a>
+					<h3>mnemonics_<wbr>word_<wbr>list</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>word_<wbr>list<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the full word list</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="mnemonics_word_list_trimmed" class="tsd-anchor"></a>
+					<h3>mnemonics_<wbr>word_<wbr>list_<wbr>trimmed</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>word_<wbr>list_<wbr>trimmed<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the full word list but trimmed to the minimum number of characters per word</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="pow2_round" class="tsd-anchor"></a>
 					<h3>pow2_<wbr>round</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -3147,6 +3299,24 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="crypto.html#initialize" class="tsd-kind-icon">initialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#mnemonics_calculate_checksum_index" class="tsd-kind-icon">mnemonics_<wbr>calculate_<wbr>checksum_<wbr>index</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#mnemonics_decode" class="tsd-kind-icon">mnemonics_<wbr>decode</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#mnemonics_encode" class="tsd-kind-icon">mnemonics_<wbr>encode</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#mnemonics_word_index" class="tsd-kind-icon">mnemonics_<wbr>word_<wbr>index</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#mnemonics_word_list" class="tsd-kind-icon">mnemonics_<wbr>word_<wbr>list</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="crypto.html#mnemonics_word_list_trimmed" class="tsd-kind-icon">mnemonics_<wbr>word_<wbr>list_<wbr>trimmed</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="crypto.html#pow2_round" class="tsd-kind-icon">pow2_<wbr>round</a>

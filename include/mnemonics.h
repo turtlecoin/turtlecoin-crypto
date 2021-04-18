@@ -24,21 +24,61 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#ifndef CRYPTO_MNEMONICS_H
+#define CRYPTO_MNEMONICS_H
 
-#include "base58.h"
-#include "bulletproofs.h"
-#include "bulletproofsplus.h"
-#include "cn_base58.h"
-#include "crypto_common.h"
-#include "memory_helper.h"
-#include "mnemonics.h"
-#include "multisig.h"
-#include "ring_signature_arcturus.h"
-#include "ring_signature_borromean.h"
-#include "ring_signature_clsag.h"
-#include "ringct.h"
-#include "signature.h"
+#include "hashing.h"
 
-#endif // CRYPTO_H
+#include <string>
+#include <vector>
+
+namespace Crypto::Mnemonics
+{
+    /**
+     * Calculates the checksum index position in the word list for the given set of words
+     *
+     * @param words
+     * @return
+     */
+    size_t calculate_checksum_index(const std::vector<std::string> &words);
+
+    /**
+     * Decodes a vector of mnemonic phrase words into the seed it represents
+     *
+     * @param words
+     * @return
+     */
+    std::tuple<bool, crypto_seed_t> decode(const std::vector<std::string> &words);
+
+    /**
+     * Encodes the given seed into a vector of mnemonic phrase words
+     *
+     * @param wallet_seed
+     * @return
+     */
+    std::vector<std::string> encode(const crypto_seed_t &wallet_seed);
+
+    /**
+     * Finds the index of the given word in the word list or returns -1 if not found
+     *
+     * @param word
+     * @return
+     */
+    size_t word_index(const std::string &word);
+
+    /**
+     * Returns the full word list
+     *
+     * @return
+     */
+    std::vector<std::string> word_list();
+
+    /**
+     * Returns the full word list but trimmed to the minimum number of characters per word
+     *
+     * @return
+     */
+    std::vector<std::string> word_list_trimmed();
+} // namespace Crypto::Mnemonics
+
+#endif

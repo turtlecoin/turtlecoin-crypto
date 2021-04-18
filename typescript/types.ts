@@ -224,6 +224,13 @@ export interface IConfig {
     generate_shared_secret_key?: (secret_keys: string[]) => Promise<string>;
     rounds_required?: (participants: number, threshold: number) => Promise<number>;
 
+    mnemonics_calculate_checksum_index?: (words: string[]) => Promise<number>;
+    mnemonics_decode?: (words: string[]) => Promise<string>;
+    mnemonics_encode?: (seed: string) => Promise<string[]>;
+    mnemonics_word_index?: (word: string) => Promise<number>;
+    mnemonics_word_list?: () => Promise<string[]>;
+    mnemonics_word_list_trimmed?: () => Promise<string[]>;
+
     check_commitments_parity?:
         (pseudo_commitments: string[], output_commitments: string[], transaction_fee: number) => Promise<boolean>;
     generate_amount_mask?:

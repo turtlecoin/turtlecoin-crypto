@@ -45,6 +45,18 @@ template<typename T> static inline v8::Local<T> to_v8_string(const std::string &
 #define NAN_TO_UINT32(value) Nan::To<uint32_t>(value).FromJust()
 #define NAN_TO_UINT64(value) (uint64_t) Nan::To<uint32_t>(value).FromJust()
 
+static inline v8::Local<v8::Array> to_v8_array(const std::vector<std::string> &vector)
+{
+    auto array = Nan::New<v8::Array>(vector.size());
+
+    for (size_t i = 0; i < vector.size(); ++i)
+    {
+        Nan::Set(array, i, STR_TO_NAN_VAL(vector[i]));
+    }
+
+    return array;
+}
+
 template<typename T> static inline v8::Local<v8::Array> to_v8_array(const std::vector<T> &vector)
 {
     auto array = Nan::New<v8::Array>(vector.size());
@@ -1597,6 +1609,165 @@ NAN_METHOD(root_hash_from_branch)
 }
 
 /**
+ * Mapped methods from mnemonics.cpp
+ */
+
+NAN_METHOD(mnemonics_calculate_checksum_index)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto words = get_vector<std::string>(info, 0);
+
+    if (!words.empty())
+    {
+        try
+        {
+            const auto index = uint32_t(Crypto::Mnemonics::calculate_checksum_index(words));
+
+            if (index >= 0)
+            {
+                result = Nan::New(index);
+
+                success = true;
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(mnemonics_decode)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto words = get_vector<std::string>(info, 0);
+
+    if (!words.empty())
+    {
+        try
+        {
+            const auto [decode_success, decoded] = Crypto::Mnemonics::decode(words);
+
+            if (decode_success)
+            {
+                result = STR_TO_NAN_VAL(decoded.to_string());
+
+                success = true;
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(mnemonics_encode)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto seed = get<std::string>(info, 0);
+
+    if (!seed.empty())
+    {
+        try
+        {
+            const auto words = Crypto::Mnemonics::encode(seed);
+
+            result = to_v8_array(words);
+
+            success = true;
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(mnemonics_word_index)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto word = get<std::string>(info, 0);
+
+    if (!word.empty())
+    {
+        try
+        {
+            const auto index = uint32_t(Crypto::Mnemonics::word_index(word));
+
+            if (index != -1)
+            {
+                result = Nan::New(index);
+
+                success = true;
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(mnemonics_word_list)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    try
+    {
+        const auto words = Crypto::Mnemonics::word_list();
+
+        result = to_v8_array(words);
+
+        success = true;
+    }
+    catch (...)
+    {
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(mnemonics_word_list_trimmed)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    try
+    {
+        const auto words = Crypto::Mnemonics::word_list_trimmed();
+
+        result = to_v8_array(words);
+
+        success = true;
+    }
+    catch (...)
+    {
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+/**
  * Mapped methods from multisig.cpp
  */
 
@@ -2816,6 +2987,21 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, root_hash);
 
         NAN_EXPORT(target, root_hash_from_branch);
+    }
+
+    // Mapped methods from mnemonics.cpp
+    {
+        NAN_EXPORT(target, mnemonics_calculate_checksum_index);
+
+        NAN_EXPORT(target, mnemonics_decode);
+
+        NAN_EXPORT(target, mnemonics_encode);
+
+        NAN_EXPORT(target, mnemonics_word_index);
+
+        NAN_EXPORT(target, mnemonics_word_list);
+
+        NAN_EXPORT(target, mnemonics_word_list_trimmed);
     }
 
     // Mapped methods from multisig.cpp
