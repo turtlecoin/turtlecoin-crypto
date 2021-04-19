@@ -105,7 +105,19 @@ struct crypto_point_t
         ge_p3_to_cached(&cached_point, &point3);
     }
 
-    crypto_point_t(const size_t &number)
+    crypto_point_t(const uint64_t &number)
+    {
+        std::memcpy(bytes, &number, sizeof(number));
+
+        if (ge_frombytes_negate_vartime(&point3, bytes) != 0)
+        {
+            throw std::runtime_error("could not load point");
+        }
+
+        ge_p3_to_cached(&cached_point, &point3);
+    }
+
+    crypto_point_t(const uint256_t &number)
     {
         std::memcpy(bytes, &number, sizeof(number));
 
@@ -581,6 +593,16 @@ struct crypto_scalar_t
     }
 
     crypto_scalar_t(const uint64_t &number, bool reduce = false)
+    {
+        std::memcpy(bytes, &number, sizeof(number));
+
+        if (reduce)
+        {
+            do_reduce();
+        }
+    }
+
+    crypto_scalar_t(const uint256_t &number, bool reduce = false)
     {
         std::memcpy(bytes, &number, sizeof(number));
 
