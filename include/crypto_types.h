@@ -990,6 +990,18 @@ struct crypto_scalar_t
     }
 
     /**
+     * Raises the scalar to the specified power with a modulus
+     * r = (s ^ e) % m
+     * @param exponent
+     * @param modulus
+     * @return
+     */
+    [[nodiscard]] crypto_scalar_t powm(const crypto_scalar_t &exponent, size_t modulus) const
+    {
+        return crypto_scalar_t(pow(exponent).to_uint256_t() % modulus);
+    }
+
+    /**
      * Generates a vector of powers of the scalar
      * @param count
      * @param descending
