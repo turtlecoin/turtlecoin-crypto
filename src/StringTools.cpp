@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <string.h>
 
 namespace Common
 {
@@ -306,6 +307,37 @@ namespace Common
            << ".s" << std::setw(2) << seconds;
 
         return ss.str();
+    }
+
+    std::vector<std::string> toStringVector(const char *string, uint64_t length)
+    {
+        const std::string buffer = std::string(string);
+
+        if (buffer.length() % length != 0)
+        {
+            throw std::runtime_error("toStringVector: invalid string size");
+        }
+
+        std::vector<std::string> result;
+
+        for (int i = 0; i < buffer.length(); i += length)
+        {
+            result.push_back(buffer.substr(i, length));
+        }
+
+        return result;
+    }
+
+    char* fromStringVector(std::vector<std::string> list)
+    {
+        std::string data;
+
+        for (const auto &element: list)
+        {
+            data += element;
+        }
+
+        return strdup(data.c_str());
     }
 
 } // namespace Common
