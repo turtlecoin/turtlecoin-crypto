@@ -129,14 +129,6 @@ namespace Crypto
         const std::vector<crypto_key_image_t> &partial_key_images);
 
     /**
-     * Generates a v2 key image such that
-     * I = (1/x) * U
-     * @param secret_ephemeral
-     * @return
-     */
-    crypto_key_image_t generate_key_image_v2(const crypto_secret_key_t &secret_ephemeral);
-
-    /**
      * Generates a set of random keys
      * a = random_scalar()
      * A = (a * G) mod l

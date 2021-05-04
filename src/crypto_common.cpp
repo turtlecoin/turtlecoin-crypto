@@ -131,13 +131,6 @@ namespace Crypto
         return key_images.dedupe_sort().sum();
     }
 
-    crypto_key_image_t generate_key_image_v2(const crypto_secret_key_t &secret_ephemeral)
-    {
-        SCALAR_OR_THROW(secret_ephemeral);
-
-        return secret_ephemeral.invert() * Crypto::U;
-    }
-
     std::tuple<crypto_public_key_t, crypto_secret_key_t> generate_keys()
     {
         crypto_secret_key_t secret_key = random_scalar();

@@ -94,11 +94,6 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#arcturus_check_ring_signature" class="tsd-kind-icon">arcturus_<wbr>check_<wbr>ring_<wbr>signature</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#arcturus_complete_ring_signature" class="tsd-kind-icon">arcturus_<wbr>complete_<wbr>ring_<wbr>signature</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#arcturus_generate_partial_signing_scalar" class="tsd-kind-icon">arcturus_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#arcturus_generate_ring_signature" class="tsd-kind-icon">arcturus_<wbr>generate_<wbr>ring_<wbr>signature</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#arcturus_prepare_ring_signature" class="tsd-kind-icon">arcturus_<wbr>prepare_<wbr>ring_<wbr>signature</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#argon2d" class="tsd-kind-icon">argon2d</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#argon2i" class="tsd-kind-icon">argon2i</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#argon2id" class="tsd-kind-icon">argon2id</a></li>
@@ -137,7 +132,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_commitment_blinding_factor" class="tsd-kind-icon">generate_<wbr>commitment_<wbr>blinding_<wbr>factor</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_key_derivation" class="tsd-kind-icon">generate_<wbr>key_<wbr>derivation</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_key_image" class="tsd-kind-icon">generate_<wbr>key_<wbr>image</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_key_image_v2" class="tsd-kind-icon">generate_<wbr>key_<wbr>image_<wbr>v2</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_keys" class="tsd-kind-icon">generate_<wbr>keys</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_multisig_secret_key" class="tsd-kind-icon">generate_<wbr>multisig_<wbr>secret_<wbr>key</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_multisig_secret_keys" class="tsd-kind-icon">generate_<wbr>multisig_<wbr>secret_<wbr>keys</a></li>
@@ -181,41 +175,6 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="arcturus_check_ring_signature" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> arcturus_<wbr>check_<wbr>ring_<wbr>signature</h3>
-					<div class="tsd-signature tsd-kind-icon">arcturus_<wbr>check_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, key_images<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, output_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><a href="crypto_arcturus_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_arcturus_signature_t</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="arcturus_complete_ring_signature" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> arcturus_<wbr>complete_<wbr>ring_<wbr>signature</h3>
-					<div class="tsd-signature tsd-kind-icon">arcturus_<wbr>complete_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>signing_scalars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, rho_R<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span>, m<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, signature<span class="tsd-signature-symbol">: </span><a href="crypto_arcturus_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_arcturus_signature_t</a>, partial_signing_scalars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_arcturus_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_arcturus_signature_t</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="arcturus_generate_partial_signing_scalar" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> arcturus_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</h3>
-					<div class="tsd-signature tsd-kind-icon">arcturus_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>m<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, spend_secret_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="arcturus_generate_ring_signature" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> arcturus_<wbr>generate_<wbr>ring_<wbr>signature</h3>
-					<div class="tsd-signature tsd-kind-icon">arcturus_<wbr>generate_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, key_images<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, output_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, real_output_indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, secret_ephemerals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_blinding_factors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, output_blinding_factors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_amounts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, output_amounts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="crypto_arcturus_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_arcturus_signature_t</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="arcturus_prepare_ring_signature" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> arcturus_<wbr>prepare_<wbr>ring_<wbr>signature</h3>
-					<div class="tsd-signature tsd-kind-icon">arcturus_<wbr>prepare_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, key_images<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, output_commitments<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, real_output_indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, input_blinding_factors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, output_blinding_factors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, input_amounts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, output_amounts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><a href="crypto_arcturus_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_arcturus_signature_t</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="argon2d" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> argon2d</h3>
@@ -479,13 +438,6 @@
 					<a name="generate_key_image" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> generate_<wbr>key_<wbr>image</h3>
 					<div class="tsd-signature tsd-kind-icon">generate_<wbr>key_<wbr>image<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>public_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, secret_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, partial_key_images<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="generate_key_image_v2" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> generate_<wbr>key_<wbr>image_<wbr>v2</h3>
-					<div class="tsd-signature tsd-kind-icon">generate_<wbr>key_<wbr>image_<wbr>v2<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>secret_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
@@ -765,21 +717,6 @@
 						<a href="iconfig.html" class="tsd-kind-icon">IConfig</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="iconfig.html#arcturus_check_ring_signature" class="tsd-kind-icon">arcturus_<wbr>check_<wbr>ring_<wbr>signature</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="iconfig.html#arcturus_complete_ring_signature" class="tsd-kind-icon">arcturus_<wbr>complete_<wbr>ring_<wbr>signature</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="iconfig.html#arcturus_generate_partial_signing_scalar" class="tsd-kind-icon">arcturus_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="iconfig.html#arcturus_generate_ring_signature" class="tsd-kind-icon">arcturus_<wbr>generate_<wbr>ring_<wbr>signature</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="iconfig.html#arcturus_prepare_ring_signature" class="tsd-kind-icon">arcturus_<wbr>prepare_<wbr>ring_<wbr>signature</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="iconfig.html#argon2d" class="tsd-kind-icon">argon2d</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -894,9 +831,6 @@
 								<a href="iconfig.html#generate_key_image" class="tsd-kind-icon">generate_<wbr>key_<wbr>image</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="iconfig.html#generate_key_image_v2" class="tsd-kind-icon">generate_<wbr>key_<wbr>image_<wbr>v2</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="iconfig.html#generate_keys" class="tsd-kind-icon">generate_<wbr>keys</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -1008,9 +942,6 @@
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface">
-						<a href="crypto_arcturus_signature_t.html" class="tsd-kind-icon">crypto_<wbr>arcturus_<wbr>signature_<wbr>t</a>
-					</li>
 					<li class=" tsd-kind-interface">
 						<a href="crypto_bulletproof_plus_t.html" class="tsd-kind-icon">crypto_<wbr>bulletproof_<wbr>plus_<wbr>t</a>
 					</li>

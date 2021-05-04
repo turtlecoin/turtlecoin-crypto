@@ -81,8 +81,15 @@ namespace Crypto::RingSignature::Borromean
             transcript.update(L, R);
         }
 
+        const auto challenge = transcript.challenge();
+
+        if (challenge == Crypto::ZERO)
+        {
+            return false;
+        }
+
         // ([H(prefix || L || R) - sum] mod l) != 0
-        return (transcript.challenge() - sum).is_nonzero();
+        return (challenge - sum).is_nonzero();
     }
 
     std::tuple<bool, std::vector<crypto_signature_t>> complete_ring_signature(
@@ -256,6 +263,7 @@ namespace Crypto::RingSignature::Borromean
             return {false, {}};
         }
 
+    try_again:
         // help to provide stronger RNG for the alpha scalar
         crypto_scalar_transcript_t alpha_transcript(message_digest, key_image, Crypto::random_scalar());
 
@@ -312,8 +320,15 @@ namespace Crypto::RingSignature::Borromean
             transcript.update(L, R);
         }
 
+        const auto challenge = transcript.challenge();
+
+        if (challenge == Crypto::ZERO)
+        {
+            goto try_again;
+        }
+
         // sL = ([H(prefix || L's || R's)] - sum) mod l
-        signature[real_output_index].LR.L = transcript.challenge() - sum;
+        signature[real_output_index].LR.L = challenge - sum;
 
         // this is the prepared portion of the real output signature index
         signature[real_output_index].LR.R = alpha_scalar;

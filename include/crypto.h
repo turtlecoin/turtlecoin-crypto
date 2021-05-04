@@ -35,7 +35,6 @@
 #include "memory_helper.h"
 #include "mnemonics.h"
 #include "multisig.h"
-#include "ring_signature_arcturus.h"
 #include "ring_signature_borromean.h"
 #include "ring_signature_clsag.h"
 #include "ringct.h"

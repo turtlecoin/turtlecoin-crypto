@@ -75,9 +75,6 @@ This repository a standalone cryptographic primitive wrapper library that can be
   * No limits to number of values proved or verified in a single call
   * Batch Verification
   * Implements caching of common points for faster repeat calls to `prove()` and `verify()`
-* [Arcturus](https://eprint.iacr.org/2020/312.pdf) Proofs (Ring Signatures)
-  * Proving & Verification
-  * **Multisig in Development**
 * Scalar Transcripts (C++ Only)
 * Byte/Binary Serialization & De-Serialization (C++ only)
 * Structure to/from JSON provided via RapidJSON (C++ only)

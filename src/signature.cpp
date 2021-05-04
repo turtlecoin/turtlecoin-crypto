@@ -47,8 +47,15 @@ namespace Crypto::Signature
 
         crypto_scalar_transcript_t transcript(SIGNATURE_DOMAIN_0, message_digest, public_key, point);
 
+        const auto challenge = transcript.challenge();
+
+        if (challenge == Crypto::ZERO)
+        {
+            return false;
+        }
+
         // [(c - sL) mod l] != 0
-        return (transcript.challenge() - signature.LR.L).is_nonzero();
+        return (challenge - signature.LR.L).is_nonzero();
     }
 
     crypto_signature_t complete_signature(
@@ -129,10 +136,16 @@ namespace Crypto::Signature
 
     crypto_signature_t prepare_signature(const crypto_hash_t &message_digest, const crypto_public_key_t &public_key)
     {
+    try_again:
         // help to provide stronger RNG for the alpha scalar
         crypto_scalar_transcript_t alpha_transcript(message_digest, public_key, Crypto::random_scalar());
 
         const auto alpha_scalar = alpha_transcript.challenge();
+
+        if (alpha_scalar == Crypto::ZERO)
+        {
+            goto try_again;
+        }
 
         // P = (a * G) mod l
         const auto point = alpha_scalar * G;
@@ -142,6 +155,11 @@ namespace Crypto::Signature
         crypto_signature_t signature;
 
         signature.LR.L = transcript.challenge();
+
+        if (signature.LR.L == Crypto::ZERO)
+        {
+            goto try_again;
+        }
 
         signature.LR.R = alpha_scalar;
 

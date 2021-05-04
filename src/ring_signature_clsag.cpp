@@ -113,6 +113,12 @@ namespace Crypto::RingSignature::CLSAG
             }
 
             mu_P = transcript.challenge();
+
+            if (mu_P == Crypto::ZERO)
+            {
+                // our mu_P cannot be 0
+                return false;
+            }
         }
 
         // generate mu_C
@@ -129,6 +135,12 @@ namespace Crypto::RingSignature::CLSAG
             transcript.update(pseudo_commitment);
 
             mu_C = transcript.challenge();
+
+            if (mu_C == Crypto::ZERO)
+            {
+                // our mu_C cannot be 0
+                return false;
+            }
         }
 
         /**
@@ -203,6 +215,12 @@ namespace Crypto::RingSignature::CLSAG
             sub_transcript.update(L, R);
 
             h[(i + 1) % ring_size] = sub_transcript.challenge();
+
+            // this value should never be 0
+            if (h[(i + 1) % ring_size] == Crypto::ZERO)
+            {
+                return false;
+            }
         }
 
         return h[0] == h0;
@@ -419,6 +437,7 @@ namespace Crypto::RingSignature::CLSAG
             return {false, {}, {}, {0}};
         }
 
+    try_again:
         // help to provide stronger RNG for the alpha scalar
         crypto_scalar_transcript_t alpha_transcript(message_digest, key_image, Crypto::random_scalar());
 
@@ -427,6 +446,11 @@ namespace Crypto::RingSignature::CLSAG
         alpha_transcript.update(public_commitments);
 
         const auto alpha_scalar = alpha_transcript.challenge();
+
+        if (alpha_scalar == Crypto::ZERO)
+        {
+            goto try_again;
+        }
 
         auto signature = Crypto::random_scalars(ring_size);
 
@@ -495,6 +519,12 @@ namespace Crypto::RingSignature::CLSAG
             }
 
             mu_P = transcript.challenge();
+
+            if (mu_P == Crypto::ZERO)
+            {
+                // We exit here as trying again does not change the transcript inputs
+                return {false, {}, {}, {0}};
+            }
         }
 
         // generate mu_C
@@ -511,6 +541,12 @@ namespace Crypto::RingSignature::CLSAG
             transcript.update(pseudo_commitment);
 
             mu_C = transcript.challenge();
+
+            if (mu_C == Crypto::ZERO)
+            {
+                // We exit here as trying again does not change the transcript inputs
+                return {false, {}, {}, {0}};
+            }
         }
 
         /**
@@ -546,6 +582,12 @@ namespace Crypto::RingSignature::CLSAG
             sub_transcript.update(L, R);
 
             h[(real_output_index + 1) % ring_size] = sub_transcript.challenge();
+
+            if (h[(real_output_index + 1) % ring_size] == Crypto::ZERO)
+            {
+                // this includes alpha_scalar which is randomly seeded so we can try again
+                goto try_again;
+            }
         }
 
         if (ring_size > 1)
@@ -593,6 +635,12 @@ namespace Crypto::RingSignature::CLSAG
                 sub_transcript.update(L, R);
 
                 h[(idx + 1) % ring_size] = sub_transcript.challenge();
+
+                // this value should never be 0
+                if (h[(idx + 1) % ring_size] == Crypto::ZERO)
+                {
+                    return {false, {}, {}, {0}};
+                }
             }
         }
 

@@ -101,7 +101,6 @@ set(SOURCES
     src/mnemonics.cpp
     src/multisig.cpp
     src/ringct.cpp
-    src/ring_signature_arcturus.cpp
     src/ring_signature_borromean.cpp
     src/ring_signature_clsag.cpp
     src/signature.cpp

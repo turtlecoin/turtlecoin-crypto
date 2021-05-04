@@ -26,7 +26,6 @@
 
 import * as bindings from 'bindings';
 import {
-    crypto_arcturus_signature_t,
     crypto_bulletproof_t,
     crypto_bulletproof_plus_t,
     crypto_clsag_signature_t,
@@ -39,7 +38,7 @@ import { Reader, Writer } from '@turtlecoin/bytestream';
 import { format } from 'util';
 import * as BigInteger from 'big-integer';
 export {
-    crypto_arcturus_signature_t, crypto_clsag_signature_t, crypto_bulletproof_t, crypto_bulletproof_plus_t,
+    crypto_clsag_signature_t, crypto_bulletproof_t, crypto_bulletproof_plus_t,
     IConfig, LibraryType
 };
 
@@ -294,154 +293,6 @@ export class Crypto {
      */
     public async cn_base58_decode_check (base58: string): Promise<string> {
         return execute('cn_base58_decode_check', base58);
-    }
-
-    /**
-     * Checks the Arcturus "ring signature" presented
-     * @param message_digest
-     * @param public_keys
-     * @param key_images
-     * @param input_commitments
-     * @param output_commitments
-     * @param signature
-     */
-    public async arcturus_check_ring_signature (
-        message_digest: string,
-        public_keys: string[],
-        key_images: string[],
-        input_commitments: string[],
-        output_commitments: string[],
-        signature: crypto_arcturus_signature_t): Promise<boolean> {
-        const sig = JSON.stringify(signature);
-
-        return execute('arcturus_check_ring_signature',
-            message_digest,
-            public_keys,
-            key_images,
-            input_commitments,
-            output_commitments,
-            sig);
-    }
-
-    /**
-     * Completes the prepared Arcturus "ring signature"
-     * @param signing_scalars
-     * @param x
-     * @param rho_R
-     * @param m
-     * @param signature
-     * @param partial_signing_scalars
-     */
-    public async arcturus_complete_ring_signature (
-        signing_scalars: string[],
-        x: string,
-        rho_R: string[][],
-        m: number,
-        signature: crypto_arcturus_signature_t,
-        partial_signing_scalars: string[][] = []
-    ): Promise<crypto_arcturus_signature_t> {
-        const sig = JSON.stringify(signature);
-
-        const result = await execute('arcturus_complete_ring_signature',
-            signing_scalars, x, rho_R, m, sig, partial_signing_scalars);
-
-        return JSON.parse(result);
-    }
-
-    /**
-     * Generates a partial signing scalar that is a factor of the full signing scalar and typically
-     * used by multisig wallets -- input data is supplied from prepare_ring_signature
-     * @param m
-     * @param x
-     * @param spend_secret_key
-     */
-    public async arcturus_generate_partial_signing_scalar (
-        m: number, x: string, spend_secret_key: string): Promise<string> {
-        return execute('arcturus_generate_partial_signing_scalar', m, x, spend_secret_key);
-    }
-
-    /**
-     * Generates an Arcturus "ring signature" using the secrets provided
-     * @param message_digest
-     * @param public_keys
-     * @param key_images
-     * @param input_commitments
-     * @param output_commitments
-     * @param real_output_indexes
-     * @param secret_ephemerals
-     * @param input_blinding_factors
-     * @param output_blinding_factors
-     * @param input_amounts
-     * @param output_amounts
-     */
-    public async arcturus_generate_ring_signature (
-        message_digest: string,
-        public_keys: string[],
-        key_images: string[],
-        input_commitments: string[],
-        output_commitments: string[],
-        real_output_indexes: number[],
-        secret_ephemerals: string[],
-        input_blinding_factors: string[],
-        output_blinding_factors: string[],
-        input_amounts: number[],
-        output_amounts: number[]
-    ): Promise<crypto_arcturus_signature_t> {
-        const result = await execute('arcturus_generate_ring_signature',
-            message_digest,
-            public_keys,
-            key_images,
-            input_commitments,
-            output_commitments,
-            real_output_indexes,
-            secret_ephemerals,
-            input_blinding_factors,
-            output_blinding_factors,
-            input_amounts,
-            output_amounts);
-
-        return JSON.parse(result);
-    }
-
-    /**
-     * Prepares an Arcturus "ring signature" using the primitive values provided
-     * Must be completed via complete_ring_signature before it will validate
-     * @param message_digest
-     * @param public_keys
-     * @param key_images
-     * @param input_commitments
-     * @param output_commitments
-     * @param real_output_indexes
-     * @param input_blinding_factors
-     * @param output_blinding_factors
-     * @param input_amounts
-     * @param output_amounts
-     */
-    public async arcturus_prepare_ring_signature (
-        message_digest: string,
-        public_keys: string[],
-        key_images: string[],
-        input_commitments: string[],
-        output_commitments: string[],
-        real_output_indexes: number[],
-        input_blinding_factors: string[],
-        output_blinding_factors: string[],
-        input_amounts: number[],
-        output_amounts: number[]
-    ): Promise<[string, string[][], crypto_arcturus_signature_t]> {
-        const [x, rho_R, signature] = await execute('arcturus_prepare_ring_signature',
-            message_digest,
-            public_keys,
-            key_images,
-            input_commitments,
-            output_commitments,
-            real_output_indexes,
-            input_blinding_factors,
-            output_blinding_factors,
-            input_amounts,
-            output_amounts);
-
-        return [x, rho_R, JSON.parse(signature)];
     }
 
     /**
@@ -1081,14 +932,6 @@ export class Crypto {
     public async generate_key_image (
         public_emphemeral: string, secret_ephemeral: string, partial_key_images: string[] = []): Promise<string> {
         return execute('generate_key_image', public_emphemeral, secret_ephemeral, partial_key_images);
-    }
-
-    /**
-     * Generates a v2 key image such that
-     * @param secret_ephemeral
-     */
-    public async generate_key_image_v2 (secret_ephemeral: string): Promise<string> {
-        return execute('generate_key_image_v2', secret_ephemeral);
     }
 
     /**
