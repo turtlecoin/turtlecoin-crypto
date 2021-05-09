@@ -77,6 +77,8 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         node: ['10', '11', '12', '13', '14']
     name: ${{ matrix.os }} - Node ${{ matrix.node }} Test
+    env:
+      MSBUILD_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/MSBuild/Current/Bin"
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
@@ -84,9 +86,6 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
         registry-url: 'https://registry.npmjs.org'
-    - name: Install Windows Node.js Build Tools
-      if: matrix.os == 'windows-latest'
-      run: npm install -g windows-build-tools --vs2015
     - name: Install Dependencies
       run: npm install
     - name: Check Typescript Style
