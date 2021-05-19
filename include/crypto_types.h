@@ -421,6 +421,28 @@ struct crypto_point_t
     }
 
     /**
+     * Reduces the given bytes, whether a point on the curve or not, to a point
+     * @param bytes
+     * @return
+     */
+    [[nodiscard]] static crypto_point_t reduce(const uint8_t bytes[32])
+    {
+        ge_p2 point;
+
+        ge_p1p1 point2;
+
+        ge_p3 point3;
+
+        ge_fromfe_frombytes_negate_vartime(&point, bytes);
+
+        ge_mul8(&point2, &point);
+
+        ge_p1p1_to_p3(&point3, &point2);
+
+        return crypto_point_t(point3);
+    }
+
+    /**
      * Serializes the struct to a byte array
      * @param writer
      */
