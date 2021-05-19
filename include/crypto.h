@@ -27,6 +27,10 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
+#ifndef CRYPTO_ENTROPY_BYTES
+#define CRYPTO_ENTROPY_BYTES 16384 // 16KiB
+#endif
+
 #include "base58.h"
 #include "bulletproofs.h"
 #include "bulletproofsplus.h"

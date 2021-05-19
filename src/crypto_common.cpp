@@ -253,7 +253,7 @@ namespace Crypto
 
     crypto_hash_t random_hash()
     {
-        uint8_t bytes[128];
+        uint8_t bytes[CRYPTO_ENTROPY_BYTES];
 
         Random::random_bytes(sizeof(bytes), bytes);
 
@@ -274,7 +274,7 @@ namespace Crypto
 
     crypto_point_t random_point()
     {
-        uint8_t bytes[32];
+        uint8_t bytes[CRYPTO_ENTROPY_BYTES];
 
         // Retreive some random bytes
         Random::random_bytes(sizeof(bytes), bytes);
@@ -296,7 +296,7 @@ namespace Crypto
 
     crypto_scalar_t random_scalar()
     {
-        uint8_t bytes[32];
+        uint8_t bytes[CRYPTO_ENTROPY_BYTES];
 
         // Retrieve some random bytes
         Random::random_bytes(sizeof(bytes), bytes);
