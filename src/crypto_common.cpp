@@ -220,11 +220,11 @@ namespace Crypto
 
     crypto_point_t hash_to_point(const void *data, size_t length)
     {
-        // hash the data to a scalar
-        const auto scalar = hash_to_scalar(data, length);
+        // hash the data
+        const auto hash = Crypto::Hashing::sha3(data, length);
 
-        // multiply it by the base point and then group of 8 it
-        return (scalar * Crypto::G).mul8();
+        // reduce the hash to a point
+        return crypto_point_t::reduce(hash.bytes);
     }
 
     crypto_scalar_t hash_to_scalar(const void *data, size_t length)

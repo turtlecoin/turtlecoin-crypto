@@ -300,7 +300,7 @@ describe('Cryptographic Tests', async () => {
         const derivation = '765e9a3ad29efabb9d749e87ac817ce4d1e105600b7e5fd0e335ee87bc1f08aa';
         const public_ephemeral = '8692c8d93cc07d2ce9126fed65214a86129383b464598bfa57b1368b91d875f6';
         const secret_ephemeral = '20ceeb1074cc86b9029406f48079d71d06060d8a5a1cfb7e3f2fef897a6a9303';
-        const key_image = '763c6572734282d47cbf848e19284c6da61a5f59ea15a32d9b7d0e723b96cf50';
+        const key_image = '62384706087b9dc3d77e510725478678c4c2350feff5117eb3e55436b7c2c128';
         let dervscalar: string;
 
         before(async () => {
