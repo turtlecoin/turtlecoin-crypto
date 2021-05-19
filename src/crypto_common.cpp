@@ -58,6 +58,45 @@ namespace Crypto
         return {false, 0};
     }
 
+    crypto_point_t commitment_tensor_point(const crypto_point_t &point, size_t i, size_t j, size_t k)
+    {
+        struct
+        {
+            crypto_point_t Gi;
+            uint64_t i = 0, j = 0, k = 0;
+        } buffer;
+
+        buffer.Gi = point;
+
+        buffer.i = i;
+
+        buffer.j = j;
+
+        buffer.k = k;
+
+        return hash_to_point(&buffer, sizeof(buffer));
+    }
+
+    std::vector<crypto_scalar_t> convolve(const crypto_scalar_vector_t &x, const std::vector<crypto_scalar_t> &y)
+    {
+        if (y.size() != 2)
+        {
+            throw std::runtime_error("requires a degree-one polynomial");
+        }
+
+        std::vector<crypto_scalar_t> result(x.size() + 1, Crypto::ZERO);
+
+        for (size_t i = 0; i < x.size(); ++i)
+        {
+            for (size_t j = 0; j < y.size(); ++j)
+            {
+                result[i + j] += x[i] * y[j];
+            }
+        }
+
+        return result;
+    }
+
     crypto_scalar_t derivation_to_scalar(const crypto_derivation_t &derivation, uint64_t output_index)
     {
         struct

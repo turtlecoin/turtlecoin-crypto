@@ -61,6 +61,24 @@ namespace Crypto
     }
 
     /**
+     * Generates a commitment tensor point
+     * @param point
+     * @param i
+     * @param j
+     * @param k
+     * @return
+     */
+    crypto_point_t commitment_tensor_point(const crypto_point_t &point, size_t i, size_t j, size_t k = 0);
+
+    /**
+     * Calculates a convolution of a degree-one polynomial
+     * @param x
+     * @param y
+     * @return
+     */
+    std::vector<crypto_scalar_t> convolve(const crypto_scalar_vector_t &x, const std::vector<crypto_scalar_t> &y);
+
+    /**
      * Generates the derivation scalar
      * Ds = H(D || output_index) mod l
      * @param derivation
