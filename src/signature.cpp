@@ -92,6 +92,12 @@ namespace Crypto::Signature
              */
             const auto derived_scalar = keys.dedupe_sort().sum();
 
+            // our derived scalar should never be 0
+            if (derived_scalar == Crypto::ZERO)
+            {
+                throw std::invalid_argument("derived scalar cannot be 0");
+            }
+
             /**
              * Subtract the result of the aggregated signing scalars from the alpha_scalar value that was
              * supplied by the prepared ring signature to arrive at the final value to complete the

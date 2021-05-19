@@ -214,13 +214,15 @@ namespace Crypto::RingSignature::CLSAG
 
             sub_transcript.update(L, R);
 
-            h[(i + 1) % ring_size] = sub_transcript.challenge();
+            const auto challenge = sub_transcript.challenge();
 
-            // this value should never be 0
-            if (h[(i + 1) % ring_size] == Crypto::ZERO)
+            // The challenge value should never be 0
+            if (challenge == Crypto::ZERO)
             {
                 return false;
             }
+
+            h[(i + 1) % ring_size] = challenge;
         }
 
         return h[0] == h0;
@@ -301,6 +303,12 @@ namespace Crypto::RingSignature::CLSAG
              * p = [pk1 + pk2 + pk3 + ...] mod l
              */
             const auto derived_scalar = keys.dedupe_sort().sum();
+
+            // our derived scalar should never be 0
+            if (derived_scalar == Crypto::ZERO)
+            {
+                return {false, {}};
+            }
 
             // s = [alpha - (h[real_output_index] * (p * mu_P))] mod l
             finalized_signature[real_output_index] -= (h[real_output_index] * derived_scalar);
@@ -581,13 +589,15 @@ namespace Crypto::RingSignature::CLSAG
 
             sub_transcript.update(L, R);
 
-            h[(real_output_index + 1) % ring_size] = sub_transcript.challenge();
+            const auto challenge = sub_transcript.challenge();
 
-            if (h[(real_output_index + 1) % ring_size] == Crypto::ZERO)
+            // our challenge value should never be 0
+            if (challenge == Crypto::ZERO)
             {
-                // this includes alpha_scalar which is randomly seeded so we can try again
                 goto try_again;
             }
+
+            h[(real_output_index + 1) % ring_size] = challenge;
         }
 
         if (ring_size > 1)
@@ -634,13 +644,21 @@ namespace Crypto::RingSignature::CLSAG
 
                 sub_transcript.update(L, R);
 
-                h[(idx + 1) % ring_size] = sub_transcript.challenge();
+                const auto challenge = sub_transcript.challenge();
 
-                // this value should never be 0
-                if (h[(idx + 1) % ring_size] == Crypto::ZERO)
+                /*
+                 * our challenge value should never be 0
+                 *
+                 * As this challenge value does not have a random component, if we fail this check here
+                 * then we need to fail out totally instead of trying again as the transcript value will
+                 * not change just by trying again
+                 */
+                if (challenge == Crypto::ZERO)
                 {
                     return {false, {}, {}, {0}};
                 }
+
+                h[(idx + 1) % ring_size] = challenge;
             }
         }
 
