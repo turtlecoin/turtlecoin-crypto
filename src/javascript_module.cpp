@@ -1036,6 +1036,29 @@ EMS_METHOD(generate_key_image)
     }
 }
 
+EMS_METHOD(generate_key_image_v2)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto secret_key = get<std::string>(info, 0);
+
+        if (!secret_key.empty())
+        {
+            const auto key = Crypto::generate_key_image_v2(secret_key);
+
+            return prepare(true, key.to_string());
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
 EMS_METHOD(generate_keys)
 {
     try
@@ -2554,6 +2577,8 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(generate_key_derivation);
 
         EMS_EXPORT(generate_key_image);
+
+        EMS_EXPORT(generate_key_image_v2);
 
         EMS_EXPORT(generate_keys);
 

@@ -117,7 +117,7 @@ npm install @turtlecoin/crypto
 #### TypeScript
 
 ```javascript
-import { Crypto } from '@turtlecoin/crypto';
+import Crypto from '@turtlecoin/crypto';
 
 (async() => {
     const crypto = new Crypto();
@@ -129,7 +129,7 @@ import { Crypto } from '@turtlecoin/crypto';
 #### CommonJS
 
 ```javascript
-const Crypto = require('turtlecoin-crypto').Crypto
+const Crypto = require('turtlecoin-crypto').default
 
 (async() => {
     const crypto = new Crypto();

@@ -1016,6 +1016,32 @@ NAN_METHOD(generate_key_image)
     info.GetReturnValue().Set(prepare(success, result));
 }
 
+NAN_METHOD(generate_key_image_v2)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto secret_key = get<std::string>(info, 0);
+
+    if (!secret_key.empty())
+    {
+        try
+        {
+            const auto key = Crypto::generate_key_image_v2(secret_key);
+
+            result = STR_TO_NAN_VAL(key.to_string());
+
+            success = true;
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
 NAN_METHOD(generate_keys)
 {
     auto result = Nan::New<v8::Array>(3);
@@ -2649,6 +2675,8 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, generate_key_derivation);
 
         NAN_EXPORT(target, generate_key_image);
+
+        NAN_EXPORT(target, generate_key_image_v2);
 
         NAN_EXPORT(target, generate_keys);
 

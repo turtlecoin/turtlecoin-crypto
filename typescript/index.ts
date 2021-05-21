@@ -58,7 +58,7 @@ const runtime_configuration: ModuleSettings = {
 /**
  * A wrapper around the underlying cryptographic libraries offered by this package
  */
-export class Crypto {
+export default class Crypto {
     /**
      * Constructs a new instance of the class
      * @param config
@@ -932,6 +932,14 @@ export class Crypto {
     public async generate_key_image (
         public_emphemeral: string, secret_ephemeral: string, partial_key_images: string[] = []): Promise<string> {
         return execute('generate_key_image', public_emphemeral, secret_ephemeral, partial_key_images);
+    }
+
+    /**
+     * Generates a v2 key image for the given value
+     * @param secret_ephemeral
+     */
+    public async generate_key_image_v2 (secret_ephemeral: string): Promise<string> {
+        return execute('generate_key_image_v2', secret_ephemeral);
     }
 
     /**

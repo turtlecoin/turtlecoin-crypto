@@ -24,7 +24,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import { Crypto, crypto_bulletproof_plus_t, crypto_bulletproof_t } from '../typescript';
+import Crypto, { crypto_bulletproof_plus_t, crypto_bulletproof_t } from '../typescript';
 import { describe, it, before } from 'mocha';
 import * as assert from 'assert';
 import { sha3_256 } from 'js-sha3';
@@ -301,6 +301,7 @@ describe('Cryptographic Tests', async () => {
         const public_ephemeral = '8692c8d93cc07d2ce9126fed65214a86129383b464598bfa57b1368b91d875f6';
         const secret_ephemeral = '20ceeb1074cc86b9029406f48079d71d06060d8a5a1cfb7e3f2fef897a6a9303';
         const key_image = '62384706087b9dc3d77e510725478678c4c2350feff5117eb3e55436b7c2c128';
+        const key_image_2 = '83451e45ea1531430a94a94dfe69515ec1111d69ec9cee8d5751bfc84450314a';
         let dervscalar: string;
 
         before(async () => {
@@ -336,6 +337,12 @@ describe('Cryptographic Tests', async () => {
             const key = await crypto.generate_key_image(public_ephemeral, secret_ephemeral);
 
             assert(key === key_image);
+        });
+
+        it('Generate Key Image v2', async () => {
+            const key = await crypto.generate_key_image_v2(secret_ephemeral);
+
+            assert(key === key_image_2);
         });
     });
 

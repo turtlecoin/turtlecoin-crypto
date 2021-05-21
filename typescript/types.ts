@@ -202,6 +202,7 @@ export interface IConfig {
     generate_key_derivation?: (public_key: string, secret_key: string) => Promise<string>;
     generate_key_image?:
         (public_ephemeral: string, secret_ephemeral: string, partial_key_images: string[]) => Promise<string>;
+    generate_key_image_v2?: (secret_ephemeral: string) => Promise<string>;
     generate_keys?: () => Promise<[string, string]>;
     generate_wallet_spend_keys?: (secret_spend_key: string, subwallet_index: number) => Promise<[string, string]>;
     generate_wallet_view_keys?: (secret_spend_key: string) => Promise<[string, string]>;
