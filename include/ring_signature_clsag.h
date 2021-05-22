@@ -31,8 +31,7 @@
 #define CRYPTO_RING_SIGNATURE_CLSAG_H
 
 #include "crypto_common.h"
-#include "ringct.h"
-#include "scalar_transcript.h"
+#include "hashing.h"
 
 typedef struct CLSAGSignature
 {

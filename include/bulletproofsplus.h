@@ -31,8 +31,6 @@
 #define CRYPTO_RANGEPROOFS_BULLETPROOFS_PLUS_H
 
 #include "crypto_common.h"
-#include "ringct.h"
-#include "scalar_transcript.h"
 
 /**
  * A Bulletproof+ Range Proof

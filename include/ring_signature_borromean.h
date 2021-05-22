@@ -28,7 +28,6 @@
 #define CRYPTO_RING_SIGNATURE_BORROMEAN_H
 
 #include "crypto_common.h"
-#include "scalar_transcript.h"
 
 namespace Crypto::RingSignature::Borromean
 {

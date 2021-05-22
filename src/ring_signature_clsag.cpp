@@ -29,6 +29,9 @@
 
 #include "ring_signature_clsag.h"
 
+#include "ringct.h"
+#include "scalar_transcript.h"
+
 /**
  * Separate hash domains are used at different points in the construction and verification
  * processes to avoid scalar collisions in different stages of the construction and verification

@@ -27,6 +27,9 @@
 
 #include "cn_base58.h"
 
+#include "hashing.h"
+#include "serializer.h"
+
 #include <cassert>
 
 #define SWAP64(x)                                                                             \

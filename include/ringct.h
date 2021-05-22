@@ -28,7 +28,6 @@
 #define CRYPTO_RINGCT_H
 
 #include "crypto_common.h"
-#include "scalar_transcript.h"
 
 namespace Crypto::RingCT
 {

@@ -29,7 +29,6 @@
 
 #include "crypto_vector_types.h"
 #include "hashing.h"
-#include "random.h"
 
 namespace Crypto
 {

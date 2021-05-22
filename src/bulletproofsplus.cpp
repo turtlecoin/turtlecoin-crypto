@@ -29,6 +29,9 @@
 
 #include "bulletproofsplus.h"
 
+#include "ringct.h"
+#include "scalar_transcript.h"
+
 #include <mutex>
 
 /**
