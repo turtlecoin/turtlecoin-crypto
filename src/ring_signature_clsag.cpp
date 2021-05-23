@@ -466,7 +466,7 @@ namespace Crypto::RingSignature::CLSAG
         auto signature = Crypto::random_scalars(ring_size);
 
         // See below for more detail
-        const auto z = (input_blinding_factor - pseudo_blinding_factor);
+        const auto z = input_blinding_factor - pseudo_blinding_factor;
 
         crypto_key_image_t commitment_image;
 
@@ -495,7 +495,7 @@ namespace Crypto::RingSignature::CLSAG
 
             /**
              * Quick sanity check to make sure that the computed z value (blinding scalar) delta
-             * resulting public point is the same as the commitment that we can sign for above
+             * has a resulting public point that is the same as the commitment that we can sign for above
              */
             if (commitment != z * Crypto::G)
             {

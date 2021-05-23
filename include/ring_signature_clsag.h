@@ -33,11 +33,11 @@
 #include "crypto_common.h"
 #include "hashing.h"
 
-typedef struct CLSAGSignature
+struct crypto_clsag_signature_t
 {
-    CLSAGSignature() {}
+    crypto_clsag_signature_t() {}
 
-    CLSAGSignature(
+    crypto_clsag_signature_t(
         std::vector<crypto_scalar_t> scalars,
         const crypto_scalar_t challenge,
         const crypto_key_image_t &commitment_image = Crypto::Z):
@@ -45,9 +45,9 @@ typedef struct CLSAGSignature
     {
     }
 
-    JSON_OBJECT_CONSTRUCTORS(CLSAGSignature, from_json)
+    JSON_OBJECT_CONSTRUCTORS(crypto_clsag_signature_t, from_json)
 
-    CLSAGSignature(const std::string &input)
+    crypto_clsag_signature_t(const std::string &input)
     {
         const auto string = Crypto::StringTools::from_hex(input);
 
@@ -56,7 +56,7 @@ typedef struct CLSAGSignature
         deserialize(reader);
     }
 
-    CLSAGSignature(std::initializer_list<uint8_t> input)
+    crypto_clsag_signature_t(std::initializer_list<uint8_t> input)
     {
         std::vector<uint8_t> data(input);
 
@@ -65,14 +65,14 @@ typedef struct CLSAGSignature
         deserialize(reader);
     }
 
-    CLSAGSignature(const std::vector<uint8_t> &input)
+    crypto_clsag_signature_t(const std::vector<uint8_t> &input)
     {
         deserializer_t reader(input);
 
         deserialize(reader);
     }
 
-    CLSAGSignature(deserializer_t &reader)
+    crypto_clsag_signature_t(deserializer_t &reader)
     {
         deserialize(reader);
     }
@@ -215,7 +215,7 @@ typedef struct CLSAGSignature
     std::vector<crypto_scalar_t> scalars;
     crypto_key_image_t commitment_image;
     crypto_scalar_t challenge;
-} crypto_clsag_signature_t;
+};
 
 namespace Crypto::RingSignature::CLSAG
 {
