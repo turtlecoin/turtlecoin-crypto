@@ -236,6 +236,14 @@ namespace Crypto
     }
 
     /**
+     * Compute the Kronecker delta
+     * @param a
+     * @param b
+     * @return
+     */
+    crypto_scalar_t kronecker_delta(const crypto_scalar_t &a, const crypto_scalar_t &b);
+
+    /**
      * Rounds the given value to the next power of 2
      * @param value
      * @return

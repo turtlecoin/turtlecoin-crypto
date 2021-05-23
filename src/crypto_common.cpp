@@ -240,6 +240,16 @@ namespace Crypto
         return crypto_scalar_t(Crypto::Hashing::sha3(data, length).bytes, true);
     }
 
+    crypto_scalar_t kronecker_delta(const crypto_scalar_t &a, const crypto_scalar_t &b)
+    {
+        if (a == b)
+        {
+            return Crypto::ONE;
+        }
+
+        return Crypto::ZERO;
+    }
+
     size_t pow2_round(size_t value)
     {
         size_t count = 0;
