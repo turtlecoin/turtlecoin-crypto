@@ -48,15 +48,18 @@ namespace Crypto::Mnemonics
      * @param words
      * @return
      */
-    std::tuple<bool, crypto_seed_t> decode(const std::vector<std::string> &words);
+    std::tuple<bool, crypto_seed_t, uint64_t> decode(const std::vector<std::string> &words);
 
     /**
      * Encodes the given seed into a vector of mnemonic phrase words
      *
      * @param wallet_seed
+     * @param timestamp
+     * @param auto_timestamp
      * @return
      */
-    std::vector<std::string> encode(const crypto_seed_t &wallet_seed);
+    std::vector<std::string>
+        encode(const crypto_seed_t &wallet_seed, uint64_t timestamp = 0, bool auto_timestamp = true);
 
     /**
      * Finds the index of the given word in the word list or returns -1 if not found

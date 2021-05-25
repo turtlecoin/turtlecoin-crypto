@@ -168,8 +168,9 @@ export interface IConfig {
     rounds_required?: (participants: number, threshold: number) => Promise<number>;
 
     mnemonics_calculate_checksum_index?: (words: string[]) => Promise<number>;
-    mnemonics_decode?: (words: string[]) => Promise<string>;
-    mnemonics_encode?: (seed: string) => Promise<string[]>;
+    mnemonics_decode?: (words: string[]) => Promise<[string, BigInteger.BigInteger]>;
+    mnemonics_encode?:
+        (seed: string, timestamp: number | BigInteger.BigInteger, auto_timestamp: boolean) => Promise<string[]>;
     mnemonics_word_index?: (word: string) => Promise<number>;
     mnemonics_word_list?: () => Promise<string[]>;
     mnemonics_word_list_trimmed?: () => Promise<string[]>;

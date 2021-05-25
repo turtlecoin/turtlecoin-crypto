@@ -1643,7 +1643,9 @@ NAN_METHOD(mnemonics_calculate_checksum_index)
 
 NAN_METHOD(mnemonics_decode)
 {
-    auto result = STR_TO_NAN_VAL("");
+    auto result = Nan::New<v8::Array>(3);
+
+    Nan::Set(result, 0, Nan::New(true));
 
     bool success = false;
 
@@ -1653,13 +1655,19 @@ NAN_METHOD(mnemonics_decode)
     {
         try
         {
-            const auto [decode_success, decoded] = Crypto::Mnemonics::decode(words);
+            const auto [decode_success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
 
             if (decode_success)
             {
-                result = STR_TO_NAN_VAL(decoded.to_string());
+                Nan::Set(result, 0, Nan::New(false));
 
-                success = true;
+                Nan::Set(result, 1, STR_TO_NAN_VAL(decoded.to_string()));
+
+                serializer_t writer;
+
+                writer.uint64(timestamp);
+
+                Nan::Set(result, 2, STR_TO_NAN_VAL(writer.to_string()));
             }
         }
         catch (...)
@@ -1667,7 +1675,7 @@ NAN_METHOD(mnemonics_decode)
         }
     }
 
-    info.GetReturnValue().Set(prepare(success, result));
+    info.GetReturnValue().Set(result);
 }
 
 NAN_METHOD(mnemonics_encode)
@@ -1678,11 +1686,19 @@ NAN_METHOD(mnemonics_encode)
 
     const auto seed = get<std::string>(info, 0);
 
+    const auto timestamp_str = get<std::string>(info, 1);
+
+    const auto auto_timestamp = (get<uint64_t>(info, 2) == 1);
+
     if (!seed.empty())
     {
         try
         {
-            const auto words = Crypto::Mnemonics::encode(seed);
+            deserializer_t reader(timestamp_str);
+
+            const auto timestamp = reader.uint64();
+
+            const auto words = Crypto::Mnemonics::encode(seed, timestamp, auto_timestamp);
 
             result = to_v8_array(words);
 

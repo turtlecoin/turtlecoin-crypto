@@ -1620,11 +1620,15 @@ EMS_METHOD(mnemonics_decode)
 
         if (!words.empty())
         {
-            const auto [decode_success, decoded] = Crypto::Mnemonics::decode(words);
+            const auto [decode_success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
 
             if (decode_success)
             {
-                return prepare(true, decoded.to_string());
+                serializer_t writer;
+
+                writer.uint64(timestamp);
+
+                return prepare(true, decoded.to_string(), writer.to_string());
             }
         }
 
@@ -1644,9 +1648,17 @@ EMS_METHOD(mnemonics_encode)
 
         const auto seed = get<std::string>(info, 0);
 
+        const auto timestamp_str = get<std::string>(info, 1);
+
+        const auto auto_timestamp = (get<uint64_t>(info, 2) == 1);
+
         if (!seed.empty())
         {
-            const auto words = Crypto::Mnemonics::encode(seed);
+            deserializer_t reader(timestamp_str);
+
+            const auto timestamp = reader.uint64();
+
+            const auto words = Crypto::Mnemonics::encode(seed, timestamp, auto_timestamp);
 
             return prepare(true, words);
         }

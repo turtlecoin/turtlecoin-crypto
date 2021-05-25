@@ -610,17 +610,32 @@ export default class Crypto {
     /**
      * Decodes a vector of mnemonic phrase words into the seed it represents
      * @param words
+     * @returns [seed, timestamp]
      */
-    public async mnemonics_decode (words: string[]): Promise<string> {
-        return execute('mnemonics_decode', words);
+    public async mnemonics_decode (words: string[]): Promise<[string, BigInteger.BigInteger]> {
+        const [seed, timestamp] = await execute('mnemonics_decode', words);
+
+        const reader = new Reader(timestamp);
+
+        return [seed, reader.uint64_t()];
     }
 
     /**
      * Encodes the given seed into a vector of mnemonic phrase words
      * @param seed
+     * @param timestamp
+     * @param auto_timestamp
      */
-    public async mnemonics_encode (seed: string): Promise<string[]> {
-        return execute('mnemonics_encode', seed);
+    public async mnemonics_encode (
+        seed: string,
+        timestamp: number | BigInteger.BigInteger = 0,
+        auto_timestamp = true
+    ): Promise<string[]> {
+        const writer = new Writer();
+
+        writer.uint64_t(timestamp);
+
+        return execute('mnemonics_encode', seed, writer.blob, (auto_timestamp) ? 1 : 0);
     }
 
     /**

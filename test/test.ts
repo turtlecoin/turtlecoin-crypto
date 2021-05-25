@@ -28,6 +28,7 @@ import Crypto, { crypto_bulletproof_plus_t, crypto_bulletproof_t } from '../type
 import { describe, it, before } from 'mocha';
 import * as assert from 'assert';
 import { sha3_256 } from 'js-sha3';
+import * as BigInteger from 'big-integer';
 
 interface KeyPair {
     secret: string;
@@ -197,20 +198,59 @@ describe('Cryptographic Tests', async () => {
 
     describe('Mnemonics', async () => {
         const m_wallet_seed = 'f41f4de17ba1dd99a520f59e542a49a19cbc4f76e072cdf12205677685befd2a';
-        const m_mnemonic_phrase = 'write cream phone control planet version believe truck decade enhance ' +
-            'hundred save near sponsor assault foster mushroom apple picture doctor kiwi spawn shy table fall';
-        const m_checksum_index = 657;
+        const m_mnemonic_phrase = [
+            'write', 'cream', 'phone',
+            'control', 'planet', 'version',
+            'believe', 'truck', 'decade',
+            'enhance', 'hundred', 'save',
+            'near', 'sponsor', 'assault',
+            'foster', 'mushroom', 'apple',
+            'picture', 'doctor', 'kiwi',
+            'spawn', 'shy', 'table',
+            'brother', 'speak', 'absurd',
+            'abandon', 'abandon', 'abandon',
+            'produce'
+        ].join(' ');
+        const m_mnemonic_phrase_nots = [
+            'write', 'cream', 'phone',
+            'control', 'planet', 'version',
+            'believe', 'truck', 'decade',
+            'enhance', 'hundred', 'save',
+            'near', 'sponsor', 'assault',
+            'foster', 'mushroom', 'apple',
+            'picture', 'doctor', 'kiwi',
+            'spawn', 'shy', 'table',
+            'abandon', 'abandon', 'abandon',
+            'abandon', 'abandon', 'abandon',
+            'detect'
+        ].join(' ');
+        const m_timestamp = BigInteger(1621948647);
+        const m_checksum_index = 1373;
 
         it('Encode', async () => {
-            const phrase = await crypto.mnemonics_encode(m_wallet_seed);
+            const phrase = await crypto.mnemonics_encode(m_wallet_seed, m_timestamp);
 
             assert(phrase.join(' ') === m_mnemonic_phrase);
         });
 
+        it('Encode - No Timestamp', async () => {
+            const phrase = await crypto.mnemonics_encode(m_wallet_seed, 0, false);
+
+            assert(phrase.join(' ') === m_mnemonic_phrase_nots);
+        });
+
         it('Decode', async () => {
-            const seed = await crypto.mnemonics_decode(m_mnemonic_phrase.split(' '));
+            const [seed, timestamp] = await crypto.mnemonics_decode(m_mnemonic_phrase.split(' '));
 
             assert(seed === m_wallet_seed);
+            assert(timestamp.toString() === m_timestamp.toString());
+        });
+
+        it('Decode - No Timestamp', async () => {
+            const [seed, timestamp] = await crypto.mnemonics_decode(m_mnemonic_phrase_nots.split(' '));
+
+            assert(seed === m_wallet_seed);
+            assert(timestamp.toJSNumber() === 0);
         });
 
         it('Calculate Checksum Index', async () => {
@@ -224,7 +264,7 @@ describe('Cryptographic Tests', async () => {
         });
 
         it('Word Index', async () => {
-            const index = await crypto.mnemonics_word_index('fall');
+            const index = await crypto.mnemonics_word_index('produce');
 
             assert(index === m_checksum_index);
         });

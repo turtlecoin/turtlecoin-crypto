@@ -315,6 +315,15 @@ struct crypto_hash_t
         return result;
     }
 
+    /**
+     * Returns the hash as a vector of uint8_t
+     * @return
+     */
+    [[nodiscard]] std::vector<uint8_t> vector() const
+    {
+        return std::vector<uint8_t>(std::begin(bytes), std::end(bytes));
+    }
+
     uint8_t bytes[32] = {0};
 
   private:

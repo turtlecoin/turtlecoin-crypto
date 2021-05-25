@@ -26,6 +26,8 @@
 
 #include "mnemonics.h"
 
+#include <chrono>
+
 #define MNEMONIC_PREFIX_LENGTH 4
 
 const inline static std::vector<std::string> english_word_list = {
@@ -260,6 +262,13 @@ const inline static std::vector<std::string> english_word_list = {
 
 static inline auto word_list_size = english_word_list.size();
 
+static inline uint64_t now()
+{
+    const auto now = std::chrono::system_clock::now().time_since_epoch();
+
+    return std::chrono::duration_cast<std::chrono::seconds>(now).count();
+}
+
 namespace Crypto::Mnemonics
 {
     size_t calculate_checksum_index(const std::vector<std::string> &words)
@@ -276,11 +285,11 @@ namespace Crypto::Mnemonics
         return uint32_t(checksum % word_list_size);
     }
 
-    std::tuple<bool, crypto_seed_t> decode(const std::vector<std::string> &words)
+    std::tuple<bool, crypto_seed_t, uint64_t> decode(const std::vector<std::string> &words)
     {
-        if (words.size() != 25)
+        if (words.size() < 2)
         {
-            return {false, {}};
+            return {false, {}, 0};
         }
 
         const auto &last = words.back();
@@ -291,7 +300,7 @@ namespace Crypto::Mnemonics
 
         if (last != english_word_list[checksum_index])
         {
-            return {false, {}};
+            return {false, {}, 0};
         }
 
         serializer_t result;
@@ -308,7 +317,7 @@ namespace Crypto::Mnemonics
 
             if (w1 == -1 || w2 == -1 || w3 == -1)
             {
-                return {false, {}};
+                return {false, {}, 0};
             }
 
             const auto &n = word_list_size;
@@ -317,21 +326,43 @@ namespace Crypto::Mnemonics
 
             if (x % word_list_size != w1)
             {
-                return {false, {}};
+                return {false, {}, 0};
             }
 
             result.uint32(x);
         }
 
-        return {true, result.vector()};
+        deserializer_t reader(result);
+
+        const auto seed = reader.key<crypto_seed_t>();
+
+        uint64_t extra_data = 0;
+
+        if (reader.unread_bytes() != 0)
+        {
+            try
+            {
+                extra_data = reader.uint64();
+            }
+            catch (...)
+            {
+            }
+        }
+
+        return {true, seed, extra_data};
     }
 
-    std::vector<std::string> encode(const crypto_seed_t &wallet_seed)
+    static inline std::vector<std::string> encode(const std::vector<uint8_t> &input)
     {
+        if (input.size() % 4 != 0)
+        {
+            throw std::invalid_argument("Input size must be a multiple of 4 bytes");
+        }
+
         std::vector<std::string> result;
 
         // easy reader for plucking out uint32_t values
-        deserializer_t reader(wallet_seed.serialize());
+        deserializer_t reader(input);
 
         while (reader.unread_bytes() > 0)
         {
@@ -355,6 +386,22 @@ namespace Crypto::Mnemonics
         result.push_back(english_word_list[checksum_index]);
 
         return result;
+    }
+
+    std::vector<std::string> encode(const crypto_seed_t &wallet_seed, uint64_t timestamp, bool auto_timestamp)
+    {
+        serializer_t writer;
+
+        writer.key(wallet_seed);
+
+        if (timestamp == 0 && auto_timestamp)
+        {
+            timestamp = now();
+        }
+
+        writer.uint64(timestamp);
+
+        return encode(writer.vector());
     }
 
     size_t word_index(const std::string &word)

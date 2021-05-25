@@ -49,7 +49,7 @@ This repository a standalone cryptographic primitive wrapper library that can be
   * **Note:** This implementation is block-based and will not work with non block-based Base58 encoding (ie. TurtleCoin)
 * [Mnemonic](https://en.wikipedia.org/wiki/Mnemonic) Encoding
   * [English language](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt)
-  * 24-word + 1 checksum (25 words total)
+  * Stores a recoverable unix timestamp in the mnemonic words
   * Utilizes SHA3 instead of CRC32 for checksum generation
 * [ED25519](https://ed25519.cr.yp.to/ed25519-20110926.pdf) Key Generation & Manipulation
   * Deterministic Subwallet Key Generation
