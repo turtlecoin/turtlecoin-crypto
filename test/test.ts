@@ -209,7 +209,7 @@ describe('Cryptographic Tests', async () => {
             'spawn', 'shy', 'table',
             'brother', 'speak', 'absurd',
             'abandon', 'abandon', 'abandon',
-            'produce'
+            'measure'
         ].join(' ');
         const m_mnemonic_phrase_nots = [
             'write', 'cream', 'phone',
@@ -220,12 +220,10 @@ describe('Cryptographic Tests', async () => {
             'foster', 'mushroom', 'apple',
             'picture', 'doctor', 'kiwi',
             'spawn', 'shy', 'table',
-            'abandon', 'abandon', 'abandon',
-            'abandon', 'abandon', 'abandon',
-            'detect'
+            'best'
         ].join(' ');
         const m_timestamp = BigInteger(1621948647);
-        const m_checksum_index = 1373;
+        const m_checksum_index = 1103;
 
         it('Encode', async () => {
             const phrase = await crypto.mnemonics_encode(m_wallet_seed, m_timestamp);
@@ -264,7 +262,7 @@ describe('Cryptographic Tests', async () => {
         });
 
         it('Word Index', async () => {
-            const index = await crypto.mnemonics_word_index('produce');
+            const index = await crypto.mnemonics_word_index('measure');
 
             assert(index === m_checksum_index);
         });

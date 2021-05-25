@@ -28,7 +28,7 @@
 
 #include <chrono>
 
-#define MNEMONIC_PREFIX_LENGTH 4
+#define MNEMONIC_PREFIX_LENGTH 5
 
 const inline static std::vector<std::string> english_word_list = {
     "abandon",  "ability",  "able",     "about",    "above",    "absent",   "absorb",   "abstract", "absurd",
@@ -287,49 +287,56 @@ namespace Crypto::Mnemonics
 
     std::tuple<bool, crypto_seed_t, uint64_t> decode(const std::vector<std::string> &words)
     {
-        if (words.size() < 2)
-        {
-            return {false, {}, 0};
-        }
-
-        const auto &last = words.back();
-
-        const auto temp_words = std::vector<std::string>(words.begin(), words.end() - 1);
-
-        const auto checksum_index = calculate_checksum_index(temp_words);
-
-        if (last != english_word_list[checksum_index])
+        if (words.size() < 2 || (words.size() - 1) % 3 != 0)
         {
             return {false, {}, 0};
         }
 
         serializer_t result;
 
-        for (size_t i = 0; i < temp_words.size(); i += 3)
+        try
         {
-            const auto &word1 = temp_words[i], &word2 = temp_words[i + 1], &word3 = temp_words[i + 2];
+            const auto &last = words.back();
 
-            const auto w1 = word_index(temp_words[i]);
+            const auto temp_words = std::vector<std::string>(words.begin(), words.end() - 1);
 
-            const auto w2 = word_index(temp_words[i + 1]);
+            const auto checksum_index = calculate_checksum_index(temp_words);
 
-            const auto w3 = word_index(temp_words[i + 2]);
-
-            if (w1 == -1 || w2 == -1 || w3 == -1)
+            if (last != english_word_list[checksum_index])
             {
                 return {false, {}, 0};
             }
 
-            const auto &n = word_list_size;
-
-            const auto x = w1 + n * (((n - w1) + w2) % n) + n * n * (((n - w2) + w3) % n);
-
-            if (x % word_list_size != w1)
+            for (size_t i = 0; i < temp_words.size(); i += 3)
             {
-                return {false, {}, 0};
-            }
+                const auto &word1 = temp_words[i], &word2 = temp_words[i + 1], &word3 = temp_words[i + 2];
 
-            result.uint32(x);
+                const auto w1 = word_index(temp_words[i]);
+
+                const auto w2 = word_index(temp_words[i + 1]);
+
+                const auto w3 = word_index(temp_words[i + 2]);
+
+                if (w1 == -1 || w2 == -1 || w3 == -1)
+                {
+                    return {false, {}, 0};
+                }
+
+                const auto &n = word_list_size;
+
+                const auto x = w1 + n * (((n - w1) + w2) % n) + n * n * (((n - w2) + w3) % n);
+
+                if (x % word_list_size != w1)
+                {
+                    return {false, {}, 0};
+                }
+
+                result.uint32(x);
+            }
+        }
+        catch (...)
+        {
+            return {false, {}, {}};
         }
 
         deserializer_t reader(result);
@@ -399,7 +406,10 @@ namespace Crypto::Mnemonics
             timestamp = now();
         }
 
-        writer.uint64(timestamp);
+        if (timestamp != 0)
+        {
+            writer.uint64(timestamp);
+        }
 
         return encode(writer.vector());
     }
