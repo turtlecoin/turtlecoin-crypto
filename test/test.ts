@@ -318,6 +318,14 @@ describe('Cryptographic Tests', async () => {
             assert(public_key === public_key2);
         });
 
+        it('Generate Wallet Seed', async () => {
+            const [seed, words, timestamp] = await crypto.generate_wallet_seed();
+
+            assert(timestamp.toJSNumber() !== 0);
+            assert(seed.length === 64);
+            assert(words.length !== 0);
+        });
+
         it('Generate Spend Keys From Wallet Seed', async () => {
             const [, secret_spend_key] = await crypto.generate_wallet_spend_keys(wallet_seed);
 

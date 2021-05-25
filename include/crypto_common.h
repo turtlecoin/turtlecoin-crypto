@@ -167,6 +167,15 @@ namespace Crypto
     std::tuple<crypto_public_key_t, crypto_secret_key_t> generate_keys();
 
     /**
+     * Generates a new wallet seed and uses the provided extra entropy if provided
+     *
+     * @param extra_entropy
+     * @return
+     */
+    std::tuple<crypto_seed_t, std::vector<std::string>, uint64_t>
+        generate_wallet_seed(const std::vector<uint8_t> &extra_entropy = {});
+
+    /**
      * Generates deterministic subwallet keys from the wallet seed value.
      *
      * For compatibility & security purposes, all wallet keys and addresses, should be derived from

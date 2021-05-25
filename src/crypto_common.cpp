@@ -186,6 +186,35 @@ namespace Crypto
         return {secret_key * Crypto::G, secret_key};
     }
 
+    std::tuple<crypto_seed_t, std::vector<std::string>, uint64_t>
+        generate_wallet_seed(const std::vector<uint8_t> &extra_entropy)
+    {
+        const auto rnd_hash = random_hash();
+
+        serializer_t writer;
+
+        writer.key(rnd_hash);
+
+        if (!extra_entropy.empty())
+        {
+            writer.bytes(extra_entropy);
+        }
+
+        const crypto_seed_t seed =
+            Crypto::Hashing::sha3_slow_hash(writer.data(), writer.size(), SEED_GENERATION_ITERATIONS);
+
+        const auto words = Crypto::Mnemonics::encode(seed);
+
+        const auto [success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
+
+        if (!success)
+        {
+            throw std::runtime_error("Could not decode generated mnemonic phrase");
+        }
+
+        return {seed, words, timestamp};
+    }
+
     std::tuple<crypto_public_key_t, crypto_secret_key_t>
         generate_wallet_spend_keys(const crypto_seed_t &wallet_seed, uint64_t subwallet_index)
     {

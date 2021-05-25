@@ -1065,6 +1065,39 @@ NAN_METHOD(generate_keys)
     info.GetReturnValue().Set(result);
 }
 
+NAN_METHOD(generate_wallet_seed)
+{
+    auto result = Nan::New<v8::Array>(4);
+
+    Nan::Set(result, 0, Nan::New(true));
+
+    const auto entropy = get<std::string>(info, 0);
+
+    try
+    {
+        deserializer_t reader(entropy);
+
+        const auto [seed, words, timestamp] = Crypto::generate_wallet_seed(reader.unread_data());
+
+        Nan::Set(result, 0, Nan::New(false));
+
+        Nan::Set(result, 1, STR_TO_NAN_VAL(seed.to_string()));
+
+        Nan::Set(result, 2, to_v8_array(words));
+
+        serializer_t writer;
+
+        writer.uint64(timestamp);
+
+        Nan::Set(result, 3, STR_TO_NAN_VAL(writer.to_string()));
+    }
+    catch (...)
+    {
+    }
+
+    info.GetReturnValue().Set(result);
+}
+
 NAN_METHOD(generate_wallet_spend_keys)
 {
     auto result = Nan::New<v8::Array>(3);
@@ -2695,6 +2728,8 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, generate_key_image_v2);
 
         NAN_EXPORT(target, generate_keys);
+
+        NAN_EXPORT(target, generate_wallet_seed);
 
         NAN_EXPORT(target, generate_wallet_spend_keys);
 

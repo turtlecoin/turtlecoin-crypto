@@ -108,6 +108,29 @@ static inline std::string prepare(bool success, const std::string &value1, const
     END_RESULT()
 }
 
+static inline std::string
+    prepare(bool success, const std::string &value1, const std::vector<std::string> &values2, const std::string &value3)
+{
+    INIT_RESULT()
+    {
+        writer.Bool(!success);
+
+        writer.String(value1);
+
+        writer.StartArray();
+        {
+            for (const auto &value : values2)
+            {
+                writer.String(value);
+            }
+        }
+        writer.EndArray();
+
+        writer.String(value3);
+    }
+    END_RESULT()
+}
+
 template<typename T>
 static inline std::string prepare(
     bool success,
@@ -1066,6 +1089,30 @@ EMS_METHOD(generate_keys)
         const auto [public_key, secret_key] = Crypto::generate_keys();
 
         return prepare(true, public_key.to_string(), secret_key.to_string());
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(generate_wallet_seed)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto entropy = get<std::string>(info, 0);
+
+        deserializer_t reader(entropy);
+
+        const auto [seed, words, timestamp] = Crypto::generate_wallet_seed(reader.unread_data());
+
+        serializer_t writer;
+
+        writer.uint64(timestamp);
+
+        return prepare(true, seed.to_string(), words, writer.to_string());
     }
     catch (const std::exception &e)
     {
@@ -2593,6 +2640,8 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(generate_key_image_v2);
 
         EMS_EXPORT(generate_keys);
+
+        EMS_EXPORT(generate_wallet_seed);
 
         EMS_EXPORT(generate_wallet_spend_keys);
 

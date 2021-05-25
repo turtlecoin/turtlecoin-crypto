@@ -965,6 +965,21 @@ export default class Crypto {
     }
 
     /**
+     * Generates a new wallet seed and uses the provided additional entropy if provided
+     *
+     * @param entropy
+     */
+    public async generate_wallet_seed (entropy = ''): Promise<[string, string[], BigInteger.BigInteger]> {
+        entropy = Buffer.from(entropy).toString('hex');
+
+        const [seed, words, timestamp] = await execute('generate_wallet_seed', entropy);
+
+        const reader = new Reader(timestamp);
+
+        return [seed, words, reader.uint64_t()];
+    }
+
+    /**
      * Generates deterministic subwallet keys from the wallet seed value.
      *
      * For compatibility & security purposes, all wallet keys and addresses, should be derived from
