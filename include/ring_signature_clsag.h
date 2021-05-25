@@ -60,7 +60,7 @@ struct crypto_clsag_signature_t
     {
         std::vector<uint8_t> data(input);
 
-        auto reader = deserializer_t(data);
+        deserializer_t reader(data);
 
         deserialize(reader);
     }
@@ -88,12 +88,16 @@ struct crypto_clsag_signature_t
         scalars.clear();
 
         for (size_t i = 0; i < scalar_count; ++i)
+        {
             scalars.push_back(reader.key<crypto_scalar_t>());
+        }
 
         challenge = reader.key<crypto_scalar_t>();
 
         if (reader.boolean())
+        {
             commitment_image = reader.key<crypto_key_image_t>();
+        }
     }
 
     JSON_FROM_FUNC(from_json)
@@ -105,7 +109,9 @@ struct crypto_clsag_signature_t
         scalars.clear();
 
         for (const auto &elem : get_json_array(j, "scalars"))
+        {
             scalars.emplace_back(get_json_string(elem));
+        }
 
         JSON_MEMBER_OR_THROW("challenge");
 
@@ -135,7 +141,9 @@ struct crypto_clsag_signature_t
         writer.varint(scalars.size());
 
         for (const auto &val : scalars)
+        {
             writer.key(val);
+        }
 
         writer.key(challenge);
 
@@ -185,7 +193,9 @@ struct crypto_clsag_signature_t
             writer.StartArray();
             {
                 for (const auto &val : scalars)
+                {
                     val.toJSON(writer);
+                }
             }
             writer.EndArray();
 
@@ -313,15 +323,19 @@ namespace std
 {
     inline ostream &operator<<(ostream &os, const crypto_clsag_signature_t &value)
     {
-        os << "CLSAG:" << std::endl << "\tscalars:" << std::endl;
+        os << "CLSAG [" << value.size() << " bytes]:" << std::endl << "\tscalars:" << std::endl;
 
         for (const auto &val : value.scalars)
+        {
             os << "\t\t" << val << std::endl;
+        }
 
         os << "\tchallenge: " << value.challenge << std::endl;
 
         if (value.commitment_image != Crypto::Z)
+        {
             os << "\tcommitment_image: " << value.commitment_image << std::endl;
+        }
 
         return os;
     }

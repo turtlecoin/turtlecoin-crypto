@@ -70,7 +70,7 @@ struct crypto_bulletproof_t
     {
         std::vector<uint8_t> data(input);
 
-        auto reader = deserializer_t(data);
+        deserializer_t reader(data);
 
         deserialize(reader);
     }
@@ -386,7 +386,7 @@ namespace std
 {
     inline ostream &operator<<(ostream &os, const crypto_bulletproof_t &value)
     {
-        os << "Bulletproof:" << std::endl
+        os << "Bulletproof [" << value.size() << " bytes]:" << std::endl
            << "\tA: " << value.A << std::endl
            << "\tS: " << value.S << std::endl
            << "\tT1: " << value.T1 << std::endl
