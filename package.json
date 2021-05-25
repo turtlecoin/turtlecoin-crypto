@@ -7,13 +7,13 @@
   "scripts": {
     "docs": "./node_modules/.bin/typedoc && touch docs/.nojekyll && git restore docs/CNAME",
     "clean-addon": "./node_modules/.bin/cmake-js clean",
-    "build-addon": "npm run clean-addon && env BUILD_NODEJS=1 ./node_modules/.bin/cmake-js compile",
+    "build-node": "npm run clean-addon && env BUILD_NODEJS=1 ./node_modules/.bin/cmake-js compile",
     "build-ts": "./node_modules/.bin/tsc",
     "build-js": "./scripts/build_js.sh",
     "conditional-build-js": "test -f .gitsource && yarn build-js || echo \"SKIP: NOT GIT SOURCE\"",
     "prebuild": "env BUILD_NODEJS=1 ./node_modules/.bin/prebuild --backend cmake-js",
     "prebuild-all": "env BUILD_NODEJS=1 ./node_modules/.bin/prebuild --backend cmake-js --all",
-    "prebuild-install": "./node_modules/.bin/prebuild-install --download --verbose || npm run build-addon",
+    "prebuild-install": "./node_modules/.bin/prebuild-install --download --verbose || npm run build-node",
     "test-node": "./node_modules/.bin/mocha --timeout 60000 --require ts-node/register test/test.ts",
     "test-js": "env FORCE_JS=1 yarn test-node",
     "test-wasm": "env FORCE_WASM=1 yarn test-node",
@@ -24,7 +24,7 @@
     "style-ts": "./node_modules/.bin/eslint typescript/**/*.ts test/**/*.ts",
     "install": "npm run prebuild-install && npm run conditional-build-js",
     "test": "yarn style && yarn test-node && yarn test-js && yarn test-wasm",
-    "prepublishOnly": "yarn build-addon && yarn build-js && yarn build-ts && yarn test"
+    "prepublishOnly": "yarn build-node && yarn build-js && yarn build-ts && yarn test"
   },
   "files": [
     "dist/*",
