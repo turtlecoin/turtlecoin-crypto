@@ -501,7 +501,7 @@ describe('Cryptographic Tests', async () => {
                     input_blinding, public_commitments, pseudo_blinding, psuedo_commitment);
 
                 assert(await crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature,
-                    public_commitments, psuedo_commitment));
+                    public_commitments));
             });
 
             it('Prepare Ring Signature', async () => {
@@ -513,7 +513,7 @@ describe('Cryptographic Tests', async () => {
                     secret_ephemeral, 3, prepared, h, mu_P);
 
                 assert(await crypto.clsag_check_ring_signature(message_digest, key_image, public_keys, signature,
-                    public_commitments, psuedo_commitment));
+                    public_commitments));
             });
         });
     });

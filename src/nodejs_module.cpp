@@ -2309,8 +2309,6 @@ NAN_METHOD(clsag_check_ring_signature)
 
     const auto commitments = get_vector<crypto_pedersen_commitment_t>(info, 4);
 
-    const auto pseudo_commitment = get_crypto_t<crypto_pedersen_commitment_t>(info, 5);
-
     if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !signature_obj.empty())
     {
         try
@@ -2320,7 +2318,7 @@ NAN_METHOD(clsag_check_ring_signature)
             const auto signature = crypto_clsag_signature_t(body);
 
             success = Crypto::RingSignature::CLSAG::check_ring_signature(
-                message_digest, key_image, public_keys, signature, commitments, pseudo_commitment);
+                message_digest, key_image, public_keys, signature, commitments);
         }
         catch (...)
         {

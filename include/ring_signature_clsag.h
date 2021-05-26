@@ -39,9 +39,13 @@ struct crypto_clsag_signature_t
 
     crypto_clsag_signature_t(
         std::vector<crypto_scalar_t> scalars,
-        const crypto_scalar_t challenge,
-        const crypto_key_image_t &commitment_image = Crypto::Z):
-        scalars(std::move(scalars)), challenge(challenge), commitment_image(commitment_image)
+        const crypto_scalar_t &challenge,
+        const crypto_key_image_t &commitment_image = Crypto::Z,
+        const crypto_pedersen_commitment_t &pseudo_commitment = Crypto::Z):
+        scalars(std::move(scalars)),
+        challenge(challenge),
+        commitment_image(commitment_image),
+        pseudo_commitment(pseudo_commitment)
     {
     }
 
@@ -97,6 +101,19 @@ struct crypto_clsag_signature_t
         if (reader.boolean())
         {
             commitment_image = reader.key<crypto_key_image_t>();
+
+            pseudo_commitment = reader.key<crypto_pedersen_commitment_t>();
+        }
+
+        {
+            const auto count = reader.varint<uint64_t>();
+
+            offsets.clear();
+
+            for (size_t i = 0; i < count; ++i)
+            {
+                offsets.push_back(reader.varint<uint64_t>());
+            }
         }
     }
 
@@ -119,6 +136,18 @@ struct crypto_clsag_signature_t
 
         JSON_IF_MEMBER("commitment_image")
         commitment_image = get_json_string(j, "commitment_image");
+
+        JSON_IF_MEMBER("pseudo_commitment")
+        pseudo_commitment = get_json_string(j, "pseudo_commitment");
+
+        JSON_MEMBER_OR_THROW("offsets");
+
+        offsets.clear();
+
+        for (const auto &elem : get_json_array(j, "offsets"))
+        {
+            offsets.emplace_back(get_json_uint64_t(elem));
+        }
     }
 
     /**
@@ -152,10 +181,19 @@ struct crypto_clsag_signature_t
             writer.boolean(true);
 
             writer.key(commitment_image);
+
+            writer.key(pseudo_commitment);
         }
         else
         {
             writer.boolean(false);
+        }
+
+        writer.varint(offsets.size());
+
+        for (const auto &val : offsets)
+        {
+            writer.varint(val);
         }
     }
 
@@ -206,7 +244,20 @@ struct crypto_clsag_signature_t
             {
                 writer.Key("commitment_image");
                 commitment_image.toJSON(writer);
+
+                writer.Key("pseudo_commitment");
+                pseudo_commitment.toJSON(writer);
             }
+
+            writer.Key("offsets");
+            writer.StartArray();
+            {
+                for (const auto &val : offsets)
+                {
+                    writer.Uint64(val);
+                }
+            }
+            writer.EndArray();
         }
         writer.EndObject();
     }
@@ -225,6 +276,8 @@ struct crypto_clsag_signature_t
     std::vector<crypto_scalar_t> scalars;
     crypto_key_image_t commitment_image;
     crypto_scalar_t challenge;
+    crypto_pedersen_commitment_t pseudo_commitment;
+    std::vector<uint64_t> offsets;
 };
 
 namespace Crypto::RingSignature::CLSAG
@@ -244,8 +297,7 @@ namespace Crypto::RingSignature::CLSAG
         const crypto_key_image_t &key_image,
         const std::vector<crypto_public_key_t> &public_keys,
         const crypto_clsag_signature_t &signature,
-        const std::vector<crypto_pedersen_commitment_t> &commitments = {},
-        const crypto_pedersen_commitment_t &pseudo_commitment = Crypto::Z);
+        const std::vector<crypto_pedersen_commitment_t> &commitments = {});
 
     /**
      * Completes the prepared CLSAG ring signature
@@ -334,7 +386,8 @@ namespace std
 
         if (value.commitment_image != Crypto::Z)
         {
-            os << "\tcommitment_image: " << value.commitment_image << std::endl;
+            os << "\tcommitment_image: " << value.commitment_image << std::endl
+               << "\tpseudo_commitment: " << value.pseudo_commitment << std::endl;
         }
 
         return os;

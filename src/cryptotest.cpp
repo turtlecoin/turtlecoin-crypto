@@ -610,7 +610,7 @@ int main()
                   << std::endl;
 
         if (!Crypto::RingSignature::CLSAG::check_ring_signature(
-                SHA3_HASH, key_image, public_keys, signature, public_commitments, ps_commitments[0]))
+                SHA3_HASH, key_image, public_keys, signature, public_commitments))
         {
             std::cout << "CLSAG::check_ring_signature: Failed!" << std::endl;
 
@@ -958,7 +958,7 @@ int main()
             benchmark(
                 [&public_keys, &image, &signature, &public_commitments, &ps_commitments = ps_commitments]() {
                     Crypto::RingSignature::CLSAG::check_ring_signature(
-                        SHA3_HASH, image, public_keys, signature, public_commitments, ps_commitments[0]);
+                        SHA3_HASH, image, public_keys, signature, public_commitments);
                 },
                 "Crypto::RingSignature::CLSAG::check_ring_signature[commitments]",
                 100);

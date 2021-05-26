@@ -417,12 +417,12 @@ export default class Crypto {
      * @param pseudo_commitment
      */
     public async clsag_check_ring_signature (message_digest: string, key_image: string, public_keys: string[],
-        signature: crypto_clsag_signature_t, commitments: string[] = [], pseudo_commitment: string = ''
+        signature: crypto_clsag_signature_t, commitments: string[] = []
     ): Promise<boolean> {
         const sig = JSON.stringify(signature);
 
         return execute('clsag_check_ring_signature', message_digest, key_image,
-            public_keys, sig, commitments, pseudo_commitment);
+            public_keys, sig, commitments);
     }
 
     /**

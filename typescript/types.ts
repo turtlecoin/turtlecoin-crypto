@@ -98,6 +98,8 @@ export interface crypto_clsag_signature_t {
     scalars: string[];
     challenge: string;
     commitment_image?: string;
+    psuedo_commitment?: string;
+    offsets?: number[];
 }
 
 /**
@@ -136,7 +138,7 @@ export interface IConfig {
 
     clsag_check_ring_signature?:
         (message_digest: string, key_image: string, public_keys: string[], signature: crypto_clsag_signature_t,
-         commitments: string[], pseudo_commitment: string) => Promise<boolean>;
+         commitments: string[]) => Promise<boolean>;
     clsag_complete_ring_signature?:
         (signing_scalar: string, real_output_index: number, signature: crypto_clsag_signature_t,
          h: string[], mu_P: string, partial_signing_scalars: string[]) => Promise<crypto_clsag_signature_t>;

@@ -52,12 +52,11 @@ namespace Crypto::RingSignature::CLSAG
         const crypto_key_image_t &key_image,
         const std::vector<crypto_public_key_t> &public_keys,
         const crypto_clsag_signature_t &signature,
-        const std::vector<crypto_pedersen_commitment_t> &commitments,
-        const crypto_pedersen_commitment_t &pseudo_commitment)
+        const std::vector<crypto_pedersen_commitment_t> &commitments)
     {
         const auto use_commitments =
             (signature.commitment_image != Crypto::Z && commitments.size() == public_keys.size()
-             && pseudo_commitment != Crypto::Z);
+             && signature.pseudo_commitment != Crypto::Z);
 
         const auto ring_size = public_keys.size();
 
@@ -112,7 +111,7 @@ namespace Crypto::RingSignature::CLSAG
 
                 transcript.update(commitments);
 
-                transcript.update(pseudo_commitment);
+                transcript.update(signature.pseudo_commitment);
             }
 
             mu_P = transcript.challenge();
@@ -135,7 +134,7 @@ namespace Crypto::RingSignature::CLSAG
 
             transcript.update(commitments);
 
-            transcript.update(pseudo_commitment);
+            transcript.update(signature.pseudo_commitment);
 
             mu_C = transcript.challenge();
 
@@ -160,7 +159,7 @@ namespace Crypto::RingSignature::CLSAG
         {
             transcript.update(commitments);
 
-            transcript.update(pseudo_commitment);
+            transcript.update(signature.pseudo_commitment);
         }
 
         for (size_t i = 0; i < ring_size; i++)
@@ -204,7 +203,7 @@ namespace Crypto::RingSignature::CLSAG
                  * to a "zero" amount difference between the two commitments
                  */
                 // C = (C[idx] - PS) mod l
-                const auto C = commitments[idx] - pseudo_commitment;
+                const auto C = commitments[idx] - signature.pseudo_commitment;
 
                 // L += [r2 * (C[idx] - PS)] mod l
                 L += (r2 * C);
@@ -317,7 +316,10 @@ namespace Crypto::RingSignature::CLSAG
             finalized_signature[real_output_index] -= (h[real_output_index] * derived_scalar);
         }
 
-        return {true, crypto_clsag_signature_t(finalized_signature, signature.challenge, signature.commitment_image)};
+        return {
+            true,
+            crypto_clsag_signature_t(
+                finalized_signature, signature.challenge, signature.commitment_image, signature.pseudo_commitment)};
     }
 
     crypto_scalar_t
@@ -672,6 +674,6 @@ namespace Crypto::RingSignature::CLSAG
             signature[real_output_index] -= (h[real_output_index] * z * mu_C);
         }
 
-        return {true, crypto_clsag_signature_t(signature, h[0], commitment_image), h, mu_P};
+        return {true, crypto_clsag_signature_t(signature, h[0], commitment_image, pseudo_commitment), h, mu_P};
     }
 } // namespace Crypto::RingSignature::CLSAG
