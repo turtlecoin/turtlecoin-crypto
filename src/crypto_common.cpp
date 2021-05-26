@@ -24,8 +24,10 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "crypto.h"
+#include "crypto_common.h"
+
 #include "hashing.h"
+#include "mnemonics.h"
 #include "random.h"
 
 static const crypto_scalar_t DERIVATION_DOMAIN_0 = {0x20, 0x54, 0x75, 0x72, 0x74, 0x6c, 0x65, 0x43, 0x6f, 0x69, 0x6e,

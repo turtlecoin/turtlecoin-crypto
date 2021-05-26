@@ -30,6 +30,15 @@
 #include "crypto_vector_types.h"
 #include "hashing.h"
 
+
+#ifndef CRYPTO_ENTROPY_BYTES
+#define CRYPTO_ENTROPY_BYTES 16384 // 16KiB
+#endif
+
+#ifndef SEED_GENERATION_ITERATIONS
+#define SEED_GENERATION_ITERATIONS 1000
+#endif
+
 namespace Crypto
 {
     /**
