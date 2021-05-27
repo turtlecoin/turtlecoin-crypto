@@ -155,6 +155,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#generate_shared_secret_key" class="tsd-kind-icon">generate_<wbr>shared_<wbr>secret_<wbr>key</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#generate_signature" class="tsd-kind-icon">generate_<wbr>signature</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#generate_transaction_fee_commitment" class="tsd-kind-icon">generate_<wbr>transaction_<wbr>fee_<wbr>commitment</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#generate_wallet_seed" class="tsd-kind-icon">generate_<wbr>wallet_<wbr>seed</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#generate_wallet_spend_keys" class="tsd-kind-icon">generate_<wbr>wallet_<wbr>spend_<wbr>keys</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#generate_wallet_view_keys" class="tsd-kind-icon">generate_<wbr>wallet_<wbr>view_<wbr>keys</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#hash_to_point" class="tsd-kind-icon">hash_<wbr>to_<wbr>point</a></li>
@@ -174,6 +175,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#random_points" class="tsd-kind-icon">random_<wbr>points</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#random_scalar" class="tsd-kind-icon">random_<wbr>scalar</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#random_scalars" class="tsd-kind-icon">random_<wbr>scalars</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#restore_wallet_seed" class="tsd-kind-icon">restore_<wbr>wallet_<wbr>seed</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#root_hash" class="tsd-kind-icon">root_<wbr>hash</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#root_hash_from_branch" class="tsd-kind-icon">root_<wbr>hash_<wbr>from_<wbr>branch</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="default.html#rounds_required" class="tsd-kind-icon">rounds_<wbr>required</a></li>
@@ -643,7 +645,7 @@
 					<a name="borromean_check_ring_signature" class="tsd-anchor"></a>
 					<h3>borromean_<wbr>check_<wbr>ring_<wbr>signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>check_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>check_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -666,7 +668,7 @@
 									<h5>public_keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
-									<h5>signature: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>signature: <a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a></h5>
 									<div class="tsd-comment tsd-typography">
 									</div>
 								</li>
@@ -679,7 +681,7 @@
 					<a name="borromean_complete_ring_signature" class="tsd-anchor"></a>
 					<h3>borromean_<wbr>complete_<wbr>ring_<wbr>signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>complete_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>signing_scalar<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, partial_signing_scalars<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>complete_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>signing_scalar<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, signature<span class="tsd-signature-symbol">: </span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a>, partial_signing_scalars<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -699,7 +701,7 @@
 									<h5>real_output_index: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>signature: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>signature: <a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a></h5>
 								</li>
 								<li>
 									<h5>partial_signing_scalars: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></h5>
@@ -707,7 +709,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -715,7 +717,7 @@
 					<a name="borromean_generate_partial_signing_scalar" class="tsd-anchor"></a>
 					<h3>borromean_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar<span class="tsd-signature-symbol">(</span>real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, secret_spend_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>generate_<wbr>partial_<wbr>signing_<wbr>scalar<span class="tsd-signature-symbol">(</span>real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, signature<span class="tsd-signature-symbol">: </span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a>, secret_spend_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -732,7 +734,7 @@
 									<h5>real_output_index: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>signature: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>signature: <a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a></h5>
 								</li>
 								<li>
 									<h5>secret_spend_key: <span class="tsd-signature-type">string</span></h5>
@@ -748,7 +750,7 @@
 					<a name="borromean_generate_ring_signature" class="tsd-anchor"></a>
 					<h3>borromean_<wbr>generate_<wbr>ring_<wbr>signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>generate_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, secret_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>generate_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, secret_ephemeral<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -773,7 +775,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -781,7 +783,7 @@
 					<a name="borromean_prepare_ring_signature" class="tsd-anchor"></a>
 					<h3>borromean_<wbr>prepare_<wbr>ring_<wbr>signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>prepare_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">borromean_<wbr>prepare_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, real_output_index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -809,7 +811,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_borromean_signature_t</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1085,7 +1087,7 @@
 					<a name="clsag_check_ring_signature" class="tsd-anchor"></a>
 					<h3>clsag_<wbr>check_<wbr>ring_<wbr>signature</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">clsag_<wbr>check_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><a href="../interfaces/crypto_clsag_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_clsag_signature_t</a>, commitments<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, pseudo_commitment<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">clsag_<wbr>check_<wbr>ring_<wbr>signature<span class="tsd-signature-symbol">(</span>message_digest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, key_image<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, public_keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, signature<span class="tsd-signature-symbol">: </span><a href="../interfaces/crypto_clsag_signature_t.html" class="tsd-signature-type" data-tsd-kind="Interface">crypto_clsag_signature_t</a>, commitments<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -1112,11 +1114,6 @@
 								</li>
 								<li>
 									<h5>commitments: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></h5>
-								</li>
-								<li>
-									<h5>pseudo_commitment: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;&#x27;</span></h5>
-									<div class="tsd-comment tsd-typography">
-									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1984,6 +1981,33 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="generate_wallet_seed" class="tsd-anchor"></a>
+					<h3>generate_<wbr>wallet_<wbr>seed</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">generate_<wbr>wallet_<wbr>seed<span class="tsd-signature-symbol">(</span>entropy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a new wallet seed and uses the provided additional entropy if provided</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>entropy: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;&#x27;</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="generate_wallet_spend_keys" class="tsd-anchor"></a>
 					<h3>generate_<wbr>wallet_<wbr>spend_<wbr>keys</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -2151,7 +2175,7 @@
 					<a name="mnemonics_decode" class="tsd-anchor"></a>
 					<h3>mnemonics_<wbr>decode</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>decode<span class="tsd-signature-symbol">(</span>words<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>decode<span class="tsd-signature-symbol">(</span>words<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -2166,11 +2190,9 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>words: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2178,7 +2200,7 @@
 					<a name="mnemonics_encode" class="tsd-anchor"></a>
 					<h3>mnemonics_<wbr>encode</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>encode<span class="tsd-signature-symbol">(</span>seed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">mnemonics_<wbr>encode<span class="tsd-signature-symbol">(</span>seed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, timestamp<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BigInteger</span>, auto_timestamp<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -2193,6 +2215,12 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>seed: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>timestamp: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol"> = 0</span></h5>
+								</li>
+								<li>
+									<h5>auto_timestamp: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
 									<div class="tsd-comment tsd-typography">
 									</div>
 								</li>
@@ -2458,6 +2486,33 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="restore_wallet_seed" class="tsd-anchor"></a>
+					<h3>restore_<wbr>wallet_<wbr>seed</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">restore_<wbr>wallet_<wbr>seed<span class="tsd-signature-symbol">(</span>words<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Restores a wallet seed and the unix timestamp of its creation (if available)</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>words: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">BigInteger</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -3036,6 +3091,9 @@
 								<a href="default.html#generate_transaction_fee_commitment" class="tsd-kind-icon">generate_<wbr>transaction_<wbr>fee_<wbr>commitment</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="default.html#generate_wallet_seed" class="tsd-kind-icon">generate_<wbr>wallet_<wbr>seed</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="default.html#generate_wallet_spend_keys" class="tsd-kind-icon">generate_<wbr>wallet_<wbr>spend_<wbr>keys</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -3093,6 +3151,9 @@
 								<a href="default.html#random_scalars" class="tsd-kind-icon">random_<wbr>scalars</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="default.html#restore_wallet_seed" class="tsd-kind-icon">restore_<wbr>wallet_<wbr>seed</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="default.html#root_hash" class="tsd-kind-icon">root_<wbr>hash</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -3143,6 +3204,9 @@
 				<ul class="after-current">
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/iconfig.html" class="tsd-kind-icon">IConfig</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/crypto_borromean_signature_t.html" class="tsd-kind-icon">crypto_<wbr>borromean_<wbr>signature_<wbr>t</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/crypto_bulletproof_plus_t.html" class="tsd-kind-icon">crypto_<wbr>bulletproof_<wbr>plus_<wbr>t</a>
