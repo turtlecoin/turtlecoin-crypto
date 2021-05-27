@@ -28,6 +28,200 @@
 #define CRYPTO_RING_SIGNATURE_BORROMEAN_H
 
 #include "crypto_common.h"
+#include "hashing.h"
+
+struct crypto_borromean_signature_t
+{
+    crypto_borromean_signature_t() {}
+
+    crypto_borromean_signature_t(std::vector<crypto_signature_t> signatures, std::vector<uint64_t> offsets = {}):
+        signatures(std::move(signatures)), offsets(std::move(offsets))
+    {
+    }
+
+    JSON_OBJECT_CONSTRUCTORS(crypto_borromean_signature_t, from_json);
+
+    crypto_borromean_signature_t(const std::string &input)
+    {
+        const auto string = Crypto::StringTools::from_hex(input);
+
+        deserializer_t reader(string);
+
+        deserialize(reader);
+    }
+
+    crypto_borromean_signature_t(std::initializer_list<uint8_t> input)
+    {
+        std::vector<uint8_t> data(input);
+
+        deserializer_t reader(data);
+
+        deserialize(reader);
+    }
+
+    crypto_borromean_signature_t(const std::vector<uint8_t> &input)
+    {
+        deserializer_t reader(input);
+
+        deserialize(reader);
+    }
+
+    crypto_borromean_signature_t(deserializer_t &reader)
+    {
+        deserialize(reader);
+    }
+
+    /**
+     * Deserializes the struct from a byte array
+     * @param reader
+     */
+    void deserialize(deserializer_t &reader)
+    {
+        {
+            const auto count = reader.varint<uint64_t>();
+
+            signatures.clear();
+
+            for (size_t i = 0; i < count; ++i)
+            {
+                signatures.push_back(reader.key<crypto_signature_t>());
+            }
+        }
+
+        {
+            const auto count = reader.varint<uint64_t>();
+
+            offsets.clear();
+
+            for (size_t i = 0; i < count; ++i)
+            {
+                offsets.push_back(reader.varint<uint64_t>());
+            }
+        }
+    }
+
+    JSON_FROM_FUNC(from_json)
+    {
+        JSON_OBJECT_OR_THROW();
+
+        JSON_MEMBER_OR_THROW("signatures");
+
+        signatures.clear();
+
+        for (const auto &elem : get_json_array(j, "signatures"))
+        {
+            signatures.emplace_back(get_json_string(elem));
+        }
+
+        JSON_MEMBER_OR_THROW("offsets");
+
+        offsets.clear();
+
+        for (const auto &elem : get_json_array(j, "offsets"))
+        {
+            offsets.emplace_back(get_json_uint64_t(elem));
+        }
+    }
+
+    /**
+     * Provides the hash of the serialized structure
+     * @return
+     */
+    [[nodiscard]] crypto_hash_t hash() const
+    {
+        const auto serialized = serialize();
+
+        return Crypto::Hashing::sha3(serialized.data(), serialized.size());
+    }
+
+    /**
+     * Serializes the struct to a byte array
+     * @param writer
+     */
+    void serialize(serializer_t &writer) const
+    {
+        writer.varint(signatures.size());
+
+        for (const auto &val : signatures)
+        {
+            writer.key(val);
+        }
+
+        writer.varint(offsets.size());
+
+        for (const auto &val : offsets)
+        {
+            writer.varint(val);
+        }
+    }
+
+    /**
+     * Serializes the struct to a byte array
+     * @return
+     */
+    [[nodiscard]] std::vector<uint8_t> serialize() const
+    {
+        serializer_t writer;
+
+        serialize(writer);
+
+        return writer.vector();
+    }
+
+    /**
+     * Returns the serialized byte size
+     * @return
+     */
+    [[nodiscard]] size_t size() const
+    {
+        return serialize().size();
+    }
+
+    /**
+     * Writes the structure as JSON to the provided writer
+     * @param writer
+     */
+    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    {
+        writer.StartObject();
+        {
+            writer.Key("signatures");
+            writer.StartArray();
+            {
+                for (const auto &val : signatures)
+                {
+                    val.toJSON(writer);
+                }
+            }
+            writer.EndArray();
+
+            writer.Key("offsets");
+            writer.StartArray();
+            {
+                for (const auto &val : offsets)
+                {
+                    writer.Uint64(val);
+                }
+            }
+            writer.EndArray();
+        }
+        writer.EndObject();
+    }
+
+    /**
+     * Returns the hex encoded serialized byte array
+     * @return
+     */
+    [[nodiscard]] std::string to_string() const
+    {
+        const auto bytes = serialize();
+
+        return Crypto::StringTools::to_hex(bytes.data(), bytes.size());
+    }
+
+    std::vector<crypto_signature_t> signatures;
+    std::vector<uint64_t> offsets;
+};
 
 namespace Crypto::RingSignature::Borromean
 {
@@ -43,7 +237,7 @@ namespace Crypto::RingSignature::Borromean
         const crypto_hash_t &message_digest,
         const crypto_key_image_t &key_image,
         const std::vector<crypto_public_key_t> &public_keys,
-        const std::vector<crypto_signature_t> &signature);
+        const crypto_borromean_signature_t &borromean_signature);
 
     /**
      * Completes the prepared Borromean ring signature
@@ -54,10 +248,10 @@ namespace Crypto::RingSignature::Borromean
      * @param partial_signing_scalars
      * @return
      */
-    std::tuple<bool, std::vector<crypto_signature_t>> complete_ring_signature(
+    std::tuple<bool, crypto_borromean_signature_t> complete_ring_signature(
         const crypto_scalar_t &signing_scalar,
         size_t real_output_index,
-        const std::vector<crypto_signature_t> &signature,
+        const crypto_borromean_signature_t &borromean_signature,
         const std::vector<crypto_scalar_t> &partial_signing_scalars = {});
 
     /**
@@ -70,7 +264,7 @@ namespace Crypto::RingSignature::Borromean
      */
     crypto_scalar_t generate_partial_signing_scalar(
         size_t real_output_index,
-        const std::vector<crypto_signature_t> &signature,
+        const crypto_borromean_signature_t &borromean_signature,
         const crypto_secret_key_t &spend_secret_key);
 
     /**
@@ -80,7 +274,7 @@ namespace Crypto::RingSignature::Borromean
      * @param public_keys
      * @return
      */
-    std::tuple<bool, std::vector<crypto_signature_t>> generate_ring_signature(
+    std::tuple<bool, crypto_borromean_signature_t> generate_ring_signature(
         const crypto_hash_t &message_digest,
         const crypto_secret_key_t &secret_ephemeral,
         const std::vector<crypto_public_key_t> &public_keys);
@@ -95,11 +289,33 @@ namespace Crypto::RingSignature::Borromean
      * @param alpha_scalar
      * @return
      */
-    std::tuple<bool, std::vector<crypto_signature_t>> prepare_ring_signature(
+    std::tuple<bool, crypto_borromean_signature_t> prepare_ring_signature(
         const crypto_hash_t &message_digest,
         const crypto_key_image_t &key_image,
         const std::vector<crypto_public_key_t> &public_keys,
         size_t real_output_index);
 } // namespace Crypto::RingSignature::Borromean
+
+namespace std
+{
+    inline ostream &operator<<(ostream &os, const crypto_borromean_signature_t &value)
+    {
+        os << "Borromean [" << value.size() << " bytes]:" << std::endl << "\tsignatures:" << std::endl;
+
+        for (const auto &val : value.signatures)
+        {
+            os << "\t\t" << val << std::endl;
+        }
+
+        os << "\toffsets:" << std::endl;
+
+        for (const auto &val : value.offsets)
+        {
+            os << "\t\t" << std::to_string(val) << std::endl;
+        }
+
+        return os;
+    }
+} // namespace std
 
 #endif // CRYPTO_RING_SIGNATURE_BORROMEAN_H

@@ -513,12 +513,13 @@ int main()
             return 1;
         }
 
-        std::cout << "Borromean::generate_ring_signature: " << std::endl;
+        std::cout << "Borromean::generate_ring_signature: Passed!" << std::endl;
 
-        for (const auto &sig : signature)
-            std::cout << "\t" << sig << std::endl;
+        std::cout << signature << std::endl;
 
-        std::cout << "\tSignature Size: " << (sizeof(crypto_signature_t) * signature.size()) << std::endl << std::endl;
+        std::cout << "Encoded Size: " << signature.size() << std::endl
+                  << signature.to_string() << std::endl
+                  << std::endl;
 
         if (!Crypto::RingSignature::Borromean::check_ring_signature(SHA3_HASH, key_image, public_keys, signature))
         {
@@ -859,7 +860,7 @@ int main()
 
             public_keys[RING_SIZE / 2] = public_ephemeral;
 
-            std::vector<crypto_signature_t> signature;
+            crypto_borromean_signature_t signature;
 
             const auto image = Crypto::generate_key_image(public_ephemeral, secret_ephemeral);
 

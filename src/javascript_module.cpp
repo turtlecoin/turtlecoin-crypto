@@ -2084,10 +2084,14 @@ EMS_METHOD(borromean_check_ring_signature)
 
         const auto public_keys = get_vector<crypto_public_key_t>(info, 2);
 
-        const auto signature = get_vector<crypto_signature_t>(info, 3);
+        const auto signature_obj = get<std::string>(info, 3);
 
-        if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !signature.empty())
+        if (!message_digest.empty() && !key_image.empty() && !public_keys.empty() && !signature_obj.empty())
         {
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_borromean_signature_t(body);
+
             const auto success = Crypto::RingSignature::Borromean::check_ring_signature(
                 message_digest, key_image, public_keys, signature);
 
@@ -2112,18 +2116,28 @@ EMS_METHOD(borromean_complete_ring_signature)
 
         const auto real_output_index = get<uint32_t>(info, 1);
 
-        const auto signature = get_vector<crypto_signature_t>(info, 2);
+        const auto signature_obj = get<std::string>(info, 2);
 
         const auto partial_signing_scalars = get_vector<crypto_scalar_t>(info, 3);
 
-        if (!signing_scalar.empty() && !signing_scalar.empty())
+        if (!signing_scalar.empty() && !signing_scalar.empty() && !signature_obj.empty())
         {
-            const auto [success, sigs] = Crypto::RingSignature::Borromean::complete_ring_signature(
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_borromean_signature_t(body);
+
+            const auto [success, sig] = Crypto::RingSignature::Borromean::complete_ring_signature(
                 signing_scalar, real_output_index, signature, partial_signing_scalars);
 
             if (success)
             {
-                return prepare(success, sigs);
+                JSON_INIT();
+
+                sig.toJSON(writer);
+
+                JSON_DUMP(sig_json);
+
+                return prepare(success, sig_json);
             }
         }
 
@@ -2143,12 +2157,16 @@ EMS_METHOD(borromean_generate_partial_signing_scalar)
 
         const auto real_output_index = get<uint32_t>(info, 0);
 
-        const auto signature = get_vector<crypto_signature_t>(info, 1);
+        const auto signature_obj = get<std::string>(info, 1);
 
         const auto spend_secret_key = get<std::string>(info, 2);
 
-        if (!signature.empty() && !spend_secret_key.empty())
+        if (!signature_obj.empty() && !spend_secret_key.empty())
         {
+            JSON_PARSE(signature_obj);
+
+            const auto signature = crypto_borromean_signature_t(body);
+
             const auto partial_signing_scalar = Crypto::RingSignature::Borromean::generate_partial_signing_scalar(
                 real_output_index, signature, spend_secret_key);
 
@@ -2182,7 +2200,13 @@ EMS_METHOD(borromean_generate_ring_signature)
 
             if (success)
             {
-                return prepare(success, signature);
+                JSON_INIT();
+
+                signature.toJSON(writer);
+
+                JSON_DUMP(sig_json);
+
+                return prepare(success, sig_json);
             }
         }
 
@@ -2215,7 +2239,13 @@ EMS_METHOD(borromean_prepare_ring_signature)
 
             if (success)
             {
-                return prepare(success, signature);
+                JSON_INIT();
+
+                signature.toJSON(writer);
+
+                JSON_DUMP(sig_json);
+
+                return prepare(success, sig_json);
             }
         }
 

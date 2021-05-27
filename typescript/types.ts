@@ -92,6 +92,14 @@ export interface crypto_bulletproof_plus_t {
 }
 
 /**
+ * Represents a Borromean signature
+ */
+export interface crypto_borromean_signature_t {
+    signatures: string[];
+    offsets?: number[];
+}
+
+/**
  * Represents a CLSAG signature
  */
 export interface crypto_clsag_signature_t {
@@ -117,17 +125,20 @@ export interface IConfig {
     cn_base58_decode_check?: (base58: string) => Promise<string>;
 
     borromean_check_ring_signature?:
-        (message_digest: string, key_image: string, public_keys: string[], signature: string[]) => Promise<boolean>;
+        (message_digest: string, key_image: string, public_keys: string[],
+         signature: crypto_borromean_signature_t) => Promise<boolean>;
     borromean_complete_ring_signature?:
-        (signing_scalar: string, real_output_index: number, signature: string[],
-         partial_signing_scalars: string[]) => Promise<string[]>;
+        (signing_scalar: string, real_output_index: number, signature: crypto_borromean_signature_t,
+         partial_signing_scalars: string[]) => Promise<crypto_borromean_signature_t>;
     borromean_generate_partial_signing_scalar?:
-        (real_output_index: number, signature: string[], secret_spend_key: string) => Promise<string>;
+        (real_output_index: number, signature: crypto_borromean_signature_t, secret_spend_key: string
+        ) => Promise<string>;
     borromean_generate_ring_signature?:
-        (message_digest: string, secret_ephemeral: string, public_keys: string[]) => Promise<string[]>;
+        (message_digest: string, secret_ephemeral: string, public_keys: string[]
+        ) => Promise<crypto_borromean_signature_t>;
     borromean_prepare_ring_signature?:
         (message_digest: string, key_image: string, public_keys: string[], real_output_index: number
-        ) => Promise<string[]>;
+        ) => Promise<crypto_borromean_signature_t>;
 
     bulletproofs_prove?: (amounts: number[], blinding_factors: string[]) => Promise<[crypto_bulletproof_t, string[]]>;
     bulletproofs_verify?: (proofs: crypto_bulletproof_t[], commitments: string[][]) => Promise<boolean>;

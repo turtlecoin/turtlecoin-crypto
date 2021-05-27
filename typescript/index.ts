@@ -28,6 +28,7 @@ import * as bindings from 'bindings';
 import {
     crypto_bulletproof_t,
     crypto_bulletproof_plus_t,
+    crypto_borromean_signature_t,
     crypto_clsag_signature_t,
     IConfig,
     LibraryType,
@@ -38,8 +39,12 @@ import { Reader, Writer } from '@turtlecoin/bytestream';
 import { format } from 'util';
 import * as BigInteger from 'big-integer';
 export {
-    crypto_clsag_signature_t, crypto_bulletproof_t, crypto_bulletproof_plus_t,
-    IConfig, LibraryType
+    crypto_bulletproof_t,
+    crypto_bulletproof_plus_t,
+    crypto_borromean_signature_t,
+    crypto_clsag_signature_t,
+    IConfig,
+    LibraryType
 };
 
 /**
@@ -303,8 +308,14 @@ export default class Crypto {
      * @param signature
      */
     public async borromean_check_ring_signature (
-        message_digest: string, key_image: string, public_keys: string[], signature: string[]): Promise<boolean> {
-        return execute('borromean_check_ring_signature', message_digest, key_image, public_keys, signature);
+        message_digest: string,
+        key_image: string,
+        public_keys: string[],
+        signature: crypto_borromean_signature_t
+    ): Promise<boolean> {
+        const sig = JSON.stringify(signature);
+
+        return execute('borromean_check_ring_signature', message_digest, key_image, public_keys, sig);
     }
 
     /**
@@ -315,10 +326,17 @@ export default class Crypto {
      * @param partial_signing_scalars
      */
     public async borromean_complete_ring_signature (
-        signing_scalar: string, real_output_index: number,
-        signature: string[], partial_signing_scalars: string[] = []): Promise<string[]> {
-        return execute('borromean_complete_ring_signature', signing_scalar,
-            real_output_index, signature, partial_signing_scalars);
+        signing_scalar: string,
+        real_output_index: number,
+        signature: crypto_borromean_signature_t,
+        partial_signing_scalars: string[] = []
+    ): Promise<crypto_borromean_signature_t> {
+        const sig = JSON.stringify(signature);
+
+        const result = await execute('borromean_complete_ring_signature', signing_scalar,
+            real_output_index, sig, partial_signing_scalars);
+
+        return JSON.parse(result);
     }
 
     /**
@@ -328,9 +346,14 @@ export default class Crypto {
      * @param secret_spend_key
      */
     public async borromean_generate_partial_signing_scalar (
-        real_output_index: number, signature: string[], secret_spend_key: string): Promise<string> {
+        real_output_index: number,
+        signature: crypto_borromean_signature_t,
+        secret_spend_key: string
+    ): Promise<string> {
+        const sig = JSON.stringify(signature);
+
         return execute('borromean_generate_partial_signing_scalar', real_output_index,
-            signature, secret_spend_key);
+            sig, secret_spend_key);
     }
 
     /**
@@ -340,9 +363,14 @@ export default class Crypto {
      * @param public_keys
      */
     public async borromean_generate_ring_signature (
-        message_digest: string, secret_ephemeral: string, public_keys: string[]): Promise<string[]> {
-        return execute('borromean_generate_ring_signature', message_digest, secret_ephemeral,
+        message_digest: string,
+        secret_ephemeral: string,
+        public_keys: string[]
+    ): Promise<crypto_borromean_signature_t> {
+        const result = await execute('borromean_generate_ring_signature', message_digest, secret_ephemeral,
             public_keys);
+
+        return JSON.parse(result);
     }
 
     /**
@@ -354,9 +382,11 @@ export default class Crypto {
      */
     public async borromean_prepare_ring_signature (
         message_digest: string, key_image: string,
-        public_keys: string[], real_output_index: number): Promise<string[]> {
-        return execute('borromean_prepare_ring_signature', message_digest, key_image,
+        public_keys: string[], real_output_index: number): Promise<crypto_borromean_signature_t> {
+        const result = await execute('borromean_prepare_ring_signature', message_digest, key_image,
             public_keys, real_output_index);
+
+        return JSON.parse(result);
     }
 
     /**

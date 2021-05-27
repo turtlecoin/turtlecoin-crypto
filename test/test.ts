@@ -24,7 +24,7 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import Crypto, { crypto_bulletproof_plus_t, crypto_bulletproof_t } from '../typescript';
+import Crypto, { crypto_bulletproof_plus_t, crypto_bulletproof_t, crypto_borromean_signature_t } from '../typescript';
 import { describe, it, before } from 'mocha';
 import * as assert from 'assert';
 import { sha3_256 } from 'js-sha3';

@@ -43,9 +43,11 @@ namespace Crypto::RingSignature::Borromean
         const crypto_hash_t &message_digest,
         const crypto_key_image_t &key_image,
         const std::vector<crypto_public_key_t> &public_keys,
-        const std::vector<crypto_signature_t> &signature)
+        const crypto_borromean_signature_t &borromean_signature)
     {
         const auto ring_size = public_keys.size();
+
+        const auto &signature = borromean_signature.signatures;
 
         if (signature.size() != ring_size)
         {
@@ -94,12 +96,14 @@ namespace Crypto::RingSignature::Borromean
         return (challenge - sum).is_nonzero();
     }
 
-    std::tuple<bool, std::vector<crypto_signature_t>> complete_ring_signature(
+    std::tuple<bool, crypto_borromean_signature_t> complete_ring_signature(
         const crypto_scalar_t &signing_scalar,
         size_t real_output_index,
-        const std::vector<crypto_signature_t> &signature,
+        const crypto_borromean_signature_t &borromean_signature,
         const std::vector<crypto_scalar_t> &partial_signing_scalars)
     {
+        const auto &signature = borromean_signature.signatures;
+
         if (signature.empty() || real_output_index >= signature.size())
         {
             return {false, {}};
@@ -176,15 +180,17 @@ namespace Crypto::RingSignature::Borromean
             // s[i].R = [alpha_scalar - p]
             finalized_signature[real_output_index].LR.R -= derived_scalar;
 
-            return {true, finalized_signature};
+            return {true, crypto_borromean_signature_t(finalized_signature, borromean_signature.offsets)};
         }
     }
 
     crypto_scalar_t generate_partial_signing_scalar(
         size_t real_output_index,
-        const std::vector<crypto_signature_t> &signature,
+        const crypto_borromean_signature_t &borromean_signature,
         const crypto_secret_key_t &spend_secret_key)
     {
+        const auto &signature = borromean_signature.signatures;
+
         SCALAR_OR_THROW(spend_secret_key);
 
         for (const auto &sig : signature)
@@ -203,7 +209,7 @@ namespace Crypto::RingSignature::Borromean
         return signature[real_output_index].LR.L * spend_secret_key;
     }
 
-    std::tuple<bool, std::vector<crypto_signature_t>> generate_ring_signature(
+    std::tuple<bool, crypto_borromean_signature_t> generate_ring_signature(
         const crypto_hash_t &message_digest,
         const crypto_secret_key_t &secret_ephemeral,
         const std::vector<crypto_public_key_t> &public_keys)
@@ -253,7 +259,7 @@ namespace Crypto::RingSignature::Borromean
         return complete_ring_signature(secret_ephemeral, real_output_index, signature);
     }
 
-    std::tuple<bool, std::vector<crypto_signature_t>> prepare_ring_signature(
+    std::tuple<bool, crypto_borromean_signature_t> prepare_ring_signature(
         const crypto_hash_t &message_digest,
         const crypto_key_image_t &key_image,
         const std::vector<crypto_public_key_t> &public_keys,
@@ -341,6 +347,6 @@ namespace Crypto::RingSignature::Borromean
         // this is the prepared portion of the real output signature index
         signature[real_output_index].LR.R = alpha_scalar;
 
-        return {true, signature};
+        return {true, crypto_borromean_signature_t(signature)};
     }
 } // namespace Crypto::RingSignature::Borromean
