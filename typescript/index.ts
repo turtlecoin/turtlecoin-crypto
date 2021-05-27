@@ -1109,6 +1109,18 @@ export default class Crypto {
     }
 
     /**
+     * Restores a wallet seed and the unix timestamp of its creation (if available)
+     * @param words
+     */
+    public async restore_wallet_seed (words: string[]): Promise<[string, BigInteger.BigInteger]> {
+        const [seed, timestamp] = await execute('restore_wallet_seed', words);
+
+        const reader = new Reader(timestamp);
+
+        return [seed, reader.uint64_t()];
+    }
+
+    /**
      * Calculates the public key for the given secret key
      * @param secret_key
      */

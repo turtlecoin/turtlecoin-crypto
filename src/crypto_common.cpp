@@ -366,6 +366,11 @@ namespace Crypto
         return result;
     }
 
+    std::tuple<bool, crypto_seed_t, uint64_t> restore_wallet_seed(const std::vector<std::string> &words)
+    {
+        return Crypto::Mnemonics::decode(words);
+    }
+
     crypto_public_key_t secret_key_to_public_key(const crypto_secret_key_t &secret_key)
     {
         SCALAR_OR_THROW(secret_key);

@@ -269,6 +269,10 @@ describe('Cryptographic Tests', async () => {
     });
 
     describe('Fundamentals', async () => {
+        let m_seed: any;
+        let m_timestamp: any;
+        let m_words: any;
+
         it('Calculate Base2 Exponent', async () => {
             for (let i = 0; i < 16; ++i) {
                 assert(await crypto.calculate_base2_exponent(1 << i) === i);
@@ -322,6 +326,17 @@ describe('Cryptographic Tests', async () => {
             assert(timestamp.toJSNumber() !== 0);
             assert(seed.length === 64);
             assert(words.length !== 0);
+
+            m_seed = seed;
+            m_words = words;
+            m_timestamp = timestamp;
+        });
+
+        it('Restore Wallet Seed', async () => {
+            const [seed, timestamp] = await crypto.restore_wallet_seed(m_words);
+
+            assert(seed === m_seed);
+            assert(timestamp.toJSNumber() === m_timestamp.toJSNumber());
         });
 
         it('Generate Spend Keys From Wallet Seed', async () => {

@@ -228,6 +228,7 @@ export interface IConfig {
     random_points?: (count: number) => Promise<string[]>;
     random_scalar?: () => Promise<string>;
     random_scalars?: (count: number) => Promise<string[]>;
+    restore_wallet_seed?: (words: string[]) => Promise<[string, BigInteger.BigInteger]>;
     secret_key_to_public_key?: (secret_key: string) => Promise<string>;
     underive_public_key?: (derivation: string, output_index: number, public_ephemeral: string) => Promise<string>;
 

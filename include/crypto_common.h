@@ -308,6 +308,13 @@ namespace Crypto
     std::vector<crypto_scalar_t> random_scalars(size_t count = 1);
 
     /**
+     * Restores a wallet seed and the unix timestamp of its creation (if available)
+     * @param words
+     * @return
+     */
+    std::tuple<bool, crypto_seed_t, uint64_t> restore_wallet_seed(const std::vector<std::string> &words);
+
+    /**
      * Calculates the public key for the given secret key
      * A = (a * G) mod l
      * @param secret_key

@@ -1325,6 +1325,41 @@ NAN_METHOD(random_scalars)
     info.GetReturnValue().Set(prepare(success, result));
 }
 
+NAN_METHOD(restore_wallet_seed)
+{
+    auto result = Nan::New<v8::Array>(3);
+
+    Nan::Set(result, 0, Nan::New(true));
+
+    const auto words = get_vector<std::string>(info, 0);
+
+    if (!words.empty())
+    {
+        try
+        {
+            const auto [success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
+
+            if (success)
+            {
+                Nan::Set(result, 0, Nan::New(false));
+
+                Nan::Set(result, 1, STR_TO_NAN_VAL(decoded.to_string()));
+
+                serializer_t writer;
+
+                writer.uint64(timestamp);
+
+                Nan::Set(result, 2, STR_TO_NAN_VAL(writer.to_string()));
+            }
+        }
+        catch (...)
+        {
+        }
+    }
+
+    info.GetReturnValue().Set(result);
+}
+
 NAN_METHOD(secret_key_to_public_key)
 {
     auto result = STR_TO_NAN_VAL("");
@@ -1680,17 +1715,15 @@ NAN_METHOD(mnemonics_decode)
 
     Nan::Set(result, 0, Nan::New(true));
 
-    bool success = false;
-
     const auto words = get_vector<std::string>(info, 0);
 
     if (!words.empty())
     {
         try
         {
-            const auto [decode_success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
+            const auto [success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
 
-            if (decode_success)
+            if (success)
             {
                 Nan::Set(result, 0, Nan::New(false));
 
@@ -2780,6 +2813,8 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, random_scalar);
 
         NAN_EXPORT(target, random_scalars);
+
+        NAN_EXPORT(target, restore_wallet_seed);
 
         NAN_EXPORT(target, secret_key_to_public_key);
 

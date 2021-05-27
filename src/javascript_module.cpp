@@ -1332,6 +1332,36 @@ EMS_METHOD(random_scalars)
     }
 }
 
+EMS_METHOD(restore_wallet_seed)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto words = get_vector<std::string>(info, 0);
+
+        if (!words.empty())
+        {
+            const auto [decode_success, decoded, timestamp] = Crypto::Mnemonics::decode(words);
+
+            if (decode_success)
+            {
+                serializer_t writer;
+
+                writer.uint64(timestamp);
+
+                return prepare(true, decoded.to_string(), writer.to_string());
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
 EMS_METHOD(secret_key_to_public_key)
 {
     try
@@ -2692,6 +2722,8 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(random_scalar);
 
         EMS_EXPORT(random_scalars);
+
+        EMS_EXPORT(restore_wallet_seed);
 
         EMS_EXPORT(secret_key_to_public_key);
 
