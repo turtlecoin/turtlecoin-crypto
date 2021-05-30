@@ -38,10 +38,67 @@
 #include <utility>
 #include <vector>
 
-#define DEBUG_PRINT(val) std::cout << #val << ": " << val << std::endl
+#ifdef DEBUG_PRINT
+#define PRINTF(value) Crypto::StringTools::Debug::debug_printer(#value, value)
+#else
+#define PRINTF(value)
+#endif
 
 namespace Crypto::StringTools
 {
+    namespace Debug
+    {
+        /**
+         * Simple printer for debugging values
+         * @tparam Type
+         * @param name
+         * @param values
+         */
+        template<typename Type>
+        static inline void debug_printer(const std::string &name, const std::vector<std::vector<Type>> &values)
+        {
+            std::cout << name << ":" << std::endl;
+
+            for (const auto &level1 : values)
+            {
+                for (const auto &value : level1)
+                {
+                    std::cout << "\t" << value << std::endl;
+                }
+
+                std::cout << std::endl;
+            }
+        }
+
+        /**
+         * Simple printer for debugging values
+         * @tparam Type
+         * @param name
+         * @param values
+         */
+        template<typename Type>
+        static inline void debug_printer(const std::string &name, const std::vector<Type> &values)
+        {
+            std::cout << name << ":" << std::endl;
+
+            for (const auto &value : values)
+            {
+                std::cout << "\t" << value << std::endl;
+            }
+        }
+
+        /**
+         * Simple printer for debugging values
+         * @tparam Type
+         * @param name
+         * @param value
+         */
+        template<typename Type> static inline void debug_printer(const std::string &name, const Type &value)
+        {
+            std::cout << name << ": " << value << std::endl;
+        }
+    } // namespace Debug
+
     /**
      * Converts a hexadecimal string to a vector of uint8_t
      * @param text
