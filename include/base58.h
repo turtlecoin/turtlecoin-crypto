@@ -25,6 +25,9 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef CRYPTO_BASE58_H
+#define CRYPTO_BASE58_H
+
 #include "hashing.h"
 #include "serializer.h"
 
@@ -64,3 +67,5 @@ namespace Crypto::Base58
      */
     [[nodiscard]] std::string encode_check(const std::vector<uint8_t> &input);
 } // namespace Crypto::Base58
+
+#endif // CRYPTO_BASE58_H
