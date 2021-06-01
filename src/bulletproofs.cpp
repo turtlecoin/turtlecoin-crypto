@@ -153,7 +153,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
                 const auto x = tr.challenge();
 
-                if (x == Crypto::ZERO)
+                if (!x.valid())
                 {
                     throw std::runtime_error("x cannot be zero");
                 }
@@ -208,7 +208,10 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         for (const auto &blinding_factor : blinding_factors)
         {
-            SCALAR_OR_THROW(blinding_factor);
+            if (!blinding_factor.valid())
+            {
+                throw std::invalid_argument("invalid blinding factor");
+            }
         }
 
         const auto M = amounts.size();
@@ -238,6 +241,11 @@ namespace Crypto::RangeProofs::Bulletproofs
     retry:
         const auto alpha = Crypto::random_scalar();
 
+        if (!alpha.valid())
+        {
+            goto retry;
+        }
+
         crypto_scalar_transcript_t tr(BULLETPROOFS_DOMAIN_0);
 
         tr.update(V.points);
@@ -248,6 +256,11 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         const auto rho = Crypto::random_scalar();
 
+        if (!rho.valid())
+        {
+            goto retry;
+        }
+
         const auto S = Crypto::INV_EIGHT * (sL.inner_product(Gi) + sR.inner_product(Hi) + (rho * G));
 
         tr.update(A);
@@ -256,7 +269,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         const auto y = tr.challenge();
 
-        if (y == Crypto::ZERO)
+        if (!y.valid())
         {
             goto retry;
         }
@@ -265,7 +278,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         const auto z = tr.challenge();
 
-        if (z == Crypto::ZERO)
+        if (!z.valid())
         {
             goto retry;
         }
@@ -306,6 +319,11 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         const auto tau1 = Crypto::random_scalar(), tau2 = Crypto::random_scalar();
 
+        if (!tau1.valid() || !tau2.valid())
+        {
+            goto retry;
+        }
+
         const auto T1 = Crypto::INV_EIGHT * t1.dbl_mult(Crypto::H, tau1, Crypto::G);
 
         const auto T2 = Crypto::INV_EIGHT * t2.dbl_mult(Crypto::H, tau2, Crypto::G);
@@ -316,7 +334,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         const auto x = tr.challenge();
 
-        if (x == Crypto::ZERO)
+        if (!x.valid())
         {
             goto retry;
         }
@@ -344,7 +362,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
         const auto x_ip = tr.challenge();
 
-        if (x_ip == Crypto::ZERO)
+        if (!x_ip.valid())
         {
             goto retry;
         }
@@ -417,7 +435,12 @@ namespace Crypto::RangeProofs::Bulletproofs
         // loop through all of the proofs in the batch
         for (size_t ii = 0; ii < proofs.size(); ++ii)
         {
-            const auto proof = proofs[ii];
+            const auto &proof = proofs[ii];
+
+            if (!proof.check_construction())
+            {
+                return false;
+            }
 
             if (commitments[ii].empty())
             {
@@ -427,51 +450,7 @@ namespace Crypto::RangeProofs::Bulletproofs
             // check for commitment torsion
             for (const auto &commitment : commitments[ii])
             {
-                if (Crypto::INV_EIGHT * (Crypto::EIGHT * commitment) != commitment)
-                {
-                    return false;
-                }
-            }
-
-            if (proof.L.empty())
-            {
-                return false;
-            }
-
-            if (proof.L.size() != proof.R.size())
-            {
-                return false;
-            }
-
-            if (!proof.taux.check() || !proof.mu.check() || !proof.g.check() || !proof.h.check() || !proof.t.check())
-            {
-                return false;
-            }
-
-            if (proof.A == Crypto::Z || proof.S == Crypto::Z || proof.T1 == Crypto::Z || proof.T2 == Crypto::Z)
-            {
-                return false;
-            }
-
-            for (const auto &point : commitments[ii])
-            {
-                if (point == Crypto::Z)
-                {
-                    return false;
-                }
-            }
-
-            for (const auto &point : proof.L)
-            {
-                if (point == Crypto::Z)
-                {
-                    return false;
-                }
-            }
-
-            for (const auto &point : proof.R)
-            {
-                if (point == Crypto::Z)
+                if (!Crypto::check_torsion(commitment))
                 {
                     return false;
                 }
@@ -493,7 +472,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             const auto y = tr.challenge();
 
-            if (y == Crypto::ZERO)
+            if (!y.valid())
             {
                 return false;
             }
@@ -506,7 +485,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             const auto z = tr.challenge();
 
-            if (z == Crypto::ZERO)
+            if (!z.valid())
             {
                 return false;
             }
@@ -519,7 +498,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             const auto x = tr.challenge();
 
-            if (x == Crypto::ZERO)
+            if (!x.valid())
             {
                 return false;
             }
@@ -532,7 +511,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             const auto x_ip = tr.challenge();
 
-            if (x_ip == Crypto::ZERO)
+            if (!x_ip.valid())
             {
                 return false;
             }
@@ -559,7 +538,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             points.append(Crypto::EIGHT * proof.T1);
 
-            if (points.back() == Crypto::Z)
+            if (!points.back().valid())
             {
                 return false;
             }
@@ -568,7 +547,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             points.append(Crypto::EIGHT * proof.T2);
 
-            if (points.back() == Crypto::Z)
+            if (!points.back().valid())
             {
                 return false;
             }
@@ -577,7 +556,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             points.append(Crypto::EIGHT * proof.A);
 
-            if (points.back() == Crypto::Z)
+            if (!points.back().valid())
             {
                 return false;
             }
@@ -586,7 +565,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
             points.append(Crypto::EIGHT * proof.S);
 
-            if (points.back() == Crypto::Z)
+            if (!points.back().valid())
             {
                 return false;
             }
@@ -601,7 +580,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
                 const auto challenge = tr.challenge();
 
-                if (challenge == Crypto::ZERO)
+                if (!challenge.valid())
                 {
                     return false;
                 }
@@ -658,7 +637,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
                 points.append(Crypto::EIGHT * proof.L[i]);
 
-                if (points.back() == Crypto::Z)
+                if (!points.back().valid())
                 {
                     return false;
                 }
@@ -667,7 +646,7 @@ namespace Crypto::RangeProofs::Bulletproofs
 
                 points.append(Crypto::EIGHT * proof.R[i]);
 
-                if (points.back() == Crypto::Z)
+                if (!points.back().valid())
                 {
                     return false;
                 }
@@ -695,7 +674,7 @@ namespace Crypto::RangeProofs::Bulletproofs
             points.append(Hi[i]);
         }
 
-        return scalars.inner_product(points) == Crypto::Z;
+        return scalars.inner_product(points).empty();
     }
 
     bool verify(

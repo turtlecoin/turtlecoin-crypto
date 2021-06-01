@@ -615,7 +615,7 @@ struct crypto_scalar_vector_t
 
             for (size_t i = 0; i < n; ++i)
             {
-                if (inputs[i] == Crypto::ZERO)
+                if (inputs[i].empty())
                 {
                     throw std::range_error("cannot divide by 0");
                 }

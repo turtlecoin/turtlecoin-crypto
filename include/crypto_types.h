@@ -358,7 +358,7 @@ struct crypto_point_t
 
         ge_dsm_precomp(tmp, &point3);
 
-        return ge_check_subgroup_precomp_negate_vartime(tmp) == 0;
+        return ge_check_subgroup_precomp_negate_vartime(tmp) == 0 && !empty();
     }
 
     /**
@@ -518,6 +518,21 @@ struct crypto_point_t
         uint256_t result(hex, 16);
 
         return result;
+    }
+
+    /**
+     * Returns if the point is a valid point on the curve AND non-identity (unless allow_identity is set)
+     * @param allow_identity
+     * @return
+     */
+    [[nodiscard]] bool valid(bool allow_identity = false) const
+    {
+        if (allow_identity)
+        {
+            return check();
+        }
+
+        return check() && !empty();
     }
 
   private:
@@ -1278,6 +1293,21 @@ struct crypto_scalar_t
         uint256_t result(hex, 16);
 
         return result;
+    }
+
+    /**
+     * Returns if the scalar is a valid scalar AND non-zero (unless allow_zero is set)
+     * @param allow_zero
+     * @return
+     */
+    [[nodiscard]] bool valid(bool allow_zero = false) const
+    {
+        if (allow_zero)
+        {
+            return check();
+        }
+
+        return check() && !empty();
     }
 
   private:

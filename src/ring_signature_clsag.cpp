@@ -60,7 +60,7 @@ namespace Crypto::RingSignature::CLSAG
 
         const auto ring_size = public_keys.size();
 
-        if (signature.scalars.size() < ring_size)
+        if (!signature.check_construction(ring_size, use_commitments))
         {
             return false;
         }
@@ -70,29 +70,19 @@ namespace Crypto::RingSignature::CLSAG
             return false;
         }
 
-        if (use_commitments && !signature.commitment_image.check_subgroup())
-        {
-            return false;
-        }
-
-        if (!signature.challenge.check())
-        {
-            return false;
-        }
-
         // check for commitment torsion
         if (use_commitments)
         {
             for (const auto &commitment : commitments)
             {
-                if (Crypto::INV_EIGHT * (Crypto::EIGHT * commitment) != commitment)
+                if (!Crypto::check_torsion(commitment))
                 {
                     return false;
                 }
             }
         }
 
-        const auto h0 = signature.challenge;
+        const auto &h0 = signature.challenge;
 
         // the computational hash vector is only as big as our ring (not including the check hash)
         std::vector<crypto_scalar_t> h(ring_size);
@@ -116,7 +106,7 @@ namespace Crypto::RingSignature::CLSAG
 
             mu_P = transcript.challenge();
 
-            if (mu_P == Crypto::ZERO)
+            if (!mu_P.valid())
             {
                 // our mu_P cannot be 0
                 return false;
@@ -138,7 +128,7 @@ namespace Crypto::RingSignature::CLSAG
 
             mu_C = transcript.challenge();
 
-            if (mu_C == Crypto::ZERO)
+            if (!mu_C.valid())
             {
                 // our mu_C cannot be 0
                 return false;
@@ -172,11 +162,6 @@ namespace Crypto::RingSignature::CLSAG
             }
 
             const auto idx = i % ring_size;
-
-            if (!signature.scalars[idx].check())
-            {
-                return false;
-            }
 
             // r = (temp_h * mu_P) mod l
             const auto r = temp_h * mu_P;
@@ -219,7 +204,7 @@ namespace Crypto::RingSignature::CLSAG
             const auto challenge = sub_transcript.challenge();
 
             // The challenge value should never be 0
-            if (challenge == Crypto::ZERO)
+            if (!challenge.valid())
             {
                 return false;
             }
@@ -244,34 +229,33 @@ namespace Crypto::RingSignature::CLSAG
             return {false, {}};
         }
 
-        try
+        if (!signing_scalar.valid() || !signature.challenge.valid() || !mu_P.valid())
         {
-            SCALAR_OR_THROW(signing_scalar);
+            return {false, {}};
+        }
 
-            for (const auto &scalar : signature.scalars)
+        for (const auto &scalar : signature.scalars)
+        {
+            if (!scalar.valid())
             {
-                SCALAR_OR_THROW(scalar);
-            }
-
-            SCALAR_OR_THROW(signature.challenge);
-
-            for (const auto &h_val : h)
-            {
-                SCALAR_OR_THROW(h_val);
-            }
-
-            SCALAR_OR_THROW(mu_P);
-
-            for (const auto &partial_signing_scalar : partial_signing_scalars)
-            {
-                SCALAR_OR_THROW(partial_signing_scalar);
+                return {false, {}};
             }
         }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
 
-            return {false, {}};
+        for (const auto &scalar : h)
+        {
+            if (!scalar.valid())
+            {
+                return {false, {}};
+            }
+        }
+
+        for (const auto &partial_signing_scalar : partial_signing_scalars)
+        {
+            if (!partial_signing_scalar.valid())
+            {
+                return {false, {}};
+            }
         }
 
         std::vector<crypto_scalar_t> finalized_signature(signature.scalars);
@@ -302,7 +286,7 @@ namespace Crypto::RingSignature::CLSAG
             const auto derived_scalar = keys.dedupe_sort().sum();
 
             // our derived scalar should never be 0
-            if (derived_scalar == Crypto::ZERO)
+            if (!derived_scalar.valid())
             {
                 return {false, {}};
             }
@@ -324,7 +308,14 @@ namespace Crypto::RingSignature::CLSAG
 
         SCALAR_OR_THROW(spend_secret_key);
 
-        return mu_P * spend_secret_key;
+        const auto partial_signing_scalar = mu_P * spend_secret_key;
+
+        if (!partial_signing_scalar.valid())
+        {
+            throw std::runtime_error("Partial signing scalar is zero");
+        }
+
+        return partial_signing_scalar;
     }
 
     std::tuple<bool, crypto_clsag_signature_t> generate_ring_signature(
@@ -336,14 +327,8 @@ namespace Crypto::RingSignature::CLSAG
         const crypto_blinding_factor_t &pseudo_blinding_factor,
         const crypto_pedersen_commitment_t &pseudo_commitment)
     {
-        try
+        if (!secret_ephemeral.valid())
         {
-            SCALAR_OR_THROW(secret_ephemeral);
-        }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
-
             return {false, {}};
         }
 
@@ -363,16 +348,8 @@ namespace Crypto::RingSignature::CLSAG
         {
             if (use_commitments)
             {
-                try
+                if (!input_blinding_factor.valid() || !pseudo_blinding_factor.valid())
                 {
-                    SCALAR_OR_THROW(input_blinding_factor);
-
-                    SCALAR_OR_THROW(pseudo_blinding_factor);
-                }
-                catch (const std::exception &e)
-                {
-                    PRINTF(e.what())
-
                     return {false, {}};
                 }
 
@@ -459,7 +436,7 @@ namespace Crypto::RingSignature::CLSAG
 
         const auto alpha_scalar = alpha_transcript.challenge();
 
-        if (alpha_scalar == Crypto::ZERO)
+        if (!alpha_scalar.valid())
         {
             goto try_again;
         }
@@ -473,16 +450,8 @@ namespace Crypto::RingSignature::CLSAG
 
         if (use_commitments)
         {
-            try
+            if (!input_blinding_factor.valid() || !pseudo_blinding_factor.valid())
             {
-                SCALAR_OR_THROW(input_blinding_factor);
-
-                SCALAR_OR_THROW(pseudo_blinding_factor);
-            }
-            catch (const std::exception &e)
-            {
-                PRINTF(e.what())
-
                 return {false, {}, {}, {0}};
             }
 
@@ -534,7 +503,7 @@ namespace Crypto::RingSignature::CLSAG
 
             mu_P = transcript.challenge();
 
-            if (mu_P == Crypto::ZERO)
+            if (!mu_P.valid())
             {
                 // We exit here as trying again does not change the transcript inputs
                 return {false, {}, {}, {0}};
@@ -556,7 +525,7 @@ namespace Crypto::RingSignature::CLSAG
 
             mu_C = transcript.challenge();
 
-            if (mu_C == Crypto::ZERO)
+            if (!mu_C.valid())
             {
                 // We exit here as trying again does not change the transcript inputs
                 return {false, {}, {}, {0}};
@@ -598,7 +567,7 @@ namespace Crypto::RingSignature::CLSAG
             const auto challenge = sub_transcript.challenge();
 
             // our challenge value should never be 0
-            if (challenge == Crypto::ZERO)
+            if (!challenge.valid())
             {
                 goto try_again;
             }
@@ -659,7 +628,7 @@ namespace Crypto::RingSignature::CLSAG
                  * then we need to fail out totally instead of trying again as the transcript value will
                  * not change just by trying again
                  */
-                if (challenge == Crypto::ZERO)
+                if (!challenge.valid())
                 {
                     return {false, {}, {}, {0}};
                 }

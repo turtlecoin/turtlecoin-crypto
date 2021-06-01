@@ -99,6 +99,74 @@ struct crypto_triptych_signature_t
     }
 
     /**
+     * Checks that the basic construction of the proof is valid
+     * @param m
+     * @param n
+     * @return
+     */
+    [[nodiscard]] bool check_construction(size_t m, size_t n = 2) const
+    {
+        if (!commitment_image.check_subgroup())
+        {
+            return false;
+        }
+
+        if (!A.valid() || !B.valid() || !C.valid() || !D.valid())
+        {
+            return false;
+        }
+
+        if (X.size() != m || Y.size() != m || f.size() != m)
+        {
+            return false;
+        }
+
+        for (const auto &point : X)
+        {
+            if (!point.valid())
+            {
+                return false;
+            }
+        }
+
+        for (const auto &point : Y)
+        {
+            if (!point.valid())
+            {
+                return false;
+            }
+        }
+
+        if (!zA.valid() || !zC.valid() || !z.valid())
+        {
+            return false;
+        }
+
+        for (const auto &level1 : f)
+        {
+            if (level1.size() != n - 1)
+            {
+                return false;
+            }
+
+            for (const auto &scalar : level1)
+            {
+                if (!scalar.valid())
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (!Crypto::check_torsion(pseudo_commitment))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Deserializes the struct from a byte array
      * @param reader
      */

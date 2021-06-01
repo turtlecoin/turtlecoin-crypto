@@ -72,6 +72,29 @@ struct crypto_borromean_signature_t
     }
 
     /**
+     * Checks that the basic construction of the proof is valid
+     * @param ring_size
+     * @return
+     */
+    [[nodiscard]] bool check_construction(size_t ring_size) const
+    {
+        if (signatures.size() != ring_size)
+        {
+            return false;
+        }
+
+        for (const auto &signature : signatures)
+        {
+            if (!signature.LR.L.valid() || !signature.LR.R.valid())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Deserializes the struct from a byte array
      * @param reader
      */

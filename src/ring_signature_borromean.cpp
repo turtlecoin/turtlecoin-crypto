@@ -47,12 +47,12 @@ namespace Crypto::RingSignature::Borromean
     {
         const auto ring_size = public_keys.size();
 
-        const auto &signature = borromean_signature.signatures;
-
-        if (signature.size() != ring_size)
+        if (!borromean_signature.check_construction(ring_size))
         {
             return false;
         }
+
+        const auto &signature = borromean_signature.signatures;
 
         if (!key_image.check_subgroup())
         {
@@ -65,11 +65,6 @@ namespace Crypto::RingSignature::Borromean
 
         for (size_t i = 0; i < ring_size; i++)
         {
-            if (!signature[i].LR.L.check() || !signature[i].LR.R.check())
-            {
-                return false;
-            }
-
             // HP = [Hp(P)] mod l
             const auto HP = hash_to_point(public_keys[i]);
 
@@ -87,7 +82,7 @@ namespace Crypto::RingSignature::Borromean
 
         const auto challenge = transcript.challenge();
 
-        if (challenge == Crypto::ZERO)
+        if (!challenge.valid())
         {
             return false;
         }
@@ -109,27 +104,25 @@ namespace Crypto::RingSignature::Borromean
             return {false, {}};
         }
 
-        try
+        if (!signing_scalar.valid())
         {
-            SCALAR_OR_THROW(signing_scalar);
+            return {false, {}};
+        }
 
-            for (const auto &sig : signature)
+        for (const auto &sig : signature)
+        {
+            if (!sig.LR.L.valid() || !sig.LR.R.valid())
             {
-                SCALAR_OR_THROW(sig.LR.L);
-
-                SCALAR_OR_THROW(sig.LR.R);
-            }
-
-            for (const auto &partial_signing_scalar : partial_signing_scalars)
-            {
-                SCALAR_OR_THROW(partial_signing_scalar);
+                return {false, {}};
             }
         }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
 
-            return {false, {}};
+        for (const auto &partial_signing_scalar : partial_signing_scalars)
+        {
+            if (!partial_signing_scalar.valid())
+            {
+                return {false, {}};
+            }
         }
 
         std::vector<crypto_signature_t> finalized_signature(signature);
@@ -160,7 +153,7 @@ namespace Crypto::RingSignature::Borromean
             const auto derived_scalar = keys.dedupe_sort().sum();
 
             // our derived scalar should never be 0
-            if (derived_scalar == Crypto::ZERO)
+            if (!derived_scalar.valid())
             {
                 return {false, {}};
             }
@@ -199,7 +192,14 @@ namespace Crypto::RingSignature::Borromean
         }
 
         // asL = (s[i].L * a) mod l
-        return signature[real_output_index].LR.L * spend_secret_key;
+        const auto partial_signing_scalar = signature[real_output_index].LR.L * spend_secret_key;
+
+        if (!partial_signing_scalar.valid())
+        {
+            throw std::runtime_error("Partial signing scalar is zero");
+        }
+
+        return partial_signing_scalar;
     }
 
     std::tuple<bool, crypto_borromean_signature_t> generate_ring_signature(
@@ -207,14 +207,8 @@ namespace Crypto::RingSignature::Borromean
         const crypto_secret_key_t &secret_ephemeral,
         const std::vector<crypto_public_key_t> &public_keys)
     {
-        try
+        if (!secret_ephemeral.valid())
         {
-            SCALAR_OR_THROW(secret_ephemeral);
-        }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
-
             return {false, {}};
         }
 
@@ -331,7 +325,7 @@ namespace Crypto::RingSignature::Borromean
 
         const auto challenge = transcript.challenge();
 
-        if (challenge == Crypto::ZERO)
+        if (!challenge.valid())
         {
             goto try_again;
         }

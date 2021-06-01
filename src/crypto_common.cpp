@@ -62,6 +62,16 @@ namespace Crypto
         return {false, 0};
     }
 
+    bool check_torsion(const crypto_point_t &value)
+    {
+        if (Crypto::INV_EIGHT * (Crypto::EIGHT * value) != value || value.empty())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     crypto_point_t commitment_tensor_point(const crypto_point_t &point, size_t i, size_t j, size_t k)
     {
         struct

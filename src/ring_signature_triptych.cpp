@@ -91,17 +91,12 @@ namespace Crypto::RingSignature::Triptych
         const crypto_triptych_signature_t &signature,
         const std::vector<crypto_pedersen_commitment_t> &commitments)
     {
-        if (public_keys.size() < 4)
-        {
-            return false;
-        }
-
         const size_t n = 2;
 
         // checks to verify that it is a proper power of two
         const auto [m_found, m] = Crypto::calculate_base2_exponent(public_keys.size());
 
-        if (!m_found || m <= 1)
+        if (!m_found || m < 2)
         {
             return false;
         }
@@ -111,7 +106,7 @@ namespace Crypto::RingSignature::Triptych
             return false;
         }
 
-        if (!key_image.check_subgroup() || !signature.commitment_image.check_subgroup())
+        if (!key_image.check_subgroup())
         {
             return false;
         }
@@ -119,54 +114,14 @@ namespace Crypto::RingSignature::Triptych
         // check for commitment torsion
         for (const auto &commitment : commitments)
         {
-            if (Crypto::INV_EIGHT * (Crypto::EIGHT * commitment) != commitment)
+            if (!Crypto::check_torsion(commitment))
             {
                 return false;
             }
         }
 
-        if (signature.A == Crypto::Z || signature.B == Crypto::Z || signature.C == Crypto::Z
-            || signature.D == Crypto::Z)
+        if (!signature.check_construction(m, n))
         {
-            return false;
-        }
-
-        for (const auto &point : signature.X)
-        {
-            if (point == Crypto::Z)
-            {
-                return false;
-            }
-        }
-
-        for (const auto &point : signature.Y)
-        {
-            if (point == Crypto::Z)
-            {
-                return false;
-            }
-        }
-
-        try
-        {
-            SCALAR_OR_THROW(signature.zA);
-
-            SCALAR_OR_THROW(signature.zC);
-
-            SCALAR_OR_THROW(signature.z);
-
-            for (const auto &level1 : signature.f)
-            {
-                for (const auto &scalar : level1)
-                {
-                    SCALAR_OR_THROW(scalar);
-                }
-            }
-        }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
-
             return false;
         }
 
@@ -192,7 +147,7 @@ namespace Crypto::RingSignature::Triptych
 
         const auto mu = tr.challenge();
 
-        if (mu == Crypto::ZERO)
+        if (!mu.valid())
         {
             return false;
         }
@@ -203,7 +158,7 @@ namespace Crypto::RingSignature::Triptych
 
         const auto x = tr.challenge();
 
-        if (x == Crypto::ZERO)
+        if (!x.valid())
         {
             return false;
         }
@@ -291,7 +246,7 @@ namespace Crypto::RingSignature::Triptych
 
         RY -= signature.z * key_image;
 
-        return RX == Crypto::Z && RY == Crypto::Z;
+        return RX.empty() && RY.empty();
     }
 
     std::tuple<bool, crypto_triptych_signature_t> complete_ring_signature(
@@ -300,22 +255,17 @@ namespace Crypto::RingSignature::Triptych
         const crypto_scalar_t &xpow,
         const std::vector<crypto_scalar_t> &partial_signing_scalars)
     {
-        try
+        if (!signing_scalar.valid() || !xpow.valid())
         {
-            SCALAR_OR_THROW(signing_scalar);
-
-            SCALAR_OR_THROW(xpow);
-
-            for (const auto &scalar : partial_signing_scalars)
-            {
-                SCALAR_OR_THROW(scalar);
-            }
-        }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
-
             return {false, {}};
+        }
+
+        for (const auto &scalar : partial_signing_scalars)
+        {
+            if (!scalar.valid())
+            {
+                return {false, {}};
+            }
         }
 
         auto finalized_signature = signature;
@@ -345,7 +295,7 @@ namespace Crypto::RingSignature::Triptych
             const auto derived_scalar = keys.dedupe_sort().sum();
 
             // our derived scalar should never be 0
-            if (derived_scalar == Crypto::ZERO)
+            if (!derived_scalar.valid())
             {
                 return {false, {}};
             }
@@ -365,7 +315,7 @@ namespace Crypto::RingSignature::Triptych
 
         const auto partial_signing_scalar = spend_secret_key * xpow;
 
-        if (partial_signing_scalar == Crypto::ZERO)
+        if (!partial_signing_scalar.valid())
         {
             throw std::runtime_error("Partial signing scalar is zero");
         }
@@ -382,15 +332,10 @@ namespace Crypto::RingSignature::Triptych
         const crypto_blinding_factor_t &pseudo_blinding_factor,
         const crypto_pedersen_commitment_t &pseudo_commitment)
     {
-        if (public_keys.size() < 4)
-        {
-            return {false, {}};
-        }
-
         // checks to verify that it is a proper power of two
         const auto [m_found, m] = Crypto::calculate_base2_exponent(public_keys.size());
 
-        if (!m_found)
+        if (!m_found || m < 2)
         {
             return {false, {}};
         }
@@ -402,18 +347,8 @@ namespace Crypto::RingSignature::Triptych
 
         const auto ring_size = public_keys.size();
 
-        try
+        if (!secret_ephemeral.valid() || !input_blinding_factor.valid() || !pseudo_blinding_factor.valid())
         {
-            SCALAR_OR_THROW(secret_ephemeral);
-
-            SCALAR_OR_THROW(input_blinding_factor);
-
-            SCALAR_OR_THROW(pseudo_blinding_factor);
-        }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
-
             return {false, {}};
         }
 
@@ -474,17 +409,12 @@ namespace Crypto::RingSignature::Triptych
         const crypto_blinding_factor_t &pseudo_blinding_factor,
         const crypto_pedersen_commitment_t &pseudo_commitment)
     {
-        if (public_keys.size() < 4)
-        {
-            return {false, {}, {}};
-        }
-
         const size_t n = 2;
 
         // checks to verify that it is a proper power of two
         const auto [m_found, m] = Crypto::calculate_base2_exponent(public_keys.size());
 
-        if (!m_found)
+        if (!m_found || m < 2)
         {
             return {false, {}, {}};
         }
@@ -499,16 +429,8 @@ namespace Crypto::RingSignature::Triptych
             return {false, {}, {}};
         }
 
-        try
+        if (!input_blinding_factor.valid() || !pseudo_blinding_factor.valid())
         {
-            SCALAR_OR_THROW(input_blinding_factor);
-
-            SCALAR_OR_THROW(pseudo_blinding_factor);
-        }
-        catch (const std::exception &e)
-        {
-            PRINTF(e.what())
-
             return {false, {}, {}};
         }
 
@@ -540,176 +462,179 @@ namespace Crypto::RingSignature::Triptych
 
         const crypto_key_image_t commitment_image = (input_blinding_factor - pseudo_blinding_factor) * key_image;
 
-        try
+    try_again:
+        const auto rA = Crypto::random_scalar(), rB = Crypto::random_scalar(), rC = Crypto::random_scalar(),
+                   rD = Crypto::random_scalar();
+
+        if (!rA.valid() || !rB.valid() || !rC.valid() || !rD.valid())
         {
-        try_again:
-            const auto rA = Crypto::random_scalar(), rB = Crypto::random_scalar(), rC = Crypto::random_scalar(),
-                       rD = Crypto::random_scalar();
+            goto try_again;
+        }
 
-            auto a = init_triptych_scalar_vector(m, n, true);
+        auto a = init_triptych_scalar_vector(m, n, true);
 
-            for (size_t j = 0; j < m; ++j)
+        for (size_t j = 0; j < m; ++j)
+        {
+            a[j][0] = Crypto::ZERO;
+
+            for (size_t i = 1; i < n; ++i)
             {
-                a[j][0] = Crypto::ZERO;
-
-                for (size_t i = 1; i < n; ++i)
-                {
-                    a[j][0] -= a[j][i];
-                }
+                a[j][0] -= a[j][i];
             }
+        }
 
-            const auto A = commitment_tensor(a, rA);
+        const auto A = commitment_tensor(a, rA);
 
-            const auto gray = GrayCodeGenerator(n, m, real_output_index);
+        const auto gray = GrayCodeGenerator(n, m, real_output_index);
 
-            const auto decomp_l = gray.v_value();
+        const auto decomp_l = gray.v_value();
 
-            auto sigma = init_triptych_scalar_vector(m, n);
+        auto sigma = init_triptych_scalar_vector(m, n);
 
-            for (size_t j = 0; j < m; ++j)
+        for (size_t j = 0; j < m; ++j)
+        {
+            for (size_t i = 0; i < n; ++i)
             {
-                for (size_t i = 0; i < n; ++i)
-                {
-                    sigma[j][i] = Crypto::kronecker_delta(decomp_l[j], i);
-                }
+                sigma[j][i] = Crypto::kronecker_delta(decomp_l[j], i);
             }
+        }
 
-            const auto B = commitment_tensor(sigma, rB);
+        const auto B = commitment_tensor(sigma, rB);
 
-            auto a_sigma = init_triptych_scalar_vector(m, n);
+        auto a_sigma = init_triptych_scalar_vector(m, n);
 
-            for (size_t j = 0; j < m; ++j)
+        for (size_t j = 0; j < m; ++j)
+        {
+            for (size_t i = 0; i < n; ++i)
             {
-                for (size_t i = 0; i < n; ++i)
-                {
-                    a_sigma[j][i] = a[j][i] * (Crypto::ONE - Crypto::TWO * sigma[j][i]);
-                }
+                a_sigma[j][i] = a[j][i] * (Crypto::ONE - Crypto::TWO * sigma[j][i]);
             }
+        }
 
-            const auto C = commitment_tensor(a_sigma, rC);
+        const auto C = commitment_tensor(a_sigma, rC);
 
-            auto a_sq = init_triptych_scalar_vector(m, n);
+        auto a_sq = init_triptych_scalar_vector(m, n);
 
-            for (size_t j = 0; j < m; ++j)
+        for (size_t j = 0; j < m; ++j)
+        {
+            for (size_t i = 0; i < n; ++i)
             {
-                for (size_t i = 0; i < n; ++i)
-                {
-                    a_sq[j][i] = a[j][i].squared().negate();
-                }
+                a_sq[j][i] = a[j][i].squared().negate();
             }
+        }
 
-            const auto D = commitment_tensor(a_sq, rD);
+        const auto D = commitment_tensor(a_sq, rD);
 
-            auto p = init_triptych_scalar_vector(N, 0);
+        auto p = init_triptych_scalar_vector(N, 0);
 
-            auto decomp_k = std::vector<int>(m, 0);
+        auto decomp_k = std::vector<int>(m, 0);
 
-            GrayCodeGenerator gray_codes(n, m);
+        GrayCodeGenerator gray_codes(n, m);
 
-            for (size_t k = 0; k < gray_codes.size(); ++k)
+        for (size_t k = 0; k < gray_codes.size(); ++k)
+        {
+            const auto &gray_update = gray_codes[k];
+
+            decomp_k[gray_update[0]] = gray_update[2];
+
+            p[k] = {a[0][decomp_k[0]], Crypto::kronecker_delta(decomp_l[0], decomp_k[0])};
+
+            for (size_t j = 1; j < m; ++j)
             {
-                const auto &gray_update = gray_codes[k];
-
-                decomp_k[gray_update[0]] = gray_update[2];
-
-                p[k] = {a[0][decomp_k[0]], Crypto::kronecker_delta(decomp_l[0], decomp_k[0])};
-
-                for (size_t j = 1; j < m; ++j)
-                {
-                    p[k] =
-                        Crypto::convolve(p[k], {a[j][decomp_k[j]], Crypto::kronecker_delta(decomp_l[j], decomp_k[j])});
-                }
+                p[k] = Crypto::convolve(p[k], {a[j][decomp_k[j]], Crypto::kronecker_delta(decomp_l[j], decomp_k[j])});
             }
+        }
 
-            std::vector<crypto_point_t> X(m, Crypto::Z), Y(m, Crypto::Z);
+        std::vector<crypto_point_t> X(m, Crypto::Z), Y(m, Crypto::Z);
 
-            auto tr = crypto_scalar_transcript_t(TRIPTYCH_DOMAIN_2, message_digest);
+        auto tr = crypto_scalar_transcript_t(TRIPTYCH_DOMAIN_2, message_digest);
 
-            tr.update(public_keys);
+        tr.update(public_keys);
 
-            tr.update(input_commitments);
+        tr.update(input_commitments);
 
-            tr.update(pseudo_commitment);
+        tr.update(pseudo_commitment);
 
-            tr.update(key_image);
+        tr.update(key_image);
 
-            tr.update(commitment_image);
+        tr.update(commitment_image);
 
-            tr.update(A);
+        tr.update(A);
 
-            tr.update(B);
+        tr.update(B);
 
-            tr.update(C);
+        tr.update(C);
 
-            tr.update(D);
+        tr.update(D);
 
-            const auto mu = tr.challenge();
+        const auto mu = tr.challenge();
 
-            if (mu == Crypto::ZERO)
+        if (!mu.valid())
+        {
+            goto try_again;
+        }
+
+        const auto rho = Crypto::random_scalars(m);
+
+        for (const auto &r : rho)
+        {
+            if (!r.valid())
             {
                 goto try_again;
             }
-
-            const auto rho = Crypto::random_scalars(m);
-
-            for (size_t j = 0; j < m; ++j)
-            {
-                for (size_t i = 0; i < N; ++i)
-                {
-                    X[j] += p[i][j] * (public_keys[i] + (mu * (input_commitments[i] - pseudo_commitment)));
-
-                    Y[j] += p[i][j] * Crypto::U;
-                }
-
-                X[j] += rho[j] * Crypto::G;
-
-                Y[j] += rho[j] * key_image;
-            }
-
-            tr.update(X);
-
-            tr.update(Y);
-
-            const auto x = tr.challenge();
-
-            if (x == Crypto::ZERO)
-            {
-                goto try_again;
-            }
-
-            auto f = init_triptych_scalar_vector(m, n - 1);
-
-            for (size_t j = 0; j < m; ++j)
-            {
-                for (size_t i = 1; i < n; ++i)
-                {
-                    f[j][i - 1] = (sigma[j][i] * x) + a[j][i];
-                }
-            }
-
-            const auto zA = rB * x + rA;
-
-            const auto zC = rC * x + rD;
-
-            const auto xpow = x.pow(m);
-
-            auto z = (mu * (input_blinding_factor - pseudo_blinding_factor)) * xpow;
-
-            for (size_t j = 0; j < m; ++j)
-            {
-                z -= rho[j] * x.pow(j);
-            }
-
-            const auto signature =
-                crypto_triptych_signature_t(commitment_image, pseudo_commitment, A, B, C, D, X, Y, f, zA, zC, z);
-
-            return {true, signature, xpow};
         }
-        catch (const std::exception &e)
+
+        for (size_t j = 0; j < m; ++j)
         {
-            PRINTF(e.what())
+            for (size_t i = 0; i < N; ++i)
+            {
+                X[j] += p[i][j] * (public_keys[i] + (mu * (input_commitments[i] - pseudo_commitment)));
 
-            return {false, {}, {}};
+                Y[j] += p[i][j] * Crypto::U;
+            }
+
+            X[j] += rho[j] * Crypto::G;
+
+            Y[j] += rho[j] * key_image;
         }
+
+        tr.update(X);
+
+        tr.update(Y);
+
+        const auto x = tr.challenge();
+
+        if (!x.valid())
+        {
+            goto try_again;
+        }
+
+        auto f = init_triptych_scalar_vector(m, n - 1);
+
+        for (size_t j = 0; j < m; ++j)
+        {
+            for (size_t i = 1; i < n; ++i)
+            {
+                f[j][i - 1] = (sigma[j][i] * x) + a[j][i];
+            }
+        }
+
+        const auto zA = rB * x + rA;
+
+        const auto zC = rC * x + rD;
+
+        const auto xpow = x.pow(m);
+
+        auto z = (mu * (input_blinding_factor - pseudo_blinding_factor)) * xpow;
+
+        for (size_t j = 0; j < m; ++j)
+        {
+            z -= rho[j] * x.pow(j);
+        }
+
+        const auto signature =
+            crypto_triptych_signature_t(commitment_image, pseudo_commitment, A, B, C, D, X, Y, f, zA, zC, z);
+
+        return {true, signature, xpow};
     }
 } // namespace Crypto::RingSignature::Triptych

@@ -85,6 +85,46 @@ struct crypto_bulletproof_plus_t
     }
 
     /**
+     * Checks that the basic construction of the proof is valid
+     * @return
+     */
+    [[nodiscard]] bool check_construction() const
+    {
+        if (L.size() != R.size() || L.empty())
+        {
+            return false;
+        }
+
+        if (!A.valid() || !A1.valid() || !B.valid())
+        {
+            return false;
+        }
+
+        for (const auto &point : L)
+        {
+            if (!point.valid())
+            {
+                return false;
+            }
+        }
+
+        for (const auto &point : R)
+        {
+            if (!point.valid())
+            {
+                return false;
+            }
+        }
+
+        if (!r1.valid() || !s1.valid() || !d1.valid())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Deserializes the struct from a byte array
      * @param reader
      */

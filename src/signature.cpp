@@ -39,7 +39,7 @@ namespace Crypto::Signature
         const crypto_public_key_t &public_key,
         const crypto_signature_t &signature)
     {
-        if (!signature.LR.L.check() || !signature.LR.R.check())
+        if (!signature.LR.L.valid() || !signature.LR.R.valid())
         {
             return false;
         }
@@ -51,7 +51,7 @@ namespace Crypto::Signature
 
         const auto challenge = transcript.challenge();
 
-        if (challenge == Crypto::ZERO)
+        if (!challenge.valid())
         {
             return false;
         }
@@ -71,6 +71,11 @@ namespace Crypto::Signature
 
         SCALAR_OR_THROW(signature.LR.R);
 
+        for (const auto &partial_signing_scalar : partial_signing_scalars)
+        {
+            SCALAR_OR_THROW(partial_signing_scalar);
+        }
+
         auto finalized_signature = signature;
 
         if (partial_signing_scalars.empty() && signing_scalar != Crypto::ZERO)
@@ -79,11 +84,6 @@ namespace Crypto::Signature
         }
         else if (!partial_signing_scalars.empty())
         {
-            for (const auto &partial_signing_scalar : partial_signing_scalars)
-            {
-                SCALAR_OR_THROW(partial_signing_scalar);
-            }
-
             // create a copy of our partial signing scalars for computation and handling
             crypto_scalar_vector_t keys(partial_signing_scalars);
 
@@ -95,7 +95,7 @@ namespace Crypto::Signature
             const auto derived_scalar = keys.dedupe_sort().sum();
 
             // our derived scalar should never be 0
-            if (derived_scalar == Crypto::ZERO)
+            if (!derived_scalar.valid())
             {
                 throw std::invalid_argument("derived scalar cannot be 0");
             }
@@ -127,7 +127,14 @@ namespace Crypto::Signature
         SCALAR_OR_THROW(signature.LR.R);
 
         // asL = (s.L * a) mod l
-        return signature.LR.L * spend_secret_key;
+        const auto partial_signing_scalar = signature.LR.L * spend_secret_key;
+
+        if (!partial_signing_scalar.valid())
+        {
+            throw std::runtime_error("Partial signing scalar is zero");
+        }
+
+        return partial_signing_scalar;
     }
 
     crypto_signature_t generate_signature(const crypto_hash_t &message_digest, const crypto_secret_key_t &secret_key)
@@ -150,7 +157,7 @@ namespace Crypto::Signature
 
         const auto alpha_scalar = alpha_transcript.challenge();
 
-        if (alpha_scalar == Crypto::ZERO)
+        if (!alpha_scalar.valid())
         {
             goto try_again;
         }
@@ -164,7 +171,7 @@ namespace Crypto::Signature
 
         signature.LR.L = transcript.challenge();
 
-        if (signature.LR.L == Crypto::ZERO)
+        if (!signature.LR.L.valid())
         {
             goto try_again;
         }

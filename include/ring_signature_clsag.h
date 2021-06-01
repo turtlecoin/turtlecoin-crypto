@@ -82,6 +82,47 @@ struct crypto_clsag_signature_t
     }
 
     /**
+     * Checks that the basic construction of the proof is valid
+     * @param ring_size
+     * @return
+     */
+    [[nodiscard]] bool check_construction(size_t ring_size, bool use_commitments = false) const
+    {
+        if (scalars.size() != ring_size)
+        {
+            return false;
+        }
+
+        if (!challenge.valid())
+        {
+            return false;
+        }
+
+        for (const auto &scalar : scalars)
+        {
+            if (!scalar.valid())
+            {
+                return false;
+            }
+        }
+
+        if (use_commitments)
+        {
+            if (!commitment_image.check_subgroup())
+            {
+                return false;
+            }
+
+            if (!Crypto::check_torsion(pseudo_commitment))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Deserializes the struct from a byte array
      * @param reader
      */

@@ -69,6 +69,13 @@ namespace Crypto
     }
 
     /**
+     * Checks for point torsion
+     * @param value
+     * @return
+     */
+    bool check_torsion(const crypto_point_t &value);
+
+    /**
      * Generates a commitment tensor point
      * @param point
      * @param i
