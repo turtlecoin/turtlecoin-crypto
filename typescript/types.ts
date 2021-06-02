@@ -96,7 +96,6 @@ export interface crypto_bulletproof_plus_t {
  */
 export interface crypto_borromean_signature_t {
     signatures: string[];
-    offsets?: number[];
 }
 
 /**
@@ -107,7 +106,6 @@ export interface crypto_clsag_signature_t {
     challenge: string;
     commitment_image?: string;
     psuedo_commitment?: string;
-    offsets?: number[];
 }
 
 export interface crypto_triptych_signature_t {
@@ -123,7 +121,6 @@ export interface crypto_triptych_signature_t {
     zA: string;
     zC: string;
     z: string;
-    offsets?: number[];
 }
 
 /**

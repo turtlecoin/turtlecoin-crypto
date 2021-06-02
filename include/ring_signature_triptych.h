@@ -106,11 +106,6 @@ struct crypto_triptych_signature_t
      */
     [[nodiscard]] bool check_construction(size_t m, size_t n = 2) const
     {
-        if (!commitment_image.check_subgroup())
-        {
-            return false;
-        }
-
         if (!A.valid() || !B.valid() || !C.valid() || !D.valid())
         {
             return false;
@@ -158,6 +153,11 @@ struct crypto_triptych_signature_t
             }
         }
 
+        if (!commitment_image.check_subgroup())
+        {
+            return false;
+        }
+
         if (!Crypto::check_torsion(pseudo_commitment))
         {
             return false;
@@ -172,10 +172,6 @@ struct crypto_triptych_signature_t
      */
     void deserialize(deserializer_t &reader)
     {
-        commitment_image = reader.key<crypto_key_image_t>();
-
-        pseudo_commitment = reader.key<crypto_pedersen_commitment_t>();
-
         A = reader.key<crypto_point_t>();
 
         B = reader.key<crypto_point_t>();
@@ -230,29 +226,14 @@ struct crypto_triptych_signature_t
 
         z = reader.key<crypto_scalar_t>();
 
-        {
-            const auto count = reader.varint<uint64_t>();
+        commitment_image = reader.key<crypto_key_image_t>();
 
-            offsets.clear();
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                offsets.push_back(reader.varint<uint64_t>());
-            }
-        }
+        pseudo_commitment = reader.key<crypto_pedersen_commitment_t>();
     }
 
     JSON_FROM_FUNC(from_json)
     {
         JSON_OBJECT_OR_THROW();
-
-        JSON_MEMBER_OR_THROW("commitment_image");
-
-        commitment_image = get_json_string(j, "commitment_image");
-
-        JSON_MEMBER_OR_THROW("pseudo_commitment");
-
-        pseudo_commitment = get_json_string(j, "pseudo_commitment");
 
         JSON_MEMBER_OR_THROW("A");
 
@@ -316,14 +297,13 @@ struct crypto_triptych_signature_t
 
         z = get_json_string(j, "z");
 
-        JSON_MEMBER_OR_THROW("offsets");
+        JSON_MEMBER_OR_THROW("commitment_image");
 
-        offsets.clear();
+        commitment_image = get_json_string(j, "commitment_image");
 
-        for (const auto &elem : get_json_array(j, "offsets"))
-        {
-            offsets.emplace_back(get_json_uint64_t(elem));
-        }
+        JSON_MEMBER_OR_THROW("pseudo_commitment");
+
+        pseudo_commitment = get_json_string(j, "pseudo_commitment");
     }
 
     /**
@@ -343,10 +323,6 @@ struct crypto_triptych_signature_t
      */
     void serialize(serializer_t &writer) const
     {
-        writer.key(commitment_image);
-
-        writer.key(pseudo_commitment);
-
         writer.key(A);
 
         writer.key(B);
@@ -387,12 +363,9 @@ struct crypto_triptych_signature_t
 
         writer.key(z);
 
-        writer.varint(offsets.size());
+        writer.key(commitment_image);
 
-        for (const auto &val : offsets)
-        {
-            writer.varint(val);
-        }
+        writer.key(pseudo_commitment);
     }
 
     /**
@@ -425,12 +398,6 @@ struct crypto_triptych_signature_t
     {
         writer.StartObject();
         {
-            writer.Key("commitment_image");
-            commitment_image.toJSON(writer);
-
-            writer.Key("pseudo_commitment");
-            pseudo_commitment.toJSON(writer);
-
             writer.Key("A");
             A.toJSON(writer);
 
@@ -489,15 +456,11 @@ struct crypto_triptych_signature_t
             writer.Key("z");
             z.toJSON(writer);
 
-            writer.Key("offsets");
-            writer.StartArray();
-            {
-                for (const auto &val : offsets)
-                {
-                    writer.Uint64(val);
-                }
-            }
-            writer.EndArray();
+            writer.Key("commitment_image");
+            commitment_image.toJSON(writer);
+
+            writer.Key("pseudo_commitment");
+            pseudo_commitment.toJSON(writer);
         }
         writer.EndObject();
     }
@@ -519,7 +482,6 @@ struct crypto_triptych_signature_t
     std::vector<crypto_point_t> X, Y;
     std::vector<std::vector<crypto_scalar_t>> f;
     crypto_scalar_t zA, zC, z;
-    std::vector<uint64_t> offsets;
 };
 
 namespace Crypto::RingSignature::Triptych
@@ -613,8 +575,6 @@ namespace std
     inline ostream &operator<<(ostream &os, const crypto_triptych_signature_t &value)
     {
         os << "Triptych [" << value.size() << " bytes]:" << std::endl
-           << "\tcommitment_image: " << value.commitment_image << std::endl
-           << "\tpseudo_commitment: " << value.pseudo_commitment << std::endl
            << "\tA: " << value.A << std::endl
            << "\tB: " << value.B << std::endl
            << "\tC: " << value.C << std::endl
@@ -650,12 +610,8 @@ namespace std
         os << "\tzA: " << value.zA << std::endl
            << "\tzC: " << value.zC << std::endl
            << "\tz: " << value.z << std::endl
-           << "\tOffsets:" << std::endl;
-
-        for (const auto &val : value.offsets)
-        {
-            os << "\t\t" << std::to_string(val) << std::endl;
-        }
+           << "\tcommitment_image: " << value.commitment_image << std::endl
+           << "\tpseudo_commitment: " << value.pseudo_commitment << std::endl;
 
         return os;
     }

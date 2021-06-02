@@ -309,16 +309,13 @@ namespace Crypto::RingSignature::Triptych
     crypto_scalar_t
         generate_partial_signing_scalar(const crypto_scalar_t &spend_secret_key, const crypto_scalar_t &xpow)
     {
-        SCALAR_OR_THROW(spend_secret_key);
+        SCALAR_NZ_OR_THROW(spend_secret_key);
 
-        SCALAR_OR_THROW(xpow);
+        SCALAR_NZ_OR_THROW(xpow);
 
         const auto partial_signing_scalar = spend_secret_key * xpow;
 
-        if (!partial_signing_scalar.valid())
-        {
-            throw std::runtime_error("Partial signing scalar is zero");
-        }
+        SCALAR_NZ_OR_THROW(partial_signing_scalar);
 
         return partial_signing_scalar;
     }

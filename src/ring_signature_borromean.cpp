@@ -167,7 +167,7 @@ namespace Crypto::RingSignature::Borromean
             finalized_signature[real_output_index].LR.R -= derived_scalar;
         }
 
-        return {true, crypto_borromean_signature_t(finalized_signature, borromean_signature.offsets)};
+        return {true, crypto_borromean_signature_t(finalized_signature)};
     }
 
     crypto_scalar_t generate_partial_signing_scalar(
@@ -177,13 +177,13 @@ namespace Crypto::RingSignature::Borromean
     {
         const auto &signature = borromean_signature.signatures;
 
-        SCALAR_OR_THROW(spend_secret_key);
+        SCALAR_NZ_OR_THROW(spend_secret_key);
 
         for (const auto &sig : signature)
         {
-            SCALAR_OR_THROW(sig.LR.L);
+            SCALAR_NZ_OR_THROW(sig.LR.L);
 
-            SCALAR_OR_THROW(sig.LR.R);
+            SCALAR_NZ_OR_THROW(sig.LR.R);
         }
 
         if (signature.empty() || real_output_index >= signature.size())
@@ -194,10 +194,7 @@ namespace Crypto::RingSignature::Borromean
         // asL = (s[i].L * a) mod l
         const auto partial_signing_scalar = signature[real_output_index].LR.L * spend_secret_key;
 
-        if (!partial_signing_scalar.valid())
-        {
-            throw std::runtime_error("Partial signing scalar is zero");
-        }
+        SCALAR_NZ_OR_THROW(partial_signing_scalar);
 
         return partial_signing_scalar;
     }

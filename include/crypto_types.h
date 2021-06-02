@@ -37,9 +37,16 @@
 #include <uint128_t.h>
 #include <uint256_t.h>
 
-#define SCALAR_OR_THROW(value) \
-    if (!value.check())        \
-    throw std::invalid_argument(std::string(#value) + " is not a scalar")
+#define SCALAR_OR_THROW(value)                                                 \
+    if (!value.valid(true))                                                    \
+    {                                                                          \
+        throw std::invalid_argument(std::string(#value) + " is not a scalar"); \
+    }
+#define SCALAR_NZ_OR_THROW(value)                                              \
+    if (!value.valid())                                                        \
+    {                                                                          \
+        throw std::invalid_argument(std::string(#value) + " is not a scalar"); \
+    }
 
 /**
  * l = 2^252 + 2774231777737235353585193779

@@ -32,7 +32,7 @@ namespace Crypto::Multisig
         const crypto_public_key_t &their_public_key,
         const crypto_secret_key_t &our_secret_key)
     {
-        SCALAR_OR_THROW(our_secret_key);
+        SCALAR_NZ_OR_THROW(our_secret_key);
 
         // Multiply the secret key by their public key point
         const auto point = (our_secret_key * their_public_key).mul8();
@@ -45,7 +45,7 @@ namespace Crypto::Multisig
         const std::vector<crypto_public_key_t> &their_public_keys,
         const crypto_secret_key_t &our_secret_key)
     {
-        SCALAR_OR_THROW(our_secret_key);
+        SCALAR_NZ_OR_THROW(our_secret_key);
 
         const auto keys = crypto_point_vector_t(their_public_keys).dedupe_sort();
 
@@ -75,7 +75,7 @@ namespace Crypto::Multisig
     {
         for (const auto &key : secret_keys)
         {
-            SCALAR_OR_THROW(key);
+            SCALAR_NZ_OR_THROW(key);
         }
 
         crypto_scalar_vector_t keys(secret_keys);

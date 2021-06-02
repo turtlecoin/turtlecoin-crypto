@@ -67,18 +67,18 @@ namespace Crypto::Signature
     {
         SCALAR_OR_THROW(signing_scalar);
 
-        SCALAR_OR_THROW(signature.LR.L);
+        SCALAR_NZ_OR_THROW(signature.LR.L);
 
-        SCALAR_OR_THROW(signature.LR.R);
+        SCALAR_NZ_OR_THROW(signature.LR.R);
 
         for (const auto &partial_signing_scalar : partial_signing_scalars)
         {
-            SCALAR_OR_THROW(partial_signing_scalar);
+            SCALAR_NZ_OR_THROW(partial_signing_scalar);
         }
 
         auto finalized_signature = signature;
 
-        if (partial_signing_scalars.empty() && signing_scalar != Crypto::ZERO)
+        if (partial_signing_scalars.empty() && signing_scalar.valid())
         {
             finalized_signature.LR.R -= (signature.LR.L * signing_scalar);
         }
@@ -120,26 +120,23 @@ namespace Crypto::Signature
         const crypto_signature_t &signature,
         const crypto_secret_key_t &spend_secret_key)
     {
-        SCALAR_OR_THROW(spend_secret_key);
+        SCALAR_NZ_OR_THROW(spend_secret_key);
 
-        SCALAR_OR_THROW(signature.LR.L);
+        SCALAR_NZ_OR_THROW(signature.LR.L);
 
-        SCALAR_OR_THROW(signature.LR.R);
+        SCALAR_NZ_OR_THROW(signature.LR.R);
 
         // asL = (s.L * a) mod l
         const auto partial_signing_scalar = signature.LR.L * spend_secret_key;
 
-        if (!partial_signing_scalar.valid())
-        {
-            throw std::runtime_error("Partial signing scalar is zero");
-        }
+        SCALAR_NZ_OR_THROW(partial_signing_scalar);
 
         return partial_signing_scalar;
     }
 
     crypto_signature_t generate_signature(const crypto_hash_t &message_digest, const crypto_secret_key_t &secret_key)
     {
-        SCALAR_OR_THROW(secret_key);
+        SCALAR_NZ_OR_THROW(secret_key);
 
         // A = (a * G) mod l
         const auto public_key = secret_key * G;

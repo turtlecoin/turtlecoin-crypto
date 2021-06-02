@@ -528,9 +528,7 @@ int main()
 
         std::cout << signature << std::endl;
 
-        std::cout << "Encoded Size: " << signature.size() << std::endl
-                  << signature.to_string() << std::endl
-                  << std::endl;
+        std::cout << signature.to_string() << std::endl << std::endl;
 
         if (!Crypto::RingSignature::Borromean::check_ring_signature(SHA3_HASH, key_image, public_keys, signature))
         {
@@ -564,9 +562,7 @@ int main()
 
         std::cout << signature << std::endl;
 
-        std::cout << "Encoded Size: " << signature.size() << std::endl
-                  << signature.to_string() << std::endl
-                  << std::endl;
+        std::cout << signature.to_string() << std::endl << std::endl;
 
         if (!Crypto::RingSignature::CLSAG::check_ring_signature(SHA3_HASH, key_image, public_keys, signature))
         {
@@ -617,9 +613,7 @@ int main()
 
         std::cout << signature << std::endl;
 
-        std::cout << "Encoded Size: " << signature.size() << std::endl
-                  << signature.to_string() << std::endl
-                  << std::endl;
+        std::cout << signature.to_string() << std::endl << std::endl;
 
         if (!Crypto::RingSignature::CLSAG::check_ring_signature(
                 SHA3_HASH, key_image, public_keys, signature, public_commitments))
@@ -671,9 +665,7 @@ int main()
 
         std::cout << signature << std::endl;
 
-        std::cout << "Encoded Size: " << signature.size() << std::endl
-                  << signature.to_string() << std::endl
-                  << std::endl;
+        std::cout << signature.to_string() << std::endl << std::endl;
 
         if (!Crypto::RingSignature::Triptych::check_ring_signature(
                 SHA3_HASH, key_image2, public_keys, signature, public_commitments))
@@ -698,7 +690,9 @@ int main()
         auto blinding_factors = Crypto::random_scalars(2);
 
         for (auto &factor : blinding_factors)
+        {
             factor = Crypto::RingCT::generate_commitment_blinding_factor(factor);
+        }
 
         /**
          * Generate two fake output commitments using the blinding factors calculated above
@@ -797,7 +791,7 @@ int main()
 
         std::cout << proof << std::endl;
 
-        std::cout << "Encoded Size: " << proof.size() << std::endl << proof.to_string() << std::endl << std::endl;
+        std::cout << proof.to_string() << std::endl << std::endl;
 
         proof.taux *= Crypto::TWO;
 
@@ -840,7 +834,7 @@ int main()
 
         std::cout << proof << std::endl;
 
-        std::cout << "Encoded Size: " << proof.size() << std::endl << proof.to_string() << std::endl << std::endl;
+        std::cout << proof.to_string() << std::endl << std::endl;
 
         proof.d1 *= Crypto::TWO;
 

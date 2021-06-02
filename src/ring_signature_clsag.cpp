@@ -55,8 +55,8 @@ namespace Crypto::RingSignature::CLSAG
         const std::vector<crypto_pedersen_commitment_t> &commitments)
     {
         const auto use_commitments =
-            (signature.commitment_image != Crypto::Z && commitments.size() == public_keys.size()
-             && signature.pseudo_commitment != Crypto::Z);
+            (signature.commitment_image.valid() && commitments.size() == public_keys.size()
+             && signature.pseudo_commitment.valid());
 
         const auto ring_size = public_keys.size();
 
@@ -304,16 +304,13 @@ namespace Crypto::RingSignature::CLSAG
     crypto_scalar_t
         generate_partial_signing_scalar(const crypto_scalar_t &mu_P, const crypto_secret_key_t &spend_secret_key)
     {
-        SCALAR_OR_THROW(mu_P);
+        SCALAR_NZ_OR_THROW(mu_P);
 
-        SCALAR_OR_THROW(spend_secret_key);
+        SCALAR_NZ_OR_THROW(spend_secret_key);
 
         const auto partial_signing_scalar = mu_P * spend_secret_key;
 
-        if (!partial_signing_scalar.valid())
-        {
-            throw std::runtime_error("Partial signing scalar is zero");
-        }
+        SCALAR_NZ_OR_THROW(partial_signing_scalar);
 
         return partial_signing_scalar;
     }
@@ -333,8 +330,8 @@ namespace Crypto::RingSignature::CLSAG
         }
 
         const auto use_commitments =
-            (input_blinding_factor != Crypto::ZERO && public_commitments.size() == public_keys.size()
-             && pseudo_blinding_factor != Crypto::ZERO && pseudo_commitment != Crypto::Z);
+            (input_blinding_factor.valid() && public_commitments.size() == public_keys.size()
+             && pseudo_blinding_factor.valid() && pseudo_commitment.valid());
 
         const auto ring_size = public_keys.size();
 
@@ -413,8 +410,8 @@ namespace Crypto::RingSignature::CLSAG
         const auto ring_size = public_keys.size();
 
         const auto use_commitments =
-            (input_blinding_factor != Crypto::ZERO && public_commitments.size() == public_keys.size()
-             && pseudo_blinding_factor != Crypto::ZERO && pseudo_commitment != Crypto::Z);
+            (input_blinding_factor.valid() && public_commitments.size() == public_keys.size()
+             && pseudo_blinding_factor.valid() && pseudo_commitment.valid());
 
         if (real_output_index >= ring_size)
         {

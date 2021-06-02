@@ -133,7 +133,7 @@ namespace Crypto
     crypto_public_key_t
         derive_public_key(const crypto_scalar_t &derivation_scalar, const crypto_public_key_t &public_key)
     {
-        SCALAR_OR_THROW(derivation_scalar);
+        SCALAR_NZ_OR_THROW(derivation_scalar);
 
         // P = [A + (Ds * G)] mod l
         return (derivation_scalar * Crypto::G) + public_key;
@@ -142,7 +142,7 @@ namespace Crypto
     crypto_secret_key_t
         derive_secret_key(const crypto_scalar_t &derivation_scalar, const crypto_secret_key_t &secret_key)
     {
-        SCALAR_OR_THROW(derivation_scalar);
+        SCALAR_NZ_OR_THROW(derivation_scalar);
 
         // p = (Ds + a) mod l
         return derivation_scalar + secret_key;
@@ -151,7 +151,7 @@ namespace Crypto
     crypto_derivation_t
         generate_key_derivation(const crypto_public_key_t &public_key, const crypto_secret_key_t &secret_key)
     {
-        SCALAR_OR_THROW(secret_key);
+        SCALAR_NZ_OR_THROW(secret_key);
 
         // D = (a * B) mod l
         return (secret_key * public_key).mul8();
@@ -160,7 +160,7 @@ namespace Crypto
     crypto_key_image_t
         generate_key_image(const crypto_public_key_t &public_ephemeral, const crypto_secret_key_t &secret_ephemeral)
     {
-        SCALAR_OR_THROW(secret_ephemeral);
+        SCALAR_NZ_OR_THROW(secret_ephemeral);
 
         // I = [Hp(P) * x] mod l
         return secret_ephemeral * hash_to_point(public_ephemeral);
@@ -171,7 +171,7 @@ namespace Crypto
         const crypto_scalar_t &derivation_scalar,
         const std::vector<crypto_key_image_t> &partial_key_images)
     {
-        SCALAR_OR_THROW(derivation_scalar);
+        SCALAR_NZ_OR_THROW(derivation_scalar);
 
         crypto_point_vector_t key_images(partial_key_images);
 
@@ -383,7 +383,7 @@ namespace Crypto
 
     crypto_public_key_t secret_key_to_public_key(const crypto_secret_key_t &secret_key)
     {
-        SCALAR_OR_THROW(secret_key);
+        SCALAR_NZ_OR_THROW(secret_key);
 
         // A = (a * G) mod l
         return secret_key * Crypto::G;

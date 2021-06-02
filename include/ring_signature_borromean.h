@@ -34,10 +34,7 @@ struct crypto_borromean_signature_t
 {
     crypto_borromean_signature_t() {}
 
-    crypto_borromean_signature_t(std::vector<crypto_signature_t> signatures, std::vector<uint64_t> offsets = {}):
-        signatures(std::move(signatures)), offsets(std::move(offsets))
-    {
-    }
+    crypto_borromean_signature_t(std::vector<crypto_signature_t> signatures): signatures(std::move(signatures)) {}
 
     JSON_OBJECT_CONSTRUCTORS(crypto_borromean_signature_t, from_json);
 
@@ -110,17 +107,6 @@ struct crypto_borromean_signature_t
                 signatures.push_back(reader.key<crypto_signature_t>());
             }
         }
-
-        {
-            const auto count = reader.varint<uint64_t>();
-
-            offsets.clear();
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                offsets.push_back(reader.varint<uint64_t>());
-            }
-        }
     }
 
     JSON_FROM_FUNC(from_json)
@@ -134,15 +120,6 @@ struct crypto_borromean_signature_t
         for (const auto &elem : get_json_array(j, "signatures"))
         {
             signatures.emplace_back(get_json_string(elem));
-        }
-
-        JSON_MEMBER_OR_THROW("offsets");
-
-        offsets.clear();
-
-        for (const auto &elem : get_json_array(j, "offsets"))
-        {
-            offsets.emplace_back(get_json_uint64_t(elem));
         }
     }
 
@@ -168,13 +145,6 @@ struct crypto_borromean_signature_t
         for (const auto &val : signatures)
         {
             writer.key(val);
-        }
-
-        writer.varint(offsets.size());
-
-        for (const auto &val : offsets)
-        {
-            writer.varint(val);
         }
     }
 
@@ -217,16 +187,6 @@ struct crypto_borromean_signature_t
                 }
             }
             writer.EndArray();
-
-            writer.Key("offsets");
-            writer.StartArray();
-            {
-                for (const auto &val : offsets)
-                {
-                    writer.Uint64(val);
-                }
-            }
-            writer.EndArray();
         }
         writer.EndObject();
     }
@@ -243,7 +203,6 @@ struct crypto_borromean_signature_t
     }
 
     std::vector<crypto_signature_t> signatures;
-    std::vector<uint64_t> offsets;
 };
 
 namespace Crypto::RingSignature::Borromean
@@ -328,13 +287,6 @@ namespace std
         for (const auto &val : value.signatures)
         {
             os << "\t\t" << val << std::endl;
-        }
-
-        os << "\toffsets:" << std::endl;
-
-        for (const auto &val : value.offsets)
-        {
-            os << "\t\t" << std::to_string(val) << std::endl;
         }
 
         return os;
