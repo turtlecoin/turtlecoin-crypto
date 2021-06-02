@@ -629,7 +629,7 @@ namespace std
 
         os << "\tY:" << std::endl;
 
-        for (const auto &val : value.X)
+        for (const auto &val : value.Y)
         {
             os << "\t\t" << val << std::endl;
         }
