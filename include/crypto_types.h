@@ -124,18 +124,6 @@ struct crypto_point_t
         ge_p3_to_cached(&cached_point, &point3);
     }
 
-    crypto_point_t(const uint256_t &number)
-    {
-        std::memcpy(bytes, &number, sizeof(number));
-
-        if (ge_frombytes_negate_vartime(&point3, bytes) != 0)
-        {
-            throw std::runtime_error("could not load point");
-        }
-
-        ge_p3_to_cached(&cached_point, &point3);
-    }
-
     crypto_point_t(const std::vector<uint8_t> &input)
     {
         if (input.size() < size())
@@ -220,6 +208,20 @@ struct crypto_point_t
 
             return false;
         }
+    }
+
+    /**
+     * Constructs a point from a uint256_t
+     * @param number
+     * @return
+     */
+    static crypto_point_t from_uint256(const uint256_t &number)
+    {
+        uint8_t bytes[32];
+
+        std::memcpy(bytes, &number, sizeof(number));
+
+        return crypto_point_t(bytes);
     }
 
     /**
@@ -648,16 +650,6 @@ struct crypto_scalar_t
         }
     }
 
-    crypto_scalar_t(const uint256_t &number, bool reduce = false)
-    {
-        std::memcpy(bytes, &number, sizeof(number));
-
-        if (reduce)
-        {
-            do_reduce();
-        }
-    }
-
     crypto_scalar_t(const std::vector<uint8_t> &input, bool reduce = false)
     {
         /**
@@ -721,6 +713,21 @@ struct crypto_scalar_t
     ~crypto_scalar_t()
     {
         secure_erase(&bytes, sizeof(bytes));
+    }
+
+    /**
+     * Constructs a scalar from a uint256_t
+     * @param number
+     * @param reduce
+     * @return
+     */
+    static crypto_scalar_t from_uint256(const uint256_t &number, bool reduce = false)
+    {
+        uint8_t bytes[32];
+
+        std::memcpy(bytes, &number, sizeof(number));
+
+        return crypto_scalar_t(bytes);
     }
 
     /**
