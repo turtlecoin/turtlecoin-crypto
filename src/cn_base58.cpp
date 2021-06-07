@@ -278,7 +278,7 @@ namespace Crypto::CNBase58
         return true;
     }
 
-    std::tuple<bool, std::vector<uint8_t>> decode(const std::string &input)
+    std::tuple<bool, deserializer_t> decode(const std::string &input)
     {
         if (input.empty())
         {
@@ -298,14 +298,16 @@ namespace Crypto::CNBase58
 
         size_t data_size = full_block_count * FULL_BLOCK_SIZE + last_block_decoded_size;
 
-        std::string data;
+        std::vector<uint8_t> data;
 
         data.resize(data_size, 0);
 
         for (size_t i = 0; i < full_block_count; ++i)
         {
             if (!decode_block(
-                    input.data() + i * FULL_ENCODED_BLOCK_SIZE, FULL_ENCODED_BLOCK_SIZE, &data[i * FULL_BLOCK_SIZE]))
+                    input.data() + i * FULL_ENCODED_BLOCK_SIZE,
+                    FULL_ENCODED_BLOCK_SIZE,
+                    reinterpret_cast<char *>(&data[i * FULL_BLOCK_SIZE])))
             {
                 return {false, {}};
             }
@@ -316,28 +318,30 @@ namespace Crypto::CNBase58
             if (!decode_block(
                     input.data() + full_block_count * FULL_ENCODED_BLOCK_SIZE,
                     last_block_size,
-                    &data[full_block_count * FULL_BLOCK_SIZE]))
+                    reinterpret_cast<char *>(&data[full_block_count * FULL_BLOCK_SIZE])))
             {
                 return {false, {}};
             }
         }
 
-        return {true, Crypto::StringTools::from_hex(data)};
+        return {true, deserializer_t(data)};
     }
 
-    std::tuple<bool, std::vector<uint8_t>> decode_check(const std::string &input)
+    std::tuple<bool, deserializer_t> decode_check(const std::string &input)
     {
         if (input.empty())
         {
             return {false, {}};
         }
 
-        auto [success, decoded] = decode(input);
+        auto [success, decoded_data] = decode(input);
 
         if (!success)
         {
             return {false, {}};
         }
+
+        auto decoded = decoded_data.unread_data();
 
         if (decoded.size() <= BASE58_CHECKSUM_SIZE)
         {
@@ -356,7 +360,7 @@ namespace Crypto::CNBase58
             return {false, {}};
         }
 
-        return {true, decoded};
+        return {true, deserializer_t(decoded)};
     }
 
     std::string encode(const std::vector<uint8_t> &input)
@@ -366,7 +370,7 @@ namespace Crypto::CNBase58
             return std::string();
         }
 
-        const auto data = Crypto::StringTools::to_hex(input.data(), input.size());
+        const auto &data = input;
 
         size_t full_block_count = data.size() / FULL_BLOCK_SIZE;
 
@@ -378,18 +382,31 @@ namespace Crypto::CNBase58
 
         for (size_t i = 0; i < full_block_count; ++i)
         {
-            encode_block(data.data() + i * FULL_BLOCK_SIZE, FULL_BLOCK_SIZE, &res[i * FULL_ENCODED_BLOCK_SIZE]);
+            encode_block(
+                reinterpret_cast<const char *>(data.data() + i * FULL_BLOCK_SIZE),
+                FULL_BLOCK_SIZE,
+                &res[i * FULL_ENCODED_BLOCK_SIZE]);
         }
 
         if (0 < last_block_size)
         {
             encode_block(
-                data.data() + full_block_count * FULL_BLOCK_SIZE,
+                reinterpret_cast<const char *>(data.data() + full_block_count * FULL_BLOCK_SIZE),
                 last_block_size,
                 &res[full_block_count * FULL_ENCODED_BLOCK_SIZE]);
         }
 
         return res;
+    }
+
+    [[nodiscard]] std::string encode(const deserializer_t &reader)
+    {
+        return encode(reader.unread_data());
+    }
+
+    std::string encode(const serializer_t &writer)
+    {
+        return encode(writer.vector());
     }
 
     std::string encode_check(const std::vector<uint8_t> &input)
@@ -408,5 +425,15 @@ namespace Crypto::CNBase58
         writer.bytes(hash.data(), BASE58_CHECKSUM_SIZE);
 
         return encode(writer.vector());
+    }
+
+    std::string encode_check(const deserializer_t &reader)
+    {
+        return encode_check(reader.unread_data());
+    }
+
+    std::string encode_check(const serializer_t &writer)
+    {
+        return encode_check(writer.vector());
     }
 } // namespace Crypto::CNBase58

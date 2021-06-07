@@ -47,7 +47,7 @@ static const int8_t Base58Map[256] = {
 
 namespace Crypto::Base58
 {
-    std::tuple<bool, std::vector<uint8_t>> decode(const std::string &input)
+    std::tuple<bool, deserializer_t> decode(const std::string &input)
     {
         if (input.empty())
         {
@@ -122,22 +122,24 @@ namespace Crypto::Base58
             result.push_back(*(it++));
         }
 
-        return {true, result};
+        return {true, deserializer_t(result)};
     }
 
-    std::tuple<bool, std::vector<uint8_t>> decode_check(const std::string &input)
+    std::tuple<bool, deserializer_t> decode_check(const std::string &input)
     {
         if (input.empty())
         {
             return {false, {}};
         }
 
-        auto [success, decoded] = decode(input);
+        auto [success, decoded_data] = decode(input);
 
         if (!success)
         {
             return {false, {}};
         }
+
+        auto decoded = decoded_data.unread_data();
 
         if (decoded.size() <= BASE58_CHECKSUM_SIZE)
         {
@@ -156,7 +158,7 @@ namespace Crypto::Base58
             return {false, {}};
         }
 
-        return {true, decoded};
+        return {true, deserializer_t(decoded)};
     }
 
     std::string encode(std::vector<uint8_t> input)
@@ -228,6 +230,16 @@ namespace Crypto::Base58
         return result;
     }
 
+    [[nodiscard]] std::string encode(const deserializer_t &reader)
+    {
+        return encode(reader.unread_data());
+    }
+
+    std::string encode(const serializer_t &writer)
+    {
+        return encode(writer.vector());
+    }
+
     std::string encode_check(const std::vector<uint8_t> &input)
     {
         if (input.empty())
@@ -244,5 +256,15 @@ namespace Crypto::Base58
         writer.bytes(hash.data(), BASE58_CHECKSUM_SIZE);
 
         return encode(writer.vector());
+    }
+
+    std::string encode_check(const deserializer_t &reader)
+    {
+        return encode_check(reader.unread_data());
+    }
+
+    std::string encode_check(const serializer_t &writer)
+    {
+        return encode_check(writer.vector());
     }
 } // namespace Crypto::Base58

@@ -434,7 +434,7 @@ NAN_METHOD(base58_encode)
         {
             deserializer_t reader(hex);
 
-            const auto base58 = Crypto::Base58::encode(reader.unread_data());
+            const auto base58 = Crypto::Base58::encode(reader);
 
             result = STR_TO_NAN_VAL(base58);
 
@@ -463,7 +463,7 @@ NAN_METHOD(base58_encode_check)
         {
             deserializer_t reader(hex);
 
-            const auto base58 = Crypto::Base58::encode_check(reader.unread_data());
+            const auto base58 = Crypto::Base58::encode_check(reader);
 
             result = STR_TO_NAN_VAL(base58);
 
@@ -494,11 +494,7 @@ NAN_METHOD(base58_decode)
 
             if (decode_success)
             {
-                serializer_t writer;
-
-                writer.bytes(decoded);
-
-                result = STR_TO_NAN_VAL(writer.to_string());
+                result = STR_TO_NAN_VAL(decoded.to_string());
 
                 success = true;
             }
@@ -528,11 +524,7 @@ NAN_METHOD(base58_decode_check)
 
             if (decode_success)
             {
-                serializer_t writer;
-
-                writer.bytes(decoded);
-
-                result = STR_TO_NAN_VAL(writer.to_string());
+                result = STR_TO_NAN_VAL(decoded.to_string());
 
                 success = true;
             }
@@ -564,7 +556,7 @@ NAN_METHOD(cn_base58_encode)
         {
             deserializer_t reader(hex);
 
-            const auto base58 = Crypto::CNBase58::encode(reader.unread_data());
+            const auto base58 = Crypto::CNBase58::encode(reader);
 
             result = STR_TO_NAN_VAL(base58);
 
@@ -593,7 +585,7 @@ NAN_METHOD(cn_base58_encode_check)
         {
             deserializer_t reader(hex);
 
-            const auto base58 = Crypto::CNBase58::encode_check(reader.unread_data());
+            const auto base58 = Crypto::CNBase58::encode_check(reader);
 
             result = STR_TO_NAN_VAL(base58);
 
@@ -624,11 +616,7 @@ NAN_METHOD(cn_base58_decode)
 
             if (decode_success)
             {
-                serializer_t writer;
-
-                writer.bytes(decoded);
-
-                result = STR_TO_NAN_VAL(writer.to_string());
+                result = STR_TO_NAN_VAL(decoded.to_string());
 
                 success = true;
             }
@@ -658,11 +646,7 @@ NAN_METHOD(cn_base58_decode_check)
 
             if (decode_success)
             {
-                serializer_t writer;
-
-                writer.bytes(decoded);
-
-                result = STR_TO_NAN_VAL(writer.to_string());
+                result = STR_TO_NAN_VAL(decoded.to_string());
 
                 success = true;
             }

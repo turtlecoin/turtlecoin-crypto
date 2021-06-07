@@ -48,6 +48,8 @@ const auto ARGON2I_4_1024_1 = crypto_hash_t("debb2a3b51732bff26670753c5dbaedf613
 
 const auto ARGON2ID_4_1024_1 = crypto_hash_t("a6ac954bce48a46bc01a9b16b484ffb745401ae421b1b6f2e22cf474d4cac1c9");
 
+const uint64_t BASE58_PREFIX = 0x6bb3b1d;
+
 template<typename T> static inline bool test_binary_encoding(const T &value)
 {
     serializer_t writer;
@@ -165,15 +167,25 @@ int main()
 
     // Base58 Test #1
     {
+        std::cout << "Base58 Test #1:" << std::endl;
+
         const auto a = Crypto::random_point();
+
+        const auto b = Crypto::random_point();
 
         serializer_t writer;
 
+        writer.varint(BASE58_PREFIX);
+
         writer.key(a);
+
+        writer.key(b);
 
         const auto encoded = Crypto::Base58::encode(writer.vector());
 
-        const auto [success, decoded] = Crypto::Base58::decode(encoded);
+        std::cout << "\tRaw: " << writer.to_string() << std::endl << "\tEncoded: " << encoded << std::endl;
+
+        auto [success, reader] = Crypto::Base58::decode(encoded);
 
         if (!success)
         {
@@ -182,11 +194,13 @@ int main()
             return 1;
         }
 
-        deserializer_t reader(decoded);
+        const auto prefix = reader.varint<uint64_t>();
 
-        const auto check = reader.key<crypto_point_t>();
+        const auto checka = reader.key<crypto_point_t>();
 
-        if (check != a)
+        const auto checkb = reader.key<crypto_point_t>();
+
+        if (checka != a || checkb != b || prefix != BASE58_PREFIX)
         {
             std::cout << "Crypto::Base58: Failed!" << std::endl;
 
@@ -198,15 +212,25 @@ int main()
 
     // Base58 Test #2
     {
+        std::cout << "Base58 Test #2:" << std::endl;
+
         const auto a = Crypto::random_point();
+
+        const auto b = Crypto::random_point();
 
         serializer_t writer;
 
+        writer.varint(BASE58_PREFIX);
+
         writer.key(a);
 
-        const auto encoded = Crypto::Base58::encode_check(writer.vector());
+        writer.key(b);
 
-        const auto [success, decoded] = Crypto::Base58::decode_check(encoded);
+        const auto encoded = Crypto::Base58::encode_check(writer);
+
+        std::cout << "\tRaw: " << writer.to_string() << std::endl << "\tEncoded: " << encoded << std::endl;
+
+        auto [success, reader] = Crypto::Base58::decode_check(encoded);
 
         if (!success)
         {
@@ -215,11 +239,13 @@ int main()
             return 1;
         }
 
-        deserializer_t reader(decoded);
+        const auto prefix = reader.varint<uint64_t>();
 
-        const auto check = reader.key<crypto_point_t>();
+        const auto checka = reader.key<crypto_point_t>();
 
-        if (check != a)
+        const auto checkb = reader.key<crypto_point_t>();
+
+        if (checka != a || checkb != b || prefix != BASE58_PREFIX)
         {
             std::cout << "Crypto::Base58[check]: Failed!" << std::endl;
 
@@ -231,15 +257,25 @@ int main()
 
     // CryptoNote Base58 Test #1
     {
+        std::cout << "CryptoNote Base58 Test #1:" << std::endl;
+
         const auto a = Crypto::random_point();
+
+        const auto b = Crypto::random_point();
 
         serializer_t writer;
 
+        writer.varint(BASE58_PREFIX);
+
         writer.key(a);
 
-        const auto encoded = Crypto::CNBase58::encode(writer.vector());
+        writer.key(b);
 
-        const auto [success, decoded] = Crypto::CNBase58::decode(encoded);
+        const auto encoded = Crypto::CNBase58::encode_check(writer);
+
+        std::cout << "\tRaw: " << writer.to_string() << std::endl << "\tEncoded: " << encoded << std::endl;
+
+        auto [success, reader] = Crypto::CNBase58::decode(encoded);
 
         if (!success)
         {
@@ -248,11 +284,13 @@ int main()
             return 1;
         }
 
-        deserializer_t reader(decoded);
+        const auto prefix = reader.varint<uint64_t>();
 
-        const auto check = reader.key<crypto_point_t>();
+        const auto checka = reader.key<crypto_point_t>();
 
-        if (check != a)
+        const auto checkb = reader.key<crypto_point_t>();
+
+        if (checka != a || checkb != b || prefix != BASE58_PREFIX)
         {
             std::cout << "Crypto::CNBase58: Failed!" << std::endl;
 
@@ -264,15 +302,25 @@ int main()
 
     // CryptoNote Base58 Test #2
     {
+        std::cout << "CryptoNote Base58 Test #2:" << std::endl;
+
         const auto a = Crypto::random_point();
+
+        const auto b = Crypto::random_point();
 
         serializer_t writer;
 
+        writer.varint(BASE58_PREFIX);
+
         writer.key(a);
 
-        const auto encoded = Crypto::CNBase58::encode_check(writer.vector());
+        writer.key(b);
 
-        const auto [success, decoded] = Crypto::CNBase58::decode_check(encoded);
+        const auto encoded = Crypto::CNBase58::encode_check(writer);
+
+        std::cout << "\tRaw: " << writer.to_string() << std::endl << "\tEncoded: " << encoded << std::endl;
+
+        auto [success, reader] = Crypto::CNBase58::decode_check(encoded);
 
         if (!success)
         {
@@ -281,11 +329,13 @@ int main()
             return 1;
         }
 
-        deserializer_t reader(decoded);
+        const auto prefix = reader.varint<uint64_t>();
 
-        const auto check = reader.key<crypto_point_t>();
+        const auto checka = reader.key<crypto_point_t>();
 
-        if (check != a)
+        const auto checkb = reader.key<crypto_point_t>();
+
+        if (checka != a || checkb != b || prefix != BASE58_PREFIX)
         {
             std::cout << "Crypto::CNBase58[check]: Failed!" << std::endl;
 

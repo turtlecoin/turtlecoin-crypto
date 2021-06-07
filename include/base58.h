@@ -39,7 +39,7 @@ namespace Crypto::Base58
      * @param input
      * @return
      */
-    [[nodiscard]] std::tuple<bool, std::vector<uint8_t>> decode(const std::string &input);
+    [[nodiscard]] std::tuple<bool, deserializer_t> decode(const std::string &input);
 
     /**
      * Decodes the Base58 encoded string into the raw bytes after confirming that
@@ -48,7 +48,7 @@ namespace Crypto::Base58
      * @param input
      * @return
      */
-    [[nodiscard]] std::tuple<bool, std::vector<uint8_t>> decode_check(const std::string &input);
+    [[nodiscard]] std::tuple<bool, deserializer_t> decode_check(const std::string &input);
 
     /**
      * Encodes the raw bytes into a Base58 encoded string
@@ -59,6 +59,22 @@ namespace Crypto::Base58
     [[nodiscard]] std::string encode(std::vector<uint8_t> input);
 
     /**
+     * Encodes the contents of the reader into a Base58 encoded string
+     *
+     * @param reader
+     * @return
+     */
+    [[nodiscard]] std::string encode(const deserializer_t &reader);
+
+    /**
+     * Encodes the contents of the writer into a Base58 encoded string
+     *
+     * @param writer
+     * @return
+     */
+    [[nodiscard]] std::string encode(const serializer_t &writer);
+
+    /**
      * Encodes the raw bytes into a Base58 encoded string including a checksum that
      * allows for ensuring that the raw bytes included inside were not altered
      *
@@ -66,6 +82,24 @@ namespace Crypto::Base58
      * @return
      */
     [[nodiscard]] std::string encode_check(const std::vector<uint8_t> &input);
+
+    /**
+     * Encodes contents of the reader into a Base58 encoded string including a checksum that
+     * allows for ensuring that the raw bytes included inside were not altered
+     *
+     * @param writer
+     * @return
+     */
+    [[nodiscard]] std::string encode_check(const deserializer_t &reader);
+
+    /**
+     * Encodes contents of the writer into a Base58 encoded string including a checksum that
+     * allows for ensuring that the raw bytes included inside were not altered
+     *
+     * @param writer
+     * @return
+     */
+    [[nodiscard]] std::string encode_check(const serializer_t &writer);
 } // namespace Crypto::Base58
 
 #endif // CRYPTO_BASE58_H
