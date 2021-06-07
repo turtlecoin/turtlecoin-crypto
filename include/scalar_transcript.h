@@ -29,6 +29,7 @@
 
 #include "crypto_common.h"
 #include "hashing.h"
+#include "serializer.h"
 
 static const crypto_scalar_t TRANSCRIPT_BASE = {0x53, 0x63, 0x61, 0x6c, 0x61, 0x72, 0x20, 0x54, 0x72, 0x61, 0x6e,
                                                 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x73, 0x20, 0x62, 0x79, 0x20,
@@ -98,17 +99,13 @@ namespace Crypto
          */
         template<typename T> void update(const T &input)
         {
-            struct
-            {
-                crypto_scalar_t seed;
-                uint8_t input[32] = {0};
-            } buf;
+            serializer_t writer;
 
-            buf.seed = state;
+            writer.key(state);
 
-            std::memcpy(buf.input, input.data(), sizeof(buf.input));
+            writer.key(input);
 
-            state = Crypto::hash_to_scalar(&buf, sizeof(buf));
+            state = Crypto::hash_to_scalar(writer.data(), writer.size());
         }
 
         /**
@@ -121,20 +118,15 @@ namespace Crypto
          */
         template<typename T, typename U> void update(const T &input, const U &input2)
         {
-            struct
-            {
-                crypto_scalar_t seed;
-                uint8_t input[32] = {0};
-                uint8_t input2[32] = {0};
-            } buf;
+            serializer_t writer;
 
-            buf.seed = state;
+            writer.key(state);
 
-            std::memcpy(buf.input, input.data(), sizeof(buf.input));
+            writer.key(input);
 
-            std::memcpy(buf.input2, input2.data(), sizeof(buf.input2));
+            writer.key(input2);
 
-            state = Crypto::hash_to_scalar(&buf, sizeof(buf));
+            state = Crypto::hash_to_scalar(writer.data(), writer.size());
         }
 
         /**
@@ -149,23 +141,17 @@ namespace Crypto
          */
         template<typename T, typename U, typename V> void update(const T &input, const U &input2, const V &input3)
         {
-            struct
-            {
-                crypto_scalar_t seed;
-                uint8_t input[32] = {0};
-                uint8_t input2[32] = {0};
-                uint8_t input3[32] = {0};
-            } buf;
+            serializer_t writer;
 
-            buf.seed = state;
+            writer.key(state);
 
-            std::memcpy(buf.input, input.data(), sizeof(buf.input));
+            writer.key(input);
 
-            std::memcpy(buf.input2, input2.data(), sizeof(buf.input2));
+            writer.key(input2);
 
-            std::memcpy(buf.input3, input3.data(), sizeof(buf.input3));
+            writer.key(input3);
 
-            state = Crypto::hash_to_scalar(&buf, sizeof(buf));
+            state = Crypto::hash_to_scalar(writer.data(), writer.size());
         }
 
         /**
@@ -183,59 +169,36 @@ namespace Crypto
         template<typename T, typename U, typename V, typename W>
         void update(const T &input, const U &input2, const V &input3, const W &input4)
         {
-            struct
-            {
-                crypto_scalar_t seed;
-                uint8_t input[32] = {0};
-                uint8_t input2[32] = {0};
-                uint8_t input3[32] = {0};
-                uint8_t input4[32] = {0};
-            } buf;
+            serializer_t writer;
 
-            buf.seed = state;
+            writer.key(state);
 
-            std::memcpy(buf.input, input.data(), sizeof(buf.input));
+            writer.key(input);
 
-            std::memcpy(buf.input2, input2.data(), sizeof(buf.input2));
+            writer.key(input2);
 
-            std::memcpy(buf.input3, input3.data(), sizeof(buf.input3));
+            writer.key(input3);
 
-            std::memcpy(buf.input4, input4.data(), sizeof(buf.input4));
+            writer.key(input4);
 
-            state = Crypto::hash_to_scalar(&buf, sizeof(buf));
+            state = Crypto::hash_to_scalar(writer.data(), writer.size());
         }
 
         /**
          * Updates the transcript with the vector of values provided
          *
+         * @tparam T
          * @param input
          */
-        void update(const std::vector<crypto_scalar_t> &input)
+        template<typename T> void update(const std::vector<T> &input)
         {
-            std::vector<crypto_scalar_t> tmp(1, state.data());
+            serializer_t writer;
 
-            tmp.resize(input.size() + 1);
+            writer.key(state);
 
-            std::copy(input.begin(), input.end(), tmp.begin() + 1);
+            writer.key(input);
 
-            state = Crypto::hash_to_scalar(tmp.data(), tmp.size() * sizeof(crypto_scalar_t));
-        }
-
-        /**
-         * Updates the transcript with the vector of values provided
-         *
-         * @param input
-         */
-        void update(const std::vector<crypto_point_t> &input)
-        {
-            std::vector<crypto_scalar_t> tmp(1, state.data());
-
-            for (const auto &point : input)
-            {
-                tmp.push_back(PointToScalar(point));
-            }
-
-            state = Crypto::hash_to_scalar(tmp.data(), tmp.size() * sizeof(crypto_scalar_t));
+            state = Crypto::hash_to_scalar(writer.data(), writer.size());
         }
 
       private:
