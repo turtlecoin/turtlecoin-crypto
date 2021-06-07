@@ -97,16 +97,7 @@ struct crypto_borromean_signature_t
      */
     void deserialize(deserializer_t &reader)
     {
-        {
-            const auto count = reader.varint<uint64_t>();
-
-            signatures.clear();
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                signatures.push_back(reader.key<crypto_signature_t>());
-            }
-        }
+        signatures = reader.keyV<crypto_signature_t>();
     }
 
     JSON_FROM_FUNC(from_json)
@@ -140,12 +131,7 @@ struct crypto_borromean_signature_t
      */
     void serialize(serializer_t &writer) const
     {
-        writer.varint(signatures.size());
-
-        for (const auto &val : signatures)
-        {
-            writer.key(val);
-        }
+        writer.key(signatures);
     }
 
     /**

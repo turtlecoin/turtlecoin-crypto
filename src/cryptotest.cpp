@@ -48,6 +48,36 @@ const auto ARGON2I_4_1024_1 = crypto_hash_t("debb2a3b51732bff26670753c5dbaedf613
 
 const auto ARGON2ID_4_1024_1 = crypto_hash_t("a6ac954bce48a46bc01a9b16b484ffb745401ae421b1b6f2e22cf474d4cac1c9");
 
+template<typename T> static inline bool test_binary_encoding(const T &value)
+{
+    serializer_t writer;
+
+    value.serialize(writer);
+
+    deserializer_t reader(writer);
+
+    T post_value;
+
+    post_value.deserialize(reader);
+
+    return value.hash() == post_value.hash();
+}
+
+template<typename T> static inline bool test_json_encoding(const T &value)
+{
+    JSON_INIT_BUFFER(buffer, writer);
+
+    value.toJSON(writer);
+
+    JSON_DUMP_BUFFER(buffer, encoded);
+
+    STR_TO_JSON(encoded, json_document);
+
+    T post_value(json_document);
+
+    return value.hash() == post_value.hash();
+}
+
 int main()
 {
     std::cout << std::endl << std::endl << "Cryptographic Primitive Unit Tests" << std::endl << std::endl;
@@ -538,6 +568,28 @@ int main()
         }
 
         std::cout << "Borromean::check_ring_signature: Passed!" << std::endl;
+
+        if (!test_binary_encoding(signature))
+        {
+            std::cout << "Borromean binary encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Borromean binary encoding check: Passed!" << std::endl;
+        }
+
+        if (!test_json_encoding(signature))
+        {
+            std::cout << "Borromean JSON encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Borromean JSON encoding check: Passed!" << std::endl;
+        }
     }
 
     // CLSAG
@@ -572,6 +624,28 @@ int main()
         }
 
         std::cout << "CLSAG::check_ring_signature: Passed!" << std::endl;
+
+        if (!test_binary_encoding(signature))
+        {
+            std::cout << "CLSAG binary encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "CLSAG binary encoding check: Passed!" << std::endl;
+        }
+
+        if (!test_json_encoding(signature))
+        {
+            std::cout << "CLSAG JSON encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "CLSAG JSON encoding check: Passed!" << std::endl;
+        }
     }
 
     // CLSAG w/ Commitments
@@ -624,6 +698,28 @@ int main()
         }
 
         std::cout << "CLSAG::check_ring_signature: Passed!" << std::endl;
+
+        if (!test_binary_encoding(signature))
+        {
+            std::cout << "CLSAG binary encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "CLSAG binary encoding check: Passed!" << std::endl;
+        }
+
+        if (!test_json_encoding(signature))
+        {
+            std::cout << "CLSAG JSON encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "CLSAG JSON encoding check: Passed!" << std::endl;
+        }
     }
 
     // Triptych
@@ -676,6 +772,28 @@ int main()
         }
 
         std::cout << "Triptych::check_ring_signature: Passed!" << std::endl;
+
+        if (!test_binary_encoding(signature))
+        {
+            std::cout << "Triptych binary encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Triptych binary encoding check: Passed!" << std::endl;
+        }
+
+        if (!test_json_encoding(signature))
+        {
+            std::cout << "Triptych JSON encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Triptych JSON encoding check: Passed!" << std::endl;
+        }
     }
 
     // RingCT Basics
@@ -815,6 +933,28 @@ int main()
         }
 
         std::cout << "Crypto::RangeProofs::Bulletproofs[3]: Passed!" << std::endl;
+
+        if (!test_binary_encoding(proof))
+        {
+            std::cout << "Bulletproofs binary encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Bulletproofs binary encoding check: Passed!" << std::endl;
+        }
+
+        if (!test_json_encoding(proof))
+        {
+            std::cout << "Bulletproofs JSON encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Bulletproofs JSON encoding check: Passed!" << std::endl;
+        }
     }
 
     // Bulletproofs+
@@ -859,6 +999,28 @@ int main()
         }
 
         std::cout << "Crypto::RangeProofs::BulletproofsPlus[3]: Passed!" << std::endl;
+
+        if (!test_binary_encoding(proof))
+        {
+            std::cout << "Bulletproofs+ binary encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Bulletproofs+ binary encoding check: Passed!" << std::endl;
+        }
+
+        if (!test_json_encoding(proof))
+        {
+            std::cout << "Bulletproofs+ JSON encoding check: Failed!" << std::endl;
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Bulletproofs+ JSON encoding check: Passed!" << std::endl;
+        }
     }
 
     // Benchmarks
@@ -868,8 +1030,10 @@ int main()
         benchmark_header();
 
         const auto [point, scalar] = Crypto::generate_keys();
+
         const auto ds = Crypto::derivation_to_scalar(point, 64);
-        const auto key_image = Crypto::generate_key_image(point, scalar);
+
+        key_image = Crypto::generate_key_image(point, scalar);
 
         benchmark([]() { Crypto::Hashing::sha3(INPUT_DATA); }, "Crypto::Hashing::sha3", PERFORMANCE_ITERATIONS_LONG);
 
@@ -1016,7 +1180,7 @@ int main()
                 100);
 
             benchmark(
-                [&public_keys, &image, &signature, &public_commitments, &ps_commitments = ps_commitments]() {
+                [&public_keys, &image, &signature, &public_commitments]() {
                     Crypto::RingSignature::CLSAG::check_ring_signature(
                         SHA3_HASH, image, public_keys, signature, public_commitments);
                 },
@@ -1069,7 +1233,7 @@ int main()
                 100);
 
             benchmark(
-                [&public_keys, &image, &signature, &public_commitments, &ps_commitments = ps_commitments]() {
+                [&public_keys, &image, &signature, &public_commitments]() {
                     Crypto::RingSignature::Triptych::check_ring_signature(
                         SHA3_HASH, image, public_keys, signature, public_commitments);
                 },

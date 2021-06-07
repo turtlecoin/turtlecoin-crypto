@@ -145,27 +145,9 @@ struct crypto_bulletproof_t
 
         mu = reader.key<crypto_scalar_t>();
 
-        {
-            const auto count = reader.varint<uint64_t>();
+        L = reader.keyV<crypto_point_t>();
 
-            L.clear();
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                L.push_back(reader.key<crypto_point_t>());
-            }
-        }
-
-        {
-            const auto count = reader.varint<uint64_t>();
-
-            R.clear();
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                R.push_back(reader.key<crypto_point_t>());
-            }
-        }
+        R = reader.keyV<crypto_point_t>();
 
         g = reader.key<crypto_scalar_t>();
 
@@ -262,19 +244,9 @@ struct crypto_bulletproof_t
 
         writer.key(mu);
 
-        writer.varint(L.size());
+        writer.key(L);
 
-        for (const auto &val : L)
-        {
-            writer.key(val);
-        }
-
-        writer.varint(R.size());
-
-        for (const auto &val : R)
-        {
-            writer.key(val);
-        }
+        writer.key(R);
 
         writer.key(g);
 

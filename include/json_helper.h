@@ -39,12 +39,16 @@
 /**
  * JSON Helpers for repetitive code
  */
-#define JSON_OBJECT_OR_THROW() \
-    if (!j.IsObject())         \
-    throw std::invalid_argument("JSON value is of the wrong type")
-#define JSON_MEMBER_OR_THROW(value)         \
-    if (!has_member(j, std::string(value))) \
-    throw std::invalid_argument(std::string(value) + " not found in JSON object")
+#define JSON_OBJECT_OR_THROW()                                          \
+    if (!j.IsObject())                                                  \
+    {                                                                   \
+        throw std::invalid_argument("JSON value is of the wrong type"); \
+    }
+#define JSON_MEMBER_OR_THROW(value)                                                    \
+    if (!has_member(j, std::string(value)))                                            \
+    {                                                                                  \
+        throw std::invalid_argument(std::string(value) + " not found in JSON object"); \
+    }
 #define JSON_IF_MEMBER(value) if (has_member(j, std::string(value)))
 #define JSON_OBJECT_CONSTRUCTORS(objtype, funccall)       \
     objtype(const JSONValue &j)                           \
@@ -63,11 +67,23 @@
 #define JSON_INIT()                 \
     rapidjson::StringBuffer buffer; \
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer)
+#define JSON_INIT_BUFFER(buffer, writer) \
+    rapidjson::StringBuffer buffer;      \
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer)
 #define JSON_DUMP(str) const std::string str = buffer.GetString()
-#define JSON_PARSE(json)                          \
-    rapidjson::Document body;                     \
-    if (body.Parse(json.c_str()).HasParseError()) \
-    throw std::invalid_argument("Could not parse JSON")
+#define JSON_DUMP_BUFFER(buffer, str) const std::string str = (buffer).GetString()
+#define JSON_PARSE(json)                                     \
+    rapidjson::Document body;                                \
+    if (body.Parse((json).c_str()).HasParseError())          \
+    {                                                        \
+        throw std::invalid_argument("Could not parse JSON"); \
+    }
+#define STR_TO_JSON(str, body)                               \
+    rapidjson::Document body;                                \
+    if ((body).Parse((str).c_str()).HasParseError())         \
+    {                                                        \
+        throw std::invalid_argument("Could not parse JSON"); \
+    }
 
 typedef rapidjson::GenericObject<
     true,

@@ -48,7 +48,7 @@ namespace Crypto::RingCT
         const auto output_total = crypto_point_vector_t(output_commitments).sum();
 
         // construct the fee commitment
-        const auto fee_commitment = generate_pedersen_commitment(ZERO, transaction_fee);
+        const auto fee_commitment = generate_pedersen_commitment(Crypto::ZERO, transaction_fee);
 
         /**
          * Check if the sum of the pseudo output commitments is equal to the

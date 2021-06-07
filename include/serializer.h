@@ -282,6 +282,41 @@ struct serializer_t
     }
 
     /**
+     * Encodes the vector of values into the vector
+     * @tparam T
+     * @param values
+     */
+    template<typename T> void key(const std::vector<T> &values)
+    {
+        varint(values.size());
+
+        for (const auto &value : values)
+        {
+            key(value);
+        }
+    }
+
+    /**
+     * Encodes the nested vector of values into the vector
+     * @tparam T
+     * @param values
+     */
+    template<typename T> void key(const std::vector<std::vector<T>> &values)
+    {
+        varint(values.size());
+
+        for (const auto &level1 : values)
+        {
+            varint(level1.size());
+
+            for (const auto &value : level1)
+            {
+                key(value);
+            }
+        }
+    }
+
+    /**
      * Clears the underlying byte vector
      */
     void reset()
@@ -387,6 +422,21 @@ struct serializer_t
         const auto bytes = SerializerTools::encode_varint(value);
 
         extend(bytes);
+    }
+
+    /**
+     * Encodes the vector of values into the vector as a varint
+     * @tparam T
+     * @param values
+     */
+    template<typename T> void varint(const std::vector<T> &values)
+    {
+        varint(values.size());
+
+        for (const auto &value : values)
+        {
+            varint(value);
+        }
     }
 
     /**
@@ -501,6 +551,71 @@ struct deserializer_t
         T result;
 
         result = bytes(result.size(), peek);
+
+        return result;
+    }
+
+    /**
+     * Decodes a vector of values from the byte vector
+     * @tparam T
+     * @param peek
+     * @return
+     */
+    template<typename T> std::vector<T> keyV(bool peek = false)
+    {
+        const auto start = offset;
+
+        const auto count = varint<uint64_t>();
+
+        std::vector<T> result;
+
+        const T temp;
+
+        for (uint64_t i = 0; i < count; ++i)
+        {
+            result.push_back(bytes(temp.size()));
+        }
+
+        if (peek)
+        {
+            offset = start;
+        }
+
+        return result;
+    }
+
+    /**
+     * Decodes a nested vector of values from the byte vector
+     * @tparam T
+     * @param peek
+     * @return
+     */
+    template<typename T> std::vector<std::vector<T>> keyVV(bool peek = false)
+    {
+        const auto start = offset;
+
+        const auto level1_count = varint<uint64_t>();
+
+        std::vector<std::vector<T>> result;
+
+        for (uint64_t i = 0; i < level1_count; ++i)
+        {
+            const auto count = varint<uint64_t>();
+
+            std::vector<T> temp;
+
+            for (uint64_t j = 0; j < count; ++j)
+            {
+                temp.push_back(key<T>());
+            }
+
+            result.push_back(temp);
+        }
+
+        if (peek)
+        {
+            offset = start;
+        }
 
         return result;
     }
@@ -664,6 +779,35 @@ struct deserializer_t
         if (!peek)
         {
             offset += length;
+        }
+
+        return result;
+    }
+
+    /**
+     * Decodes a vector of values from the byte vector
+     * @tparam T
+     * @param peek
+     * @return
+     */
+    template<typename T> std::vector<T> varintV(bool peek = false)
+    {
+        const auto start = offset;
+
+        const auto count = varint<uint64_t>();
+
+        std::vector<T> result;
+
+        for (uint64_t i = 0; i < count; ++i)
+        {
+            const auto temp = varint<T>();
+
+            result.push_back(temp);
+        }
+
+        if (peek)
+        {
+            offset = start;
         }
 
         return result;

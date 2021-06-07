@@ -128,14 +128,7 @@ struct crypto_clsag_signature_t
      */
     void deserialize(deserializer_t &reader)
     {
-        const auto scalar_count = reader.varint<uint64_t>();
-
-        scalars.clear();
-
-        for (size_t i = 0; i < scalar_count; ++i)
-        {
-            scalars.push_back(reader.key<crypto_scalar_t>());
-        }
+        scalars = reader.keyV<crypto_scalar_t>();
 
         challenge = reader.key<crypto_scalar_t>();
 
@@ -188,12 +181,7 @@ struct crypto_clsag_signature_t
      */
     void serialize(serializer_t &writer) const
     {
-        writer.varint(scalars.size());
-
-        for (const auto &val : scalars)
-        {
-            writer.key(val);
-        }
+        writer.key(scalars);
 
         writer.key(challenge);
 

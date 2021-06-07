@@ -180,45 +180,11 @@ struct crypto_triptych_signature_t
 
         D = reader.key<crypto_point_t>();
 
-        {
-            const auto count = reader.varint<uint64_t>();
+        X = reader.keyV<crypto_point_t>();
 
-            X.clear();
+        Y = reader.keyV<crypto_point_t>();
 
-            for (size_t i = 0; i < count; ++i)
-            {
-                X.push_back(reader.key<crypto_point_t>());
-            }
-        }
-
-        {
-            const auto count = reader.varint<uint64_t>();
-
-            Y.clear();
-
-            for (size_t i = 0; i < count; ++i)
-            {
-                Y.push_back(reader.key<crypto_point_t>());
-            }
-        }
-
-        {
-            const auto level1_count = reader.varint<uint64_t>();
-
-            f.clear();
-
-            f.resize(level1_count);
-
-            for (size_t i = 0; i < level1_count; ++i)
-            {
-                const auto count = reader.varint<uint64_t>();
-
-                for (size_t j = 0; j < count; ++j)
-                {
-                    f[i].push_back(reader.key<crypto_scalar_t>());
-                }
-            }
-        }
+        f = reader.keyVV<crypto_scalar_t>();
 
         zA = reader.key<crypto_scalar_t>();
 
@@ -331,31 +297,11 @@ struct crypto_triptych_signature_t
 
         writer.key(D);
 
-        writer.varint(X.size());
+        writer.key(X);
 
-        for (const auto &val : X)
-        {
-            writer.key(val);
-        }
+        writer.key(Y);
 
-        writer.varint(Y.size());
-
-        for (const auto &val : Y)
-        {
-            writer.key(val);
-        }
-
-        writer.varint(f.size());
-
-        for (const auto &level1 : f)
-        {
-            writer.varint(level1.size());
-
-            for (const auto &val : level1)
-            {
-                writer.key(val);
-            }
-        }
+        writer.key(f);
 
         writer.key(zA);
 
