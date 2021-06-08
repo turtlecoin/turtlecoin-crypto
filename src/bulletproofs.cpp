@@ -447,15 +447,6 @@ namespace Crypto::RangeProofs::Bulletproofs
                 return false;
             }
 
-            // check for commitment torsion
-            for (const auto &commitment : commitments[ii])
-            {
-                if (!Crypto::check_torsion(commitment))
-                {
-                    return false;
-                }
-            }
-
             const auto M = size_t(powers_of_two[proof.L.size()].to_uint64_t()) / N;
 
             const auto MN = M * N;
@@ -531,7 +522,7 @@ namespace Crypto::RangeProofs::Bulletproofs
             {
                 scalars.append(z_powers[j + 2] * weight_y);
 
-                points.append(commitments[ii][j]);
+                points.append(Crypto::EIGHT * commitments[ii][j]);
             }
 
             scalars.append(x * weight_y);

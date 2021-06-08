@@ -81,7 +81,7 @@ namespace Crypto::RingCT
         SCALAR_OR_THROW(blinding_factor);
 
         // r = (amount * H) + (f * G)
-        return crypto_scalar_t(amount).dbl_mult(Crypto::H, blinding_factor, Crypto::G);
+        return Crypto::INV_EIGHT * crypto_scalar_t(amount).dbl_mult(Crypto::H, blinding_factor, Crypto::G);
     }
 
     std::tuple<std::vector<crypto_blinding_factor_t>, std::vector<crypto_pedersen_commitment_t>>

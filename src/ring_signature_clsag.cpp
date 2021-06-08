@@ -70,18 +70,6 @@ namespace Crypto::RingSignature::CLSAG
             return false;
         }
 
-        // check for commitment torsion
-        if (use_commitments)
-        {
-            for (const auto &commitment : commitments)
-            {
-                if (!Crypto::check_torsion(commitment))
-                {
-                    return false;
-                }
-            }
-        }
-
         const auto &h0 = signature.challenge;
 
         // the computational hash vector is only as big as our ring (not including the check hash)
@@ -188,7 +176,7 @@ namespace Crypto::RingSignature::CLSAG
                  * to a "zero" amount difference between the two commitments
                  */
                 // C = (C[idx] - PS) mod l
-                const auto C = commitments[idx] - signature.pseudo_commitment;
+                const auto C = Crypto::EIGHT * (commitments[idx] - signature.pseudo_commitment);
 
                 // L += [r2 * (C[idx] - PS)] mod l
                 L += (r2 * C);
@@ -352,7 +340,7 @@ namespace Crypto::RingSignature::CLSAG
 
                 const auto public_commitment = (input_blinding_factor - pseudo_blinding_factor) * Crypto::G;
 
-                const auto derived_commitment = public_commitments[i] - pseudo_commitment;
+                const auto derived_commitment = Crypto::EIGHT * (public_commitments[i] - pseudo_commitment);
 
                 if (public_ephemeral == public_keys[i] && public_commitment == derived_commitment)
                 {
@@ -460,7 +448,7 @@ namespace Crypto::RingSignature::CLSAG
              * two and hence we are committing (in a non-revealing way) that the pseudo output
              * commitment is equivalent to ONE of the input commitments in the set
              */
-            const auto commitment = public_commitments[real_output_index] - pseudo_commitment;
+            const auto commitment = Crypto::EIGHT * (public_commitments[real_output_index] - pseudo_commitment);
 
             /**
              * Quick sanity check to make sure that the computed z value (blinding scalar) delta
@@ -603,7 +591,7 @@ namespace Crypto::RingSignature::CLSAG
                      * to a "zero" amount difference between the two commitments
                      */
                     // C = (C[idx] - PS) mod l
-                    const auto C = public_commitments[idx] - pseudo_commitment;
+                    const auto C = Crypto::EIGHT * (public_commitments[idx] - pseudo_commitment);
 
                     // L += (r2 * C[idx]) mod l
                     L += (r2 * C);

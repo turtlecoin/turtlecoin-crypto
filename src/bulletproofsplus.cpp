@@ -443,15 +443,6 @@ namespace Crypto::RangeProofs::BulletproofsPlus
                 return false;
             }
 
-            // check for commitment torsion
-            for (const auto &commitment : commitments[ii])
-            {
-                if (!Crypto::check_torsion(commitment))
-                {
-                    return false;
-                }
-            }
-
             crypto_scalar_transcript_t tr(BULLETPROOFS_PLUS_DOMAIN_0);
 
             const auto M = size_t(powers_of_two[proof.L.size()].to_uint64_t()) / N;
@@ -575,7 +566,7 @@ namespace Crypto::RangeProofs::BulletproofsPlus
             {
                 scalars.append(weight * (xsquare_negated * z_powers[2 * (j + 1)] * ypow));
 
-                points.append(commitments[ii][j]);
+                points.append(Crypto::EIGHT * commitments[ii][j]);
             }
 
             H_scalar += weight

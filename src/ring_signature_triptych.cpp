@@ -111,15 +111,6 @@ namespace Crypto::RingSignature::Triptych
             return false;
         }
 
-        // check for commitment torsion
-        for (const auto &commitment : commitments)
-        {
-            if (!Crypto::check_torsion(commitment))
-            {
-                return false;
-            }
-        }
-
         if (!signature.check_construction(m, n))
         {
             return false;
@@ -228,7 +219,7 @@ namespace Crypto::RingSignature::Triptych
                 t *= f[gray_update[0]][gray_update[1]].invert() * f[gray_update[0]][gray_update[2]];
             }
 
-            RX += t * (public_keys[k] + (mu * (commitments[k] - signature.pseudo_commitment)));
+            RX += t * (public_keys[k] + (mu * (Crypto::EIGHT * (commitments[k] - signature.pseudo_commitment))));
 
             RY += t * (Crypto::U + (mu * signature.commitment_image));
         }
@@ -359,7 +350,7 @@ namespace Crypto::RingSignature::Triptych
 
         for (size_t i = 0; i < ring_size; i++)
         {
-            const auto derived_commitment = input_commitments[i] - pseudo_commitment;
+            const auto derived_commitment = Crypto::EIGHT * (input_commitments[i] - pseudo_commitment);
 
             if (public_ephemeral == public_keys[i] && public_commitment == derived_commitment)
             {
@@ -442,7 +433,7 @@ namespace Crypto::RingSignature::Triptych
          * two and hence we are committing (in a non-revealing way) that the pseudo output
          * commitment is equivalent to ONE of the input commitments in the set
          */
-        const auto commitment = input_commitments[real_output_index] - pseudo_commitment;
+        const auto commitment = Crypto::EIGHT * (input_commitments[real_output_index] - pseudo_commitment);
 
         const auto public_commitment = blinding_factor * Crypto::G;
 
@@ -585,7 +576,8 @@ namespace Crypto::RingSignature::Triptych
         {
             for (size_t i = 0; i < N; ++i)
             {
-                X[j] += p[i][j] * (public_keys[i] + (mu * (input_commitments[i] - pseudo_commitment)));
+                X[j] +=
+                    p[i][j] * (public_keys[i] + (mu * (Crypto::EIGHT * (input_commitments[i] - pseudo_commitment))));
 
                 Y[j] += p[i][j] * Crypto::U;
             }

@@ -106,17 +106,9 @@ struct crypto_clsag_signature_t
             }
         }
 
-        if (use_commitments)
+        if (use_commitments && !commitment_image.check_subgroup())
         {
-            if (!commitment_image.check_subgroup())
-            {
-                return false;
-            }
-
-            if (!Crypto::check_torsion(pseudo_commitment))
-            {
-                return false;
-            }
+            return false;
         }
 
         return true;

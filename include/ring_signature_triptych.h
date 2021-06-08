@@ -158,11 +158,6 @@ struct crypto_triptych_signature_t
             return false;
         }
 
-        if (!Crypto::check_torsion(pseudo_commitment))
-        {
-            return false;
-        }
-
         return true;
     }
 
