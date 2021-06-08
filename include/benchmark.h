@@ -41,13 +41,15 @@
 
 /**
  * Prints the benchmark header for a "table" like setup
+ *
+ * @param prefix_width
+ * @param column_width
  */
-void benchmark_header()
+void benchmark_header(size_t prefix_width = BENCHMARK_PREFIX_WIDTH, size_t column_width = BENCHMARK_COLUMN_WIDTH)
 {
-    std::cout << std::setw(BENCHMARK_PREFIX_WIDTH) << "BENCHMARK TESTS"
-              << ": " << std::setw(10) << " " << std::setw(BENCHMARK_COLUMN_WIDTH) << "Average"
-              << std::setw(BENCHMARK_COLUMN_WIDTH) << "Minimum" << std::setw(BENCHMARK_COLUMN_WIDTH) << "Maximum"
-              << std::endl;
+    std::cout << std::setw(prefix_width) << "BENCHMARK TESTS"
+              << ": " << std::setw(10) << " " << std::setw(column_width) << "Average" << std::setw(column_width)
+              << "Minimum" << std::setw(column_width) << "Maximum" << std::endl;
 }
 
 /**
@@ -57,14 +59,22 @@ void benchmark_header()
  * @param function
  * @param functionName
  * @param iterations
+ * @param prefix_width
+ * @param column_width
+ * @param precision
  */
 template<typename T>
-void benchmark(T &&function, const std::string &functionName = "", const uint64_t iterations = PERFORMANCE_ITERATIONS)
+void benchmark(
+    T &&function,
+    const std::string &functionName = "",
+    const uint64_t iterations = PERFORMANCE_ITERATIONS,
+    size_t prefix_width = BENCHMARK_PREFIX_WIDTH,
+    size_t column_width = BENCHMARK_COLUMN_WIDTH,
+    size_t precision = BENCHMARK_PRECISION)
 {
     if (!functionName.empty())
     {
-        std::cout << std::setw(BENCHMARK_PREFIX_WIDTH) << functionName.substr(0, BENCHMARK_PREFIX_WIDTH) << ": "
-                  << std::flush;
+        std::cout << std::setw(prefix_width) << functionName.substr(0, prefix_width) << ": " << std::flush;
     }
 
     const auto tenth = (iterations >= 10) ? iterations / 10 : 1;
@@ -110,11 +120,9 @@ void benchmark(T &&function, const std::string &functionName = "", const uint64_
 
     const auto avg = elapsed_time / iterations;
 
-    std::cout << std::fixed << std::setprecision(BENCHMARK_PRECISION) << std::setw(BENCHMARK_COLUMN_WIDTH)
-              << avg / 1000.0 << std::fixed << std::setprecision(BENCHMARK_PRECISION)
-              << std::setw(BENCHMARK_COLUMN_WIDTH) << min / 1000.0 << std::fixed
-              << std::setprecision(BENCHMARK_PRECISION) << std::setw(BENCHMARK_COLUMN_WIDTH) << max / 1000.0 << " ms"
-              << std::endl;
+    std::cout << std::fixed << std::setprecision(precision) << std::setw(column_width) << avg / 1000.0 << std::fixed
+              << std::setprecision(precision) << std::setw(column_width) << min / 1000.0 << std::fixed
+              << std::setprecision(precision) << std::setw(column_width) << max / 1000.0 << " ms" << std::endl;
 }
 
 #endif // CRYPTO_BENCHMARK_H
