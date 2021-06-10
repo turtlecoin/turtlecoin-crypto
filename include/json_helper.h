@@ -49,21 +49,22 @@
     {                                                                                  \
         throw std::invalid_argument(std::string(value) + " not found in JSON object"); \
     }
-#define JSON_IF_MEMBER(value) if (has_member(j, std::string(value)))
+#define JSON_IF_MEMBER(field) if (has_member(j, #field))
 #define JSON_OBJECT_CONSTRUCTORS(objtype, funccall)       \
     objtype(const JSONValue &j)                           \
     {                                                     \
-        JSON_OBJECT_OR_THROW();                           \
+        JSON_OBJECT_OR_THROW()                            \
         funccall(j);                                      \
     }                                                     \
                                                           \
     objtype(const JSONValue &val, const std::string &key) \
     {                                                     \
         const auto &j = get_json_value(val, key);         \
-        JSON_OBJECT_OR_THROW();                           \
+        JSON_OBJECT_OR_THROW()                            \
         funccall(j);                                      \
     }
 #define JSON_FROM_FUNC(name) void name(const JSONValue &j)
+#define JSON_TO_FUNC(name) void name(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
 #define JSON_INIT()                 \
     rapidjson::StringBuffer buffer; \
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer)
@@ -84,6 +85,92 @@
     {                                                        \
         throw std::invalid_argument("Could not parse JSON"); \
     }
+#define LOAD_KEY_FROM_JSON(field)             \
+    {                                         \
+        JSON_MEMBER_OR_THROW(#field)          \
+                                              \
+        (field) = get_json_string(j, #field); \
+    }
+#define LOAD_KEYV_FROM_JSON(field)                         \
+    {                                                      \
+        JSON_MEMBER_OR_THROW(#field)                       \
+        (field).clear();                                   \
+        for (const auto &elem : get_json_array(j, #field)) \
+        {                                                  \
+            (field).emplace_back(get_json_string(elem));   \
+        }                                                  \
+    }
+#define LOAD_KEYVV_FROM_JSON(field)                          \
+    {                                                        \
+        JSON_MEMBER_OR_THROW(#field)                         \
+        (field).clear();                                     \
+        for (const auto &level1 : get_json_array(j, #field)) \
+        {                                                    \
+            (field).resize((field).size() + 1);              \
+            auto &inner = (field).back();                    \
+            for (const auto &elem : get_json_array(level1))  \
+            {                                                \
+                inner.emplace_back(get_json_string(elem));   \
+            }                                                \
+        }                                                    \
+    }
+#define LOAD_U64_FROM_JSON(field)               \
+    {                                           \
+        JSON_MEMBER_OR_THROW(#field);           \
+        (field) = get_json_uint64_t(j, #field); \
+    }
+#define LOAD_U32_FROM_JSON(field)               \
+    {                                           \
+        JSON_MEMBER_OR_THROW(#field);           \
+        (field) = get_json_uint32_t(j, #field); \
+    }
+#define KEY_TO_JSON(field)      \
+    {                           \
+        writer.Key(#field);     \
+        (field).toJSON(writer); \
+    }
+#define KEYV_TO_JSON(field)                 \
+    {                                       \
+        writer.Key(#field);                 \
+        writer.StartArray();                \
+        {                                   \
+            for (const auto &val : (field)) \
+            {                               \
+                val.toJSON(writer);         \
+            }                               \
+        }                                   \
+        writer.EndArray();                  \
+    }
+#define KEYVV_TO_JSON(field)                       \
+    {                                              \
+        writer.Key(#field);                        \
+        writer.StartArray();                       \
+        {                                          \
+            for (const auto &level1 : (field))     \
+            {                                      \
+                writer.StartArray();               \
+                {                                  \
+                    for (const auto &val : level1) \
+                    {                              \
+                        val.toJSON(writer);        \
+                    }                              \
+                }                                  \
+                writer.EndArray();                 \
+            }                                      \
+        }                                          \
+        writer.EndArray();                         \
+    }
+#define U64_TO_JSON(field)    \
+    {                         \
+        writer.Key(#field);   \
+        writer.Uint64(field); \
+    }
+#define U32_TO_JSON(field)  \
+    {                       \
+        writer.Key(#field); \
+        writer.Uint(field); \
+    }
+
 
 typedef rapidjson::GenericObject<
     true,
