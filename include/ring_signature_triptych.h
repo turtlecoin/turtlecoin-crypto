@@ -34,7 +34,7 @@
 
 #include <utility>
 
-struct crypto_triptych_signature_t
+struct crypto_triptych_signature_t : ISerializable
 {
     crypto_triptych_signature_t() {}
 
@@ -66,7 +66,7 @@ struct crypto_triptych_signature_t
     {
     }
 
-    JSON_OBJECT_CONSTRUCTORS(crypto_triptych_signature_t, from_json)
+    JSON_OBJECT_CONSTRUCTORS(crypto_triptych_signature_t, fromJSON)
 
     crypto_triptych_signature_t(const std::string &input)
     {
@@ -165,7 +165,7 @@ struct crypto_triptych_signature_t
      * Deserializes the struct from a byte array
      * @param reader
      */
-    void deserialize(deserializer_t &reader)
+    void deserialize(deserializer_t &reader) override
     {
         A = reader.key<crypto_point_t>();
 
@@ -192,79 +192,33 @@ struct crypto_triptych_signature_t
         pseudo_commitment = reader.key<crypto_pedersen_commitment_t>();
     }
 
-    JSON_FROM_FUNC(from_json)
+    JSON_FROM_FUNC(fromJSON) override
     {
-        JSON_OBJECT_OR_THROW();
+        JSON_OBJECT_OR_THROW()
 
-        JSON_MEMBER_OR_THROW("A");
+        LOAD_KEY_FROM_JSON(A)
 
-        A = get_json_string(j, "A");
+        LOAD_KEY_FROM_JSON(B)
 
-        JSON_MEMBER_OR_THROW("B");
+        LOAD_KEY_FROM_JSON(C)
 
-        B = get_json_string(j, "B");
+        LOAD_KEY_FROM_JSON(D)
 
-        JSON_MEMBER_OR_THROW("C");
+        LOAD_KEYV_FROM_JSON(X)
 
-        C = get_json_string(j, "C");
+        LOAD_KEYV_FROM_JSON(Y)
 
-        JSON_MEMBER_OR_THROW("D");
+        LOAD_KEYVV_FROM_JSON(f)
 
-        D = get_json_string(j, "D");
+        LOAD_KEY_FROM_JSON(zA)
 
-        JSON_MEMBER_OR_THROW("X");
+        LOAD_KEY_FROM_JSON(zC)
 
-        X.clear();
+        LOAD_KEY_FROM_JSON(z)
 
-        for (const auto &elem : get_json_array(j, "X"))
-        {
-            X.emplace_back(get_json_string(elem));
-        }
+        LOAD_KEY_FROM_JSON(commitment_image)
 
-        JSON_MEMBER_OR_THROW("Y");
-
-        Y.clear();
-
-        for (const auto &elem : get_json_array(j, "Y"))
-        {
-            Y.emplace_back(get_json_string(elem));
-        }
-
-        JSON_MEMBER_OR_THROW("f");
-
-        f.clear();
-
-        for (const auto &level1 : get_json_array(j, "f"))
-        {
-            f.resize(f.size() + 1);
-
-            auto &f1 = f.back();
-
-            for (const auto &elem : get_json_array(level1))
-            {
-                f1.emplace_back(get_json_string(elem));
-            }
-        }
-
-        JSON_MEMBER_OR_THROW("zA");
-
-        zA = get_json_string(j, "zA");
-
-        JSON_MEMBER_OR_THROW("zC");
-
-        zC = get_json_string(j, "zC");
-
-        JSON_MEMBER_OR_THROW("z");
-
-        z = get_json_string(j, "z");
-
-        JSON_MEMBER_OR_THROW("commitment_image");
-
-        commitment_image = get_json_string(j, "commitment_image");
-
-        JSON_MEMBER_OR_THROW("pseudo_commitment");
-
-        pseudo_commitment = get_json_string(j, "pseudo_commitment");
+        LOAD_KEY_FROM_JSON(pseudo_commitment)
     }
 
     /**
@@ -282,7 +236,7 @@ struct crypto_triptych_signature_t
      * Serializes the struct to a byte array
      * @return
      */
-    void serialize(serializer_t &writer) const
+    void serialize(serializer_t &writer) const override
     {
         writer.key(A);
 
@@ -313,7 +267,7 @@ struct crypto_triptych_signature_t
      * Serializes the struct to a byte array
      * @return
      */
-    [[nodiscard]] std::vector<uint8_t> serialize() const
+    [[nodiscard]] std::vector<uint8_t> serialize() const override
     {
         serializer_t writer;
 
@@ -326,7 +280,7 @@ struct crypto_triptych_signature_t
      * Returns the serialized byte size
      * @return
      */
-    [[nodiscard]] size_t size() const
+    [[nodiscard]] size_t size() const override
     {
         return serialize().size();
     }
@@ -335,73 +289,33 @@ struct crypto_triptych_signature_t
      * Writes the structure as JSON to the provided writer
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    JSON_TO_FUNC(toJSON) override
     {
         writer.StartObject();
         {
-            writer.Key("A");
-            A.toJSON(writer);
+            KEY_TO_JSON(A);
 
-            writer.Key("B");
-            B.toJSON(writer);
+            KEY_TO_JSON(B);
 
-            writer.Key("C");
-            C.toJSON(writer);
+            KEY_TO_JSON(C);
 
-            writer.Key("D");
-            D.toJSON(writer);
+            KEY_TO_JSON(D);
 
-            writer.Key("X");
-            writer.StartArray();
-            {
-                for (const auto &val : X)
-                {
-                    val.toJSON(writer);
-                }
-            }
-            writer.EndArray();
+            KEYV_TO_JSON(X);
 
-            writer.Key("Y");
-            writer.StartArray();
-            {
-                for (const auto &val : Y)
-                {
-                    val.toJSON(writer);
-                }
-            }
-            writer.EndArray();
+            KEYV_TO_JSON(Y);
 
-            writer.Key("f");
-            writer.StartArray();
-            {
-                for (const auto &level1 : f)
-                {
-                    writer.StartArray();
-                    {
-                        for (const auto &val : level1)
-                        {
-                            val.toJSON(writer);
-                        }
-                    }
-                    writer.EndArray();
-                }
-            }
-            writer.EndArray();
+            KEYVV_TO_JSON(f);
 
-            writer.Key("zA");
-            zA.toJSON(writer);
+            KEY_TO_JSON(zA);
 
-            writer.Key("zC");
-            zC.toJSON(writer);
+            KEY_TO_JSON(zC);
 
-            writer.Key("z");
-            z.toJSON(writer);
+            KEY_TO_JSON(z);
 
-            writer.Key("commitment_image");
-            commitment_image.toJSON(writer);
+            KEY_TO_JSON(commitment_image);
 
-            writer.Key("pseudo_commitment");
-            pseudo_commitment.toJSON(writer);
+            KEY_TO_JSON(pseudo_commitment);
         }
         writer.EndObject();
     }
@@ -410,7 +324,7 @@ struct crypto_triptych_signature_t
      * Returns the hex encoded serialized byte array
      * @return
      */
-    [[nodiscard]] std::string to_string() const
+    [[nodiscard]] std::string to_string() const override
     {
         const auto bytes = serialize();
 

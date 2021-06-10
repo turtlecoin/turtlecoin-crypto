@@ -30,13 +30,13 @@
 #include "crypto_common.h"
 #include "hashing.h"
 
-struct crypto_borromean_signature_t
+struct crypto_borromean_signature_t : ISerializable
 {
     crypto_borromean_signature_t() {}
 
     crypto_borromean_signature_t(std::vector<crypto_signature_t> signatures): signatures(std::move(signatures)) {}
 
-    JSON_OBJECT_CONSTRUCTORS(crypto_borromean_signature_t, from_json);
+    JSON_OBJECT_CONSTRUCTORS(crypto_borromean_signature_t, fromJSON);
 
     crypto_borromean_signature_t(const std::string &input)
     {
@@ -95,23 +95,16 @@ struct crypto_borromean_signature_t
      * Deserializes the struct from a byte array
      * @param reader
      */
-    void deserialize(deserializer_t &reader)
+    void deserialize(deserializer_t &reader) override
     {
         signatures = reader.keyV<crypto_signature_t>();
     }
 
-    JSON_FROM_FUNC(from_json)
+    JSON_FROM_FUNC(fromJSON) override
     {
-        JSON_OBJECT_OR_THROW();
+        JSON_OBJECT_OR_THROW()
 
-        JSON_MEMBER_OR_THROW("signatures");
-
-        signatures.clear();
-
-        for (const auto &elem : get_json_array(j, "signatures"))
-        {
-            signatures.emplace_back(get_json_string(elem));
-        }
+        LOAD_KEYV_FROM_JSON(signatures)
     }
 
     /**
@@ -129,7 +122,7 @@ struct crypto_borromean_signature_t
      * Serializes the struct to a byte array
      * @param writer
      */
-    void serialize(serializer_t &writer) const
+    void serialize(serializer_t &writer) const override
     {
         writer.key(signatures);
     }
@@ -138,7 +131,7 @@ struct crypto_borromean_signature_t
      * Serializes the struct to a byte array
      * @return
      */
-    [[nodiscard]] std::vector<uint8_t> serialize() const
+    [[nodiscard]] std::vector<uint8_t> serialize() const override
     {
         serializer_t writer;
 
@@ -151,7 +144,7 @@ struct crypto_borromean_signature_t
      * Returns the serialized byte size
      * @return
      */
-    [[nodiscard]] size_t size() const
+    [[nodiscard]] size_t size() const override
     {
         return serialize().size();
     }
@@ -160,19 +153,11 @@ struct crypto_borromean_signature_t
      * Writes the structure as JSON to the provided writer
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    JSON_TO_FUNC(toJSON) override
     {
         writer.StartObject();
         {
-            writer.Key("signatures");
-            writer.StartArray();
-            {
-                for (const auto &val : signatures)
-                {
-                    val.toJSON(writer);
-                }
-            }
-            writer.EndArray();
+            KEYV_TO_JSON(signatures);
         }
         writer.EndObject();
     }
@@ -181,7 +166,7 @@ struct crypto_borromean_signature_t
      * Returns the hex encoded serialized byte array
      * @return
      */
-    [[nodiscard]] std::string to_string() const
+    [[nodiscard]] std::string to_string() const override
     {
         const auto bytes = serialize();
 

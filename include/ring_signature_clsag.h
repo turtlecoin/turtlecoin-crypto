@@ -33,7 +33,7 @@
 #include "crypto_common.h"
 #include "hashing.h"
 
-struct crypto_clsag_signature_t
+struct crypto_clsag_signature_t : ISerializable
 {
     crypto_clsag_signature_t() {}
 
@@ -49,7 +49,7 @@ struct crypto_clsag_signature_t
     {
     }
 
-    JSON_OBJECT_CONSTRUCTORS(crypto_clsag_signature_t, from_json)
+    JSON_OBJECT_CONSTRUCTORS(crypto_clsag_signature_t, fromJSON)
 
     crypto_clsag_signature_t(const std::string &input)
     {
@@ -118,7 +118,7 @@ struct crypto_clsag_signature_t
      * Deserializes the struct from a byte array
      * @param reader
      */
-    void deserialize(deserializer_t &reader)
+    void deserialize(deserializer_t &reader) override
     {
         scalars = reader.keyV<crypto_scalar_t>();
 
@@ -132,28 +132,19 @@ struct crypto_clsag_signature_t
         }
     }
 
-    JSON_FROM_FUNC(from_json)
+    JSON_FROM_FUNC(fromJSON) override
     {
-        JSON_OBJECT_OR_THROW();
+        JSON_OBJECT_OR_THROW()
 
-        JSON_MEMBER_OR_THROW("scalars");
+        LOAD_KEYV_FROM_JSON(scalars)
 
-        scalars.clear();
+        LOAD_KEY_FROM_JSON(challenge)
 
-        for (const auto &elem : get_json_array(j, "scalars"))
-        {
-            scalars.emplace_back(get_json_string(elem));
-        }
+        JSON_IF_MEMBER(commitment_image)
+        LOAD_KEY_FROM_JSON(commitment_image)
 
-        JSON_MEMBER_OR_THROW("challenge");
-
-        challenge = get_json_string(j, "challenge");
-
-        JSON_IF_MEMBER("commitment_image")
-        commitment_image = get_json_string(j, "commitment_image");
-
-        JSON_IF_MEMBER("pseudo_commitment")
-        pseudo_commitment = get_json_string(j, "pseudo_commitment");
+        JSON_IF_MEMBER(pseudo_commitment)
+        LOAD_KEY_FROM_JSON(pseudo_commitment)
     }
 
     /**
@@ -171,7 +162,7 @@ struct crypto_clsag_signature_t
      * Serializes the struct to a byte array
      * @param writer
      */
-    void serialize(serializer_t &writer) const
+    void serialize(serializer_t &writer) const override
     {
         writer.key(scalars);
 
@@ -195,7 +186,7 @@ struct crypto_clsag_signature_t
      * Serializes the struct to a byte array
      * @return
      */
-    [[nodiscard]] std::vector<uint8_t> serialize() const
+    [[nodiscard]] std::vector<uint8_t> serialize() const override
     {
         serializer_t writer;
 
@@ -208,7 +199,7 @@ struct crypto_clsag_signature_t
      * Returns the serialized byte size
      * @return
      */
-    [[nodiscard]] size_t size() const
+    [[nodiscard]] size_t size() const override
     {
         return serialize().size();
     }
@@ -217,30 +208,19 @@ struct crypto_clsag_signature_t
      * Writes the structure as JSON to the provided writer
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const override
     {
         writer.StartObject();
         {
-            writer.Key("scalars");
-            writer.StartArray();
-            {
-                for (const auto &val : scalars)
-                {
-                    val.toJSON(writer);
-                }
-            }
-            writer.EndArray();
+            KEYV_TO_JSON(scalars);
 
-            writer.Key("challenge");
-            challenge.toJSON(writer);
+            KEY_TO_JSON(challenge);
 
             if (commitment_image.valid())
             {
-                writer.Key("commitment_image");
-                commitment_image.toJSON(writer);
+                KEY_TO_JSON(commitment_image);
 
-                writer.Key("pseudo_commitment");
-                pseudo_commitment.toJSON(writer);
+                KEY_TO_JSON(pseudo_commitment);
             }
         }
         writer.EndObject();
@@ -250,7 +230,7 @@ struct crypto_clsag_signature_t
      * Returns the hex encoded serialized byte array
      * @return
      */
-    [[nodiscard]] std::string to_string() const
+    [[nodiscard]] std::string to_string() const override
     {
         const auto bytes = serialize();
 

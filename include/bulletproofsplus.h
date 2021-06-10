@@ -35,7 +35,7 @@
 /**
  * A Bulletproof+ Range Proof
  */
-struct crypto_bulletproof_plus_t
+struct crypto_bulletproof_plus_t : ISerializable
 {
     crypto_bulletproof_plus_t() {}
 
@@ -52,7 +52,7 @@ struct crypto_bulletproof_plus_t
     {
     }
 
-    JSON_OBJECT_CONSTRUCTORS(crypto_bulletproof_plus_t, from_json)
+    JSON_OBJECT_CONSTRUCTORS(crypto_bulletproof_plus_t, fromJSON)
 
     crypto_bulletproof_plus_t(const std::string &input)
     {
@@ -128,7 +128,7 @@ struct crypto_bulletproof_plus_t
      * Deserializes the struct from a byte array
      * @param reader
      */
-    void deserialize(deserializer_t &reader)
+    void deserialize(deserializer_t &reader) override
     {
         A = reader.key<crypto_point_t>();
 
@@ -147,51 +147,25 @@ struct crypto_bulletproof_plus_t
         R = reader.keyV<crypto_point_t>();
     }
 
-    JSON_FROM_FUNC(from_json)
+    JSON_FROM_FUNC(fromJSON) override
     {
-        JSON_OBJECT_OR_THROW();
+        JSON_OBJECT_OR_THROW()
 
-        JSON_MEMBER_OR_THROW("A");
+        LOAD_KEY_FROM_JSON(A)
 
-        A = get_json_string(j, "A");
+        LOAD_KEY_FROM_JSON(A1)
 
-        JSON_MEMBER_OR_THROW("A1");
+        LOAD_KEY_FROM_JSON(B)
 
-        A1 = get_json_string(j, "A1");
+        LOAD_KEY_FROM_JSON(r1)
 
-        JSON_MEMBER_OR_THROW("B");
+        LOAD_KEY_FROM_JSON(s1)
 
-        B = get_json_string(j, "B");
+        LOAD_KEY_FROM_JSON(d1)
 
-        JSON_MEMBER_OR_THROW("r1");
+        LOAD_KEYV_FROM_JSON(L)
 
-        r1 = get_json_string(j, "r1");
-
-        JSON_MEMBER_OR_THROW("s1");
-
-        s1 = get_json_string(j, "s1");
-
-        JSON_MEMBER_OR_THROW("d1");
-
-        d1 = get_json_string(j, "d1");
-
-        JSON_MEMBER_OR_THROW("L");
-
-        L.clear();
-
-        for (const auto &elem : get_json_array(j, "L"))
-        {
-            L.emplace_back(get_json_string(elem));
-        }
-
-        JSON_MEMBER_OR_THROW("R");
-
-        R.clear();
-
-        for (const auto &elem : get_json_array(j, "R"))
-        {
-            R.emplace_back(get_json_string(elem));
-        }
+        LOAD_KEYV_FROM_JSON(R)
     }
 
     /**
@@ -209,7 +183,7 @@ struct crypto_bulletproof_plus_t
      * Serializes the struct to a byte array
      * @param writer
      */
-    void serialize(serializer_t &writer) const
+    void serialize(serializer_t &writer) const override
     {
         writer.key(A);
 
@@ -232,7 +206,7 @@ struct crypto_bulletproof_plus_t
      * Serializes the struct to a byte array
      * @return
      */
-    [[nodiscard]] std::vector<uint8_t> serialize() const
+    [[nodiscard]] std::vector<uint8_t> serialize() const override
     {
         serializer_t writer;
 
@@ -245,7 +219,7 @@ struct crypto_bulletproof_plus_t
      * Returns the serialized byte size
      * @return
      */
-    [[nodiscard]] size_t size() const
+    [[nodiscard]] size_t size() const override
     {
         return serialize().size();
     }
@@ -254,47 +228,25 @@ struct crypto_bulletproof_plus_t
      * Writes the structure as JSON to the provided writer
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    JSON_TO_FUNC(toJSON) override
     {
         writer.StartObject();
         {
-            writer.Key("A");
-            A.toJSON(writer);
+            KEY_TO_JSON(A);
 
-            writer.Key("A1");
-            A1.toJSON(writer);
+            KEY_TO_JSON(A1);
 
-            writer.Key("B");
-            B.toJSON(writer);
+            KEY_TO_JSON(B);
 
-            writer.Key("r1");
-            r1.toJSON(writer);
+            KEY_TO_JSON(r1);
 
-            writer.Key("s1");
-            s1.toJSON(writer);
+            KEY_TO_JSON(s1);
 
-            writer.Key("d1");
-            d1.toJSON(writer);
+            KEY_TO_JSON(d1);
 
-            writer.Key("L");
-            writer.StartArray();
-            {
-                for (const auto &val : L)
-                {
-                    val.toJSON(writer);
-                }
-            }
-            writer.EndArray();
+            KEYV_TO_JSON(L);
 
-            writer.Key("R");
-            writer.StartArray();
-            {
-                for (const auto &val : R)
-                {
-                    val.toJSON(writer);
-                }
-            }
-            writer.EndArray();
+            KEYV_TO_JSON(R);
         }
         writer.EndObject();
     }
@@ -303,7 +255,7 @@ struct crypto_bulletproof_plus_t
      * Returns the hex encoded serialized byte array
      * @return
      */
-    [[nodiscard]] std::string to_string() const
+    [[nodiscard]] std::string to_string() const override
     {
         const auto bytes = serialize();
 

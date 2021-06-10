@@ -839,4 +839,24 @@ struct deserializer_t
     size_t offset = 0;
 };
 
+/**
+ * Serialization interface for inheritance
+ */
+struct ISerializable
+{
+    virtual void deserialize(deserializer_t &reader) = 0;
+
+    virtual JSON_FROM_FUNC(fromJSON) = 0;
+
+    virtual void serialize(serializer_t &writer) const = 0;
+
+    virtual std::vector<uint8_t> serialize() const = 0;
+
+    virtual size_t size() const = 0;
+
+    virtual JSON_TO_FUNC(toJSON) = 0;
+
+    virtual std::string to_string() const = 0;
+};
+
 #endif // CRYPTO_SERIALIZER_H

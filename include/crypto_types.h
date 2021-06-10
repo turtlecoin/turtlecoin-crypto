@@ -38,12 +38,12 @@
 #include <uint256_t.h>
 
 #define SCALAR_OR_THROW(value)                                                 \
-    if (!value.valid(true))                                                    \
+    if (!(value).valid(true))                                                  \
     {                                                                          \
         throw std::invalid_argument(std::string(#value) + " is not a scalar"); \
     }
 #define SCALAR_NZ_OR_THROW(value)                                              \
-    if (!value.valid())                                                        \
+    if (!(value).valid())                                                      \
     {                                                                          \
         throw std::invalid_argument(std::string(#value) + " is not a scalar"); \
     }
@@ -380,12 +380,44 @@ struct crypto_point_t
     }
 
     /**
+     * Deserializes the struct from a byte array
+     * @param reader
+     */
+    void deserialize(deserializer_t &reader)
+    {
+        const auto data = reader.bytes(sizeof(bytes));
+
+        std::copy(data.begin(), data.end(), std::begin(bytes));
+
+        if (ge_frombytes_negate_vartime(&point3, bytes) != 0)
+        {
+            throw std::runtime_error("could not load point");
+        }
+
+        ge_p3_to_cached(&cached_point, &point3);
+    }
+
+    /**
      * Returns if the structure is empty (unset)
      * @return
      */
     [[nodiscard]] bool empty() const
     {
         return *this == crypto_point_t();
+    }
+
+    /**
+     * Deserializes the struct from JSON
+     * @param j
+     */
+    JSON_FROM_FUNC(fromJSON)
+    {
+        if (!j.IsString())
+        {
+            throw std::invalid_argument("JSON value is of the wrong type");
+        }
+
+        from_string(j.GetString());
     }
 
     /**
@@ -489,7 +521,7 @@ struct crypto_point_t
      * Converts the structure to a JSON object
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    JSON_TO_FUNC(toJSON)
     {
         writer.String(to_string());
     }
@@ -963,12 +995,37 @@ struct crypto_scalar_t
     }
 
     /**
+     * Deserializes the struct from a byte array
+     * @param reader
+     */
+    void deserialize(deserializer_t &reader)
+    {
+        const auto data = reader.bytes(sizeof(bytes));
+
+        std::memcpy(&bytes, data.data(), data.size());
+    }
+
+    /**
      * Returns if the structure is empty (unset)
      * @return
      */
     [[nodiscard]] bool empty() const
     {
         return *this == crypto_scalar_t();
+    }
+
+    /**
+     * Deserializes the struct from JSON
+     * @param j
+     */
+    JSON_FROM_FUNC(fromJSON)
+    {
+        if (!j.IsString())
+        {
+            throw std::invalid_argument("JSON value is of the wrong type");
+        }
+
+        from_string(j.GetString());
     }
 
     /**
@@ -1250,7 +1307,7 @@ struct crypto_scalar_t
      * Converts the structure to a JSON object
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    JSON_TO_FUNC(toJSON)
     {
         writer.String(to_string());
     }
@@ -1260,14 +1317,9 @@ struct crypto_scalar_t
      * @param byte_length
      * @return
      */
-    [[nodiscard]] std::string to_string(size_t byte_length = 32) const
+    [[nodiscard]] std::string to_string() const
     {
-        if (byte_length > 32)
-        {
-            throw std::range_error("length cannot exceed the size of the scalar");
-        }
-
-        return Crypto::StringTools::to_hex(bytes, byte_length);
+        return Crypto::StringTools::to_hex(bytes, sizeof(bytes));
     }
 
     /**
@@ -1541,12 +1593,37 @@ struct crypto_signature_t
     }
 
     /**
+     * Deserializes the struct from a byte array
+     * @param reader
+     */
+    void deserialize(deserializer_t &reader)
+    {
+        const auto data = reader.bytes(sizeof(bytes));
+
+        std::memcpy(&bytes, data.data(), data.size());
+    }
+
+    /**
      * Returns if the structure is empty (unset)
      * @return
      */
     [[nodiscard]] bool empty() const
     {
         return *this == crypto_signature_t();
+    }
+
+    /**
+     * Deserializes the struct from JSON
+     * @param j
+     */
+    JSON_FROM_FUNC(fromJSON)
+    {
+        if (!j.IsString())
+        {
+            throw std::invalid_argument("JSON value is of the wrong type");
+        }
+
+        from_string(j.GetString());
     }
 
     /**
@@ -1584,7 +1661,7 @@ struct crypto_signature_t
      * Converts the structure to a JSON object
      * @param writer
      */
-    void toJSON(rapidjson::Writer<rapidjson::StringBuffer> &writer) const
+    JSON_TO_FUNC(toJSON)
     {
         writer.String(to_string());
     }

@@ -166,12 +166,37 @@ struct crypto_hash_t
     }
 
     /**
+     * Deserializes the struct from a byte array
+     * @param reader
+     */
+    void deserialize(deserializer_t &reader)
+    {
+        const auto data = reader.bytes(sizeof(bytes));
+
+        std::memcpy(&bytes, data.data(), data.size());
+    }
+
+    /**
      * Returns if the structure is empty (unset)
      * @return
      */
     [[nodiscard]] bool empty() const
     {
         return *this == crypto_hash_t();
+    }
+
+    /**
+     * Deserializes the struct from JSON
+     * @param j
+     */
+    JSON_FROM_FUNC(fromJSON)
+    {
+        if (!j.IsString())
+        {
+            throw std::invalid_argument("JSON value is of the wrong type");
+        }
+
+        from_string(j.GetString());
     }
 
     /**
