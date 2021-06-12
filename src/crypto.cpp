@@ -36,7 +36,7 @@ namespace Crypto
     static inline void random_scalar(EllipticCurveScalar &res)
     {
         unsigned char tmp[64];
-        Random::randomBytes(64, tmp);
+        random_bytes(64, tmp);
         sc_reduce(tmp);
         memcpy(&res, tmp, 32);
     }

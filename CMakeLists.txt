@@ -232,8 +232,8 @@ if(NOT BUILD_JS AND NOT BUILD_WASM)
   if(WIN32)
     add_library(turtlecoin-crypto-shared SHARED ${SOURCES})
     target_link_libraries(turtlecoin-crypto-shared crypto argon2 ed25519)
-    target_link_libraries(turtlecoin-crypto-static ws2_32)
-    target_link_libraries(turtlecoin-crypto-shared ws2_32)
+    target_link_libraries(turtlecoin-crypto-static ws2_32 advapi32 crypt32 gdi32 user32)
+    target_link_libraries(turtlecoin-crypto-shared ws2_32 advapi32 crypt32 gdi32 user32)
   endif()
 
   set(CRYPTOTEST_SOURCES

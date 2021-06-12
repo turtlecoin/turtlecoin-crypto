@@ -1,79 +1,55 @@
-// Copyright (c) 2019, The TurtleCoin Developers
+// Copyright (c) 2017, Daan Sprenkels <hello@dsprenkels.com>
+// Copyright (c) 2020-2021, The TurtleCoin Developers
+//
+// Redistribution and use in source and binary forms, with or without modification, are
+// permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of
+//    conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list
+//    of conditions and the following disclaimer in the documentation and/or other
+//    materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its contributors may be
+//    used to endorse or promote products derived from this software without specific
+//    prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#ifndef CRYPTO_RANDOM_H
+#define CRYPTO_RANDOM_H
 
 #include <random>
 
-namespace Random
+#ifdef __cplusplus
+extern "C"
 {
-    /* Used to obtain a random seed */
-    static thread_local std::random_device device;
+#endif
 
-    /* Generator, seeded with the random device */
-    static thread_local std::mt19937 gen(device());
+#ifdef _WIN32
+/* Load size_t on windows */
+#include <crtdefs.h>
+#else
+#include <unistd.h>
+#endif /* _WIN32 */
 
-    /* The distribution to get numbers for - in this case, uint8_t */
-    static std::uniform_int_distribution<int> distribution {0, std::numeric_limits<uint8_t>::max()};
 
-    /**
-     * Generate n random bytes (uint8_t), and place them in *result. Result should be large
-     * enough to contain the bytes.
-     */
-    inline void randomBytes(size_t n, uint8_t *result)
-    {
-        for (size_t i = 0; i < n; i++)
-        {
-            result[i] = distribution(gen);
-        }
-    }
+/*
+ * Write `n` bytes of high quality random bytes to `buf`
+ */
+int random_bytes(size_t n, void *buf);
 
-    /**
-     * Generate n random bytes (uint8_t), and return them in a vector.
-     */
-    inline std::vector<uint8_t> randomBytes(size_t n)
-    {
-        std::vector<uint8_t> result;
+#ifdef __cplusplus
+}
+#endif
 
-        result.reserve(n);
-
-        for (size_t i = 0; i < n; i++)
-        {
-            result.push_back(distribution(gen));
-        }
-
-        return result;
-    }
-
-    /**
-     * Generate a random value of the type specified, in the full range of the
-     * type
-     */
-    template<typename T> T randomValue()
-    {
-        std::uniform_int_distribution<T> distribution {std::numeric_limits<T>::min(), std::numeric_limits<T>::max()};
-
-        return distribution(gen);
-    }
-
-    /**
-     * Generate a random value of the type specified, in the range [min, max]
-     * Note that both min, and max, are included in the results. Therefore,
-     * randomValue(0, 100), will generate numbers between 0 and 100.
-     *
-     * Note that min must be <= max, or undefined behaviour will occur.
-     */
-    template<typename T> T randomValue(T min, T max)
-    {
-        std::uniform_int_distribution<T> distribution {min, max};
-        return distribution(gen);
-    }
-
-    /**
-     * Obtain the generator used internally. Helpful for passing to functions
-     * like std::shuffle.
-     */
-    inline std::mt19937 generator()
-    {
-        return gen;
-    }
-} // namespace Random
+#endif // CRYPTO_RANDOM_H
