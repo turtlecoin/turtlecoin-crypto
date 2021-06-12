@@ -1,3 +1,4 @@
+// Copyright (c) 2017, Daan Sprenkels <hello@dsprenkels.com>
 // Copyright (c) 2020-2021, The TurtleCoin Developers
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -23,37 +24,32 @@
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// Adapted from code by Zpalmtree found at
-// https://github.com/turtlecoin/turtlecoin/blob/26e395fadcaa1326dab595431526db3899e5df6e/src/crypto/random.h
 
 #ifndef CRYPTO_RANDOM_H
 #define CRYPTO_RANDOM_H
 
 #include <random>
 
-namespace Random
+#ifdef __cplusplus
+extern "C"
 {
-    /* Used to obtain a random seed */
-    static thread_local std::random_device device;
+#endif
 
-    /* Generator, seeded with the random device */
-    static thread_local std::mt19937 gen(device());
+#ifdef _WIN32
+/* Load size_t on windows */
+#include <crtdefs.h>
+#else
+#include <unistd.h>
+#endif /* _WIN32 */
 
-    /* The distribution to get numbers for - in this case, uint8_t */
-    static std::uniform_int_distribution<int> distribution {0, 255};
 
-    /**
-     * Generate n random bytes (uint8_t), and place them in *result. Result should be large
-     * enough to contain the bytes.
+    /*
+     * Write `n` bytes of high quality random bytes to `buf`
      */
-    inline void random_bytes(size_t n, uint8_t *result)
-    {
-        for (size_t i = 0; i < n; i++)
-        {
-            result[i] = distribution(gen);
-        }
-    }
-} // namespace Random
+    int random_bytes(size_t n, void *buf);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // CRYPTO_RANDOM_H

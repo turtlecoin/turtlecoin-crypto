@@ -314,7 +314,7 @@ namespace Crypto
     {
         uint8_t bytes[CRYPTO_ENTROPY_BYTES];
 
-        Random::random_bytes(sizeof(bytes), bytes);
+        random_bytes(sizeof(bytes), bytes);
 
         return Crypto::Hashing::sha3(bytes, sizeof(bytes));
     }
@@ -336,7 +336,7 @@ namespace Crypto
         uint8_t bytes[CRYPTO_ENTROPY_BYTES];
 
         // Retreive some random bytes
-        Random::random_bytes(sizeof(bytes), bytes);
+        random_bytes(sizeof(bytes), bytes);
 
         return hash_to_point(bytes, sizeof(bytes));
     }
@@ -358,7 +358,7 @@ namespace Crypto
         uint8_t bytes[CRYPTO_ENTROPY_BYTES];
 
         // Retrieve some random bytes
-        Random::random_bytes(sizeof(bytes), bytes);
+        random_bytes(sizeof(bytes), bytes);
 
         // hash it and return it as a scalar
         return hash_to_scalar(bytes, sizeof(bytes));

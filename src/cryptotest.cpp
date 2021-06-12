@@ -84,6 +84,8 @@ int main()
 {
     std::cout << std::endl << std::endl << "Cryptographic Primitive Unit Tests" << std::endl << std::endl;
 
+    std::cout << "Random Hash: " << Crypto::random_hash() << std::endl << std::endl;
+
     // SHA-3 test
     {
         const auto hash = Crypto::Hashing::sha3(INPUT_DATA);

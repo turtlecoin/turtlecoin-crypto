@@ -119,6 +119,7 @@ set(SOURCES
     src/memory_helper.cpp
     src/mnemonics.cpp
     src/multisig.cpp
+    src/random.cpp
     src/ringct.cpp
     src/ring_signature_borromean.cpp
     src/ring_signature_clsag.cpp
@@ -132,7 +133,7 @@ target_link_libraries(crypto-static argon2 ed25519 sha3 uint256t)
 target_include_directories(crypto-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson)
 
 if(WIN32)
-    target_link_libraries(crypto-static ws2_32)
+    target_link_libraries(crypto-static ws2_32 advapi32 crypt32 gdi32 user32)
 endif()
 
 if(BUILD_SHARED)
@@ -141,7 +142,7 @@ if(BUILD_SHARED)
     target_include_directories(crypto-shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson)
 
     if(WIN32)
-        target_link_libraries(crypto-shared ws2_32)
+        target_link_libraries(crypto-shared ws2_32 advapi32 crypt32 gdi32 user32)
     endif()
 endif()
 
