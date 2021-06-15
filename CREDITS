@@ -8,6 +8,9 @@ Argon2: Copyright (c) 2016 Ondrej Mosnáček
 uint256_t: Copyright (c) 2013 - 2017 Jason Lee @ calccrypto at gmail.com
 Emscripten: Copyright (c) 2018 Emscripten authors (see AUTHORS in Emscripten)
 RapidJSON: Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip.
+Base58: Copyright (c) 2009-2010 Satoshi Nakamoto
+        Copyright (c) 2014-2020 The Bitcoin Core Developers
+CNBase58: Copyright (c) 2011-2016 The Cryptonote Developers
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
