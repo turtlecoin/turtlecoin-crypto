@@ -34,7 +34,8 @@
     "external/ed25519",
     "external/rapidjson",
     "external/sha3",
-    "build.js/*.js"
+    "build.js/*.js",
+	"CREDITS"
   ],
   "repository": {
     "type": "git",
