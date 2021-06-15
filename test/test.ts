@@ -305,11 +305,71 @@ describe('Cryptographic Tests', async () => {
             assert(typeof await crypto.random_hash() !== 'undefined');
         });
 
+        it('Random Scalars', async () => {
+            const keys = await crypto.random_scalars(20);
+
+            const found: string[] = [];
+
+            for (const key of keys) {
+                if (found.indexOf(key) !== -1) {
+                    assert(false);
+                }
+
+                found.push(key);
+            }
+        });
+
+        it('Random Points', async () => {
+            const keys = await crypto.random_points(20);
+
+            const found: string[] = [];
+
+            for (const key of keys) {
+                if (found.indexOf(key) !== -1) {
+                    assert(false);
+                }
+
+                found.push(key);
+            }
+        });
+
+        it('Random Hashes', async () => {
+            const keys = await crypto.random_hashes(20);
+
+            const found: string[] = [];
+
+            for (const key of keys) {
+                if (found.indexOf(key) !== -1) {
+                    assert(false);
+                }
+
+                found.push(key);
+            }
+        });
+
         it('Generate Random Keys', async () => {
             const [public_key, secret_key] = await crypto.generate_keys();
 
             assert(await crypto.check_point(public_key));
             assert(await crypto.check_scalar(secret_key));
+        });
+
+        it('Generate Sets of Random Keys', async () => {
+            const [public_keys, secret_keys] = await crypto.generate_keys_m(10);
+
+            const test = async (pub: string, sec: string): Promise<boolean> => {
+                return await crypto.check_point(pub) &&
+                    await crypto.check_scalar(sec) &&
+                    await crypto.secret_key_to_public_key(sec) === pub;
+            };
+
+            const promises = [];
+
+            for (let i = 0; i < public_keys.length; ++i) {
+                promises.push(test(public_keys[i], secret_keys[i]));
+            }
+
+            assert(await Promise.all(promises));
         });
 
         it('Secret Key to Public Key', async () => {
@@ -404,6 +464,42 @@ describe('Cryptographic Tests', async () => {
             const key = await crypto.generate_key_image_v2(secret_ephemeral);
 
             assert(key === key_image_2);
+        });
+    });
+
+    describe('Audit Methods', async () => {
+        const key_count = 20;
+        let public_keys: string[] = [];
+        let secret_keys: string[] = [];
+        let proof: string;
+
+        before(async () => {
+            [public_keys, secret_keys] = await crypto.generate_keys_m(key_count);
+        });
+
+        it('Generate Outputs Proof', async () => {
+            proof = await crypto.audit_generate_outputs_proof(secret_keys);
+
+            assert(proof.length !== 0);
+
+            const key_images = await crypto.audit_check_outputs_proof(public_keys, proof);
+
+            assert(key_images.length === key_count);
+        });
+
+        it('Check Outputs Proof', async () => {
+            const key_images = await crypto.audit_check_outputs_proof(public_keys, proof);
+
+            assert(key_images.length === key_count);
+        });
+
+        it('Check Output Proof: Failure', async () => {
+            const keys = await crypto.random_points(20);
+
+            const key_images = await crypto.audit_check_outputs_proof(keys, proof)
+                .catch(() => []);
+
+            assert(key_images.length === 0);
         });
     });
 

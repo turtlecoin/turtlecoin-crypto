@@ -89,6 +89,22 @@
 #include <stdbool.h>
 #endif /* defined(__EMSCRIPTEN__) */
 
+static thread_local std::random_device device;
+
+static thread_local std::mt19937 gen(device());
+
+static std::uniform_int_distribution<int> distribution {0, 255};
+
+static inline int randombytes_fallback(uint8_t *buf, size_t n)
+{
+    for (size_t i = 0; i < n; i++)
+    {
+        buf[i] = distribution(gen);
+    }
+
+    return 0;
+}
+
 
 #if defined(_WIN32)
 static inline int randombytes_win32_randombytes(void *buf, const size_t n)
@@ -323,44 +339,9 @@ static inline int randombytes_bsd_randombytes(void *buf, size_t n)
 #if defined(__EMSCRIPTEN__)
 static inline int randombytes_js_randombytes_nodejs(void *buf, size_t n)
 {
-    const int ret = EM_ASM_INT(
-        {
-            var crypto;
-            try
-            {
-                crypto = require('crypto');
-            }
-            catch (error)
-            {
-                return -2;
-            }
-            try
-            {
-                writeArrayToMemory(crypto.randomBytes($1), $0);
-                return 0;
-            }
-            catch (error)
-            {
-                return -1;
-            }
-        },
-        buf,
-        n);
-    switch (ret)
-    {
-        case 0:
-            return 0;
-        case -1:
-            errno = EINVAL;
-            return -1;
-        case -2:
-            errno = ENOSYS;
-            return -1;
-    }
-    assert(false); // Unreachable
+    return randombytes_fallback(static_cast<uint8_t *>(buf), n);
 }
 #endif /* defined(__EMSCRIPTEN__) */
-
 
 int random_bytes(size_t n, void *buf)
 {
@@ -381,6 +362,6 @@ int random_bytes(size_t n, void *buf)
     /* Use windows API */
     return randombytes_win32_randombytes(buf, n);
 #else
-#error "randombytes(...) is not supported on this platform"
+    return randombytes_fallback(static_cast<uint8_t *>(buf), n);
 #endif
 }

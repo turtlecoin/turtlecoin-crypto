@@ -110,6 +110,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson)
 
 set(SOURCES
+    src/audit.cpp
     src/base58.cpp
     src/bulletproofs.cpp
     src/bulletproofsplus.cpp

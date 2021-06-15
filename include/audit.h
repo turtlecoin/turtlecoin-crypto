@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021, The TurtleCoin Developers
+// Copyright (c) 2021, The TurtleCoin Developers
 //
 // Redistribution and use in source and binary forms, with or without modification, are
 // permitted provided that the following conditions are met:
@@ -24,22 +24,35 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#ifndef CRYPTO_AUDIT_H
+#define CRYPTO_AUDIT_H
 
-#include "audit.h"
-#include "base58.h"
-#include "bulletproofs.h"
-#include "bulletproofsplus.h"
-#include "cn_base58.h"
-#include "crypto_common.h"
-#include "memory_helper.h"
-#include "mnemonics.h"
-#include "multisig.h"
-#include "ring_signature_borromean.h"
-#include "ring_signature_clsag.h"
-#include "ring_signature_triptych.h"
-#include "ringct.h"
-#include "signature.h"
+#include "crypto_types.h"
 
-#endif // CRYPTO_H
+namespace Crypto::Audit
+{
+    /**
+     * Verifies the proof provided using the public ephemerals by decoding the Base58 proof,
+     * extracting the key images, and the signatures, and then verifying those signatures if
+     * all of the proofs are valid, the key images are returned as well
+     *
+     * @param public_ephemerals
+     * @param proof
+     * @return
+     */
+    std::tuple<bool, std::vector<crypto_key_image_t>>
+        check_outputs_proof(const std::vector<crypto_public_key_t> &public_ephemerals, const std::string &proof);
+
+    /**
+     * Generates proof of having the secret ephemerals specified by generating the relevant
+     * public keys, key images, and signature for each and encoding the necessary information
+     * into a Base58 string that can be given to a verifier that already has the public
+     * ephemerals
+     *
+     * @param secret_ephemerals
+     * @return
+     */
+    std::tuple<bool, std::string> generate_outputs_proof(const std::vector<crypto_secret_key_t> &secret_ephemerals);
+} // namespace Crypto::Audit
+
+#endif

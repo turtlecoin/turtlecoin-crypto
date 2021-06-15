@@ -235,6 +235,30 @@ export default class Crypto {
     }
 
     /**
+     * Verifies the proof provided using the public ephemerals by decoding the Base58 proof,
+     * extracting the key images, and the signatures, and then verifying those signatures if
+     * all of the proofs are valid, the key images are returned as well
+     *
+     * @param public_ephemerals
+     * @param proof
+     */
+    public async audit_check_outputs_proof (public_ephemerals: string[], proof: string): Promise<string[]> {
+        return execute('audit_check_outputs_proof', public_ephemerals, proof);
+    }
+
+    /**
+     * Generates proof of having the secret ephemerals specified by generating the relevant
+     * public keys, key images, and signature for each and encoding the necessary information
+     * into a Base58 string that can be given to a verifier that already has the public
+     * ephemerals
+     *
+     * @param secret_ephemerals
+     */
+    public async audit_generate_outputs_proof (secret_ephemerals: string[]): Promise<string> {
+        return execute('audit_generate_outputs_proof', secret_ephemerals);
+    }
+
+    /**
      * Encodes the hexadecimal encoded string into a base58 encoded string
      * @param hex
      */
@@ -1213,6 +1237,14 @@ export default class Crypto {
      */
     public async generate_keys (): Promise<[string, string]> {
         return execute('generate_keys');
+    }
+
+    /**
+     * Generates a set of random key pairs
+     * @param count
+     */
+    public async generate_keys_m (count: number): Promise<[string[], string[]]> {
+        return execute('generate_keys_m', count);
     }
 
     /**

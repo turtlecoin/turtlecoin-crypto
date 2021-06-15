@@ -97,6 +97,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#argon2d" class="tsd-kind-icon">argon2d</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#argon2i" class="tsd-kind-icon">argon2i</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#argon2id" class="tsd-kind-icon">argon2id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#audit_check_outputs_proof" class="tsd-kind-icon">audit_<wbr>check_<wbr>outputs_<wbr>proof</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#audit_generate_outputs_proof" class="tsd-kind-icon">audit_<wbr>generate_<wbr>outputs_<wbr>proof</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#base58_decode" class="tsd-kind-icon">base58_<wbr>decode</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#base58_decode_check" class="tsd-kind-icon">base58_<wbr>decode_<wbr>check</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#base58_encode" class="tsd-kind-icon">base58_<wbr>encode</a></li>
@@ -134,6 +136,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_key_image" class="tsd-kind-icon">generate_<wbr>key_<wbr>image</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_key_image_v2" class="tsd-kind-icon">generate_<wbr>key_<wbr>image_<wbr>v2</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_keys" class="tsd-kind-icon">generate_<wbr>keys</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_keys_m" class="tsd-kind-icon">generate_<wbr>keys_<wbr>m</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_multisig_secret_key" class="tsd-kind-icon">generate_<wbr>multisig_<wbr>secret_<wbr>key</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_multisig_secret_keys" class="tsd-kind-icon">generate_<wbr>multisig_<wbr>secret_<wbr>keys</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconfig.html#generate_partial_signing_scalar" class="tsd-kind-icon">generate_<wbr>partial_<wbr>signing_<wbr>scalar</a></li>
@@ -285,6 +288,65 @@
 											</li>
 											<li>
 												<h5>threads: <span class="tsd-signature-type">number</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="audit_check_outputs_proof" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> audit_<wbr>check_<wbr>outputs_<wbr>proof</h3>
+					<div class="tsd-signature tsd-kind-icon">audit_<wbr>check_<wbr>outputs_<wbr>proof<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>public_ephemerals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, proof<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>public_ephemerals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, proof<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>public_ephemerals: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+											<li>
+												<h5>proof: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="audit_generate_outputs_proof" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> audit_<wbr>generate_<wbr>outputs_<wbr>proof</h3>
+					<div class="tsd-signature tsd-kind-icon">audit_<wbr>generate_<wbr>outputs_<wbr>proof<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>secret_ephemerals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>secret_ephemerals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>secret_ephemerals: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1474,6 +1536,34 @@
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="generate_keys_m" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> generate_<wbr>keys_<wbr>m</h3>
+					<div class="tsd-signature tsd-kind-icon">generate_<wbr>keys_<wbr>m<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>count: <span class="tsd-signature-type">number</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 									</li>
 								</ul>
 							</li>
@@ -2782,6 +2872,12 @@
 								<a href="iconfig.html#argon2id" class="tsd-kind-icon">argon2id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#audit_check_outputs_proof" class="tsd-kind-icon">audit_<wbr>check_<wbr>outputs_<wbr>proof</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#audit_generate_outputs_proof" class="tsd-kind-icon">audit_<wbr>generate_<wbr>outputs_<wbr>proof</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="iconfig.html#base58_decode" class="tsd-kind-icon">base58_<wbr>decode</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -2891,6 +2987,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="iconfig.html#generate_keys" class="tsd-kind-icon">generate_<wbr>keys</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="iconfig.html#generate_keys_m" class="tsd-kind-icon">generate_<wbr>keys_<wbr>m</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="iconfig.html#generate_multisig_secret_key" class="tsd-kind-icon">generate_<wbr>multisig_<wbr>secret_<wbr>key</a>

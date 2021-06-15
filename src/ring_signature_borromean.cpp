@@ -45,6 +45,16 @@ namespace Crypto::RingSignature::Borromean
         const std::vector<crypto_public_key_t> &public_keys,
         const crypto_borromean_signature_t &borromean_signature)
     {
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return false;
+            }
+        }
+
         const auto ring_size = public_keys.size();
 
         if (!borromean_signature.check_construction(ring_size))
@@ -209,6 +219,16 @@ namespace Crypto::RingSignature::Borromean
             return {false, {}};
         }
 
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return {false, {}};
+            }
+        }
+
         const auto ring_size = public_keys.size();
 
         // find our real output in the list
@@ -217,11 +237,17 @@ namespace Crypto::RingSignature::Borromean
         // P = (p * G) mod l
         const auto public_ephemeral = secret_ephemeral * G;
 
+        /**
+         * Look for a public_ephemeral in the key set that we have the
+         * secret ephemeral for
+         */
         for (size_t i = 0; i < ring_size; i++)
         {
             if (public_ephemeral == public_keys[i])
             {
                 real_output_index = i;
+
+                break;
             }
         }
 
@@ -251,6 +277,16 @@ namespace Crypto::RingSignature::Borromean
         const std::vector<crypto_public_key_t> &public_keys,
         size_t real_output_index)
     {
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return {false, {}};
+            }
+        }
+
         const auto ring_size = public_keys.size();
 
         if (real_output_index >= ring_size)

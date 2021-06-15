@@ -84,6 +84,17 @@ namespace Crypto
         }
 
         /**
+         * Returns the challenge scalar given the current state of the transcript as the given type
+         *
+         * @tparam T
+         * @return
+         */
+        template<typename T> T challenge()
+        {
+            return T(state.serialize());
+        }
+
+        /**
          * Resets the transcript to its base state
          */
         void reset()

@@ -35,6 +35,9 @@ This repository a standalone cryptographic primitive wrapper library that can be
       * `crypto_secret_key_t`
       * `crypto_blinding_factor_t`
   * `crypto_signature_t`: 512-bit message signature
+* [Stealth Addresses](https://bytecoin.org/old/whitepaper.pdf)
+* Auditing Methods
+  * Prove & Verify output ownership with linking tags (key images)
 * [SHA3](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf) (256-bit)
   * Simple KDF via `sha3_slow_hash()`
 * [Argon2](https://github.com/P-H-C/phc-winner-argon2/blob/master/argon2-specs.pdf) Hashing

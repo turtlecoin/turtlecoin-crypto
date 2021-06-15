@@ -462,6 +462,64 @@ static inline std::vector<std::vector<T>> get_vector_vector(const rapidjson::Doc
 }
 
 /**
+ * Mapped methods from audit.cpp
+ */
+
+EMS_METHOD(audit_check_outputs_proof)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto public_keys = get_vector<crypto_public_key_t>(info, 0);
+
+        const auto proof = get<std::string>(info, 1);
+
+        if (!public_keys.empty() && !proof.empty())
+        {
+            const auto [valid, key_images] = Crypto::Audit::check_outputs_proof(public_keys, proof);
+
+            if (valid)
+            {
+                return prepare(valid, key_images);
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(audit_generate_outputs_proof)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto secret_keys = get_vector<crypto_secret_key_t>(info, 0);
+
+        if (!secret_keys.empty())
+        {
+            const auto [valid, proof] = Crypto::Audit::generate_outputs_proof(secret_keys);
+
+            if (valid)
+            {
+                return prepare(valid, proof);
+            }
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+/**
  * Mapped methods from base58.cpp
  */
 
@@ -1077,6 +1135,24 @@ EMS_METHOD(generate_keys)
         const auto [public_key, secret_key] = Crypto::generate_keys();
 
         return prepare(true, public_key.to_string(), secret_key.to_string());
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(generate_keys_m)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto count = get<uint32_t>(info, 0);
+
+        const auto [public_keys, secret_keys] = Crypto::generate_keys_m(count);
+
+        return prepare(true, public_keys, secret_keys);
     }
     catch (const std::exception &e)
     {
@@ -2847,6 +2923,13 @@ EMS_METHOD(prepare_signature)
 
 EMSCRIPTEN_BINDINGS(InitModule)
 {
+    // Mapped methods from audit.cpp
+    {
+        EMS_EXPORT(audit_check_outputs_proof);
+
+        EMS_EXPORT(audit_generate_outputs_proof);
+    }
+
     // Mapped methods from base58.cpp
     {
         EMS_EXPORT(base58_encode);
@@ -2904,6 +2987,8 @@ EMSCRIPTEN_BINDINGS(InitModule)
         EMS_EXPORT(generate_key_image_v2);
 
         EMS_EXPORT(generate_keys);
+
+        EMS_EXPORT(generate_keys_m);
 
         EMS_EXPORT(generate_wallet_seed);
 

@@ -417,6 +417,72 @@ inline std::vector<std::vector<crypto_pedersen_commitment_t>>
 }
 
 /**
+ * Mapped methods from audit.cpp
+ */
+
+NAN_METHOD(audit_check_outputs_proof)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto public_keys = get_vector<crypto_public_key_t>(info, 0);
+
+    const auto proof = get<std::string>(info, 1);
+
+    if (!public_keys.empty() && !proof.empty())
+    {
+        try
+        {
+            const auto [valid, key_images] = Crypto::Audit::check_outputs_proof(public_keys, proof);
+
+            success = valid;
+
+            if (valid)
+            {
+                result = to_v8_array(key_images);
+            }
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what());
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(audit_generate_outputs_proof)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto secret_keys = get_vector<crypto_secret_key_t>(info, 0);
+
+    if (!secret_keys.empty())
+    {
+        try
+        {
+            const auto [valid, proof] = Crypto::Audit::generate_outputs_proof(secret_keys);
+
+            success = valid;
+
+            if (valid)
+            {
+                result = STR_TO_NAN_VAL(proof);
+            }
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what());
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+/**
  * Mapped methods from base58.cpp
  */
 
@@ -1060,6 +1126,32 @@ NAN_METHOD(generate_keys)
         Nan::Set(result, 1, STR_TO_NAN_VAL(public_key.to_string()));
 
         Nan::Set(result, 2, STR_TO_NAN_VAL(secret_key.to_string()));
+    }
+    catch (const std::exception &e)
+    {
+        PRINTF(e.what())
+    }
+
+    info.GetReturnValue().Set(result);
+}
+
+NAN_METHOD(generate_keys_m)
+{
+    auto result = Nan::New<v8::Array>(3);
+
+    const auto count = get<uint32_t>(info, 0);
+
+    Nan::Set(result, 0, Nan::New(true));
+
+    try
+    {
+        const auto [public_keys, secret_keys] = Crypto::generate_keys_m(count);
+
+        Nan::Set(result, 0, Nan::New(false));
+
+        Nan::Set(result, 1, to_v8_array(public_keys));
+
+        Nan::Set(result, 2, to_v8_array(secret_keys));
     }
     catch (const std::exception &e)
     {
@@ -3020,6 +3112,13 @@ NAN_METHOD(prepare_signature)
 
 NAN_MODULE_INIT(InitModule)
 {
+    // Mapped methods from audit.cpp
+    {
+        NAN_EXPORT(target, audit_check_outputs_proof);
+
+        NAN_EXPORT(target, audit_generate_outputs_proof);
+    }
+
     // Mapped methods from base58.cpp
     {
         NAN_EXPORT(target, base58_encode);
@@ -3077,6 +3176,8 @@ NAN_MODULE_INIT(InitModule)
         NAN_EXPORT(target, generate_key_image_v2);
 
         NAN_EXPORT(target, generate_keys);
+
+        NAN_EXPORT(target, generate_keys_m);
 
         NAN_EXPORT(target, generate_wallet_seed);
 

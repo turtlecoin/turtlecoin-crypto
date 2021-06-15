@@ -58,6 +58,16 @@ namespace Crypto::RingSignature::CLSAG
             (signature.commitment_image.valid() && commitments.size() == public_keys.size()
              && signature.pseudo_commitment.valid());
 
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return false;
+            }
+        }
+
         const auto ring_size = public_keys.size();
 
         if (!signature.check_construction(ring_size, use_commitments))
@@ -317,6 +327,16 @@ namespace Crypto::RingSignature::CLSAG
             return {false, {}};
         }
 
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return {false, {}};
+            }
+        }
+
         const auto use_commitments =
             (input_blinding_factor.valid() && public_commitments.size() == public_keys.size()
              && pseudo_blinding_factor.valid() && pseudo_commitment.valid());
@@ -329,6 +349,10 @@ namespace Crypto::RingSignature::CLSAG
         // P = (p * G) mod l
         const auto public_ephemeral = secret_ephemeral * Crypto::G;
 
+        /**
+         * Look for a public_ephemeral in the key set that we have the
+         * secret ephemeral for
+         */
         for (size_t i = 0; i < ring_size; i++)
         {
             if (use_commitments)
@@ -345,6 +369,8 @@ namespace Crypto::RingSignature::CLSAG
                 if (public_ephemeral == public_keys[i] && public_commitment == derived_commitment)
                 {
                     real_output_index = i;
+
+                    break;
                 }
             }
             else
@@ -352,6 +378,8 @@ namespace Crypto::RingSignature::CLSAG
                 if (public_ephemeral == public_keys[i])
                 {
                     real_output_index = i;
+
+                    break;
                 }
             }
         }
@@ -395,6 +423,16 @@ namespace Crypto::RingSignature::CLSAG
         const crypto_blinding_factor_t &pseudo_blinding_factor,
         const crypto_pedersen_commitment_t &pseudo_commitment)
     {
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return {false, {}, {}, {}};
+            }
+        }
+
         const auto ring_size = public_keys.size();
 
         const auto use_commitments =
@@ -403,12 +441,12 @@ namespace Crypto::RingSignature::CLSAG
 
         if (real_output_index >= ring_size)
         {
-            return {false, {}, {}, {0}};
+            return {false, {}, {}, {}};
         }
 
         if (!key_image.check_subgroup())
         {
-            return {false, {}, {}, {0}};
+            return {false, {}, {}, {}};
         }
 
     try_again:
@@ -437,7 +475,7 @@ namespace Crypto::RingSignature::CLSAG
         {
             if (!input_blinding_factor.valid() || !pseudo_blinding_factor.valid())
             {
-                return {false, {}, {}, {0}};
+                return {false, {}, {}, {}};
             }
 
             /**
@@ -456,7 +494,7 @@ namespace Crypto::RingSignature::CLSAG
              */
             if (commitment != z * Crypto::G)
             {
-                return {false, {}, {}, {0}};
+                return {false, {}, {}, {}};
             }
 
             /**
@@ -491,7 +529,7 @@ namespace Crypto::RingSignature::CLSAG
             if (!mu_P.valid())
             {
                 // We exit here as trying again does not change the transcript inputs
-                return {false, {}, {}, {0}};
+                return {false, {}, {}, {}};
             }
         }
 
@@ -513,7 +551,7 @@ namespace Crypto::RingSignature::CLSAG
             if (!mu_C.valid())
             {
                 // We exit here as trying again does not change the transcript inputs
-                return {false, {}, {}, {0}};
+                return {false, {}, {}, {}};
             }
         }
 
@@ -615,7 +653,7 @@ namespace Crypto::RingSignature::CLSAG
                  */
                 if (!challenge.valid())
                 {
-                    return {false, {}, {}, {0}};
+                    return {false, {}, {}, {}};
                 }
 
                 h[(idx + 1) % ring_size] = challenge;

@@ -361,6 +361,27 @@ int main()
         std::cout << "pow2_round: Passed!" << std::endl;
     }
 
+    // check for randomness
+    {
+        const auto points = crypto_point_vector_t(Crypto::random_points(20)).dedupe_sort();
+
+        PRINTF(points.points);
+
+        if (points.size() != 20)
+        {
+            std::cout << "Failed random points test! Very Bad!!!" << std::endl << std::endl << std::endl;
+        }
+
+        const auto scalars = crypto_scalar_vector_t(Crypto::random_scalars(20)).dedupe_sort();
+
+        PRINTF(scalars.scalars);
+
+        if (scalars.size() != 20)
+        {
+            std::cout << "Failed random scalars test! Very Bad!!!" << std::endl << std::endl << std::endl;
+        }
+    }
+
     // check tests
     {
         const auto scalar = std::string("a03681f038b1aee4d417874fa551aaa8f4a608a70ddff0257dd93f932b8fef0e");
@@ -568,6 +589,41 @@ int main()
         }
 
         std::cout << "generate_key_image_v2: " << key_image2 << std::endl;
+    }
+
+    // Audit Output Proofs
+    {
+        std::cout << std::endl << std::endl << "Audit Output Proofs" << std::endl;
+
+        const auto [public_keys, secret_keys] = Crypto::generate_keys_m(20);
+
+        const auto [success, proof] = Crypto::Audit::generate_outputs_proof(secret_keys);
+
+        if (success)
+        {
+            std::cout << "Audit::generate_outputs_proof: Passed!" << std::endl;
+        }
+        else
+        {
+            std::cout << "Audit::generate_outputs_proof: Failed!" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << std::endl << proof << std::endl << std::endl;
+
+        const auto [valid, key_images] = Crypto::Audit::check_outputs_proof(public_keys, proof);
+
+        if (valid)
+        {
+            std::cout << "Audit::check_outputs_proof: Passed!" << std::endl;
+        }
+        else
+        {
+            std::cout << "Audit::check_outputs_proof: Failed!" << std::endl;
+
+            return 1;
+        }
     }
 
     // Single Signature

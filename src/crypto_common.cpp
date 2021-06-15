@@ -198,6 +198,24 @@ namespace Crypto
         return {secret_key * Crypto::G, secret_key};
     }
 
+    std::tuple<std::vector<crypto_public_key_t>, std::vector<crypto_secret_key_t>> generate_keys_m(size_t count)
+    {
+        std::vector<crypto_public_key_t> public_keys;
+
+        std::vector<crypto_secret_key_t> secret_keys;
+
+        for (size_t i = 0; i < count; ++i)
+        {
+            const auto [public_key, secret_key] = generate_keys();
+
+            public_keys.push_back(public_key);
+
+            secret_keys.push_back(secret_key);
+        }
+
+        return {public_keys, secret_keys};
+    }
+
     std::tuple<crypto_seed_t, std::vector<std::string>, uint64_t>
         generate_wallet_seed(const std::vector<uint8_t> &extra_entropy)
     {

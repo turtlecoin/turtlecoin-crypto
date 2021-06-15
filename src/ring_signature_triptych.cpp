@@ -93,6 +93,16 @@ namespace Crypto::RingSignature::Triptych
     {
         const size_t n = 2;
 
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return false;
+            }
+        }
+
         // checks to verify that it is a proper power of two
         const auto [m_found, m] = Crypto::calculate_base2_exponent(public_keys.size());
 
@@ -320,6 +330,16 @@ namespace Crypto::RingSignature::Triptych
         const crypto_blinding_factor_t &pseudo_blinding_factor,
         const crypto_pedersen_commitment_t &pseudo_commitment)
     {
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return {false, {}};
+            }
+        }
+
         // checks to verify that it is a proper power of two
         const auto [m_found, m] = Crypto::calculate_base2_exponent(public_keys.size());
 
@@ -348,6 +368,10 @@ namespace Crypto::RingSignature::Triptych
 
         const auto public_commitment = (input_blinding_factor - pseudo_blinding_factor) * Crypto::G;
 
+        /**
+         * Look for a public_ephemeral in the key set that we have the
+         * secret ephemeral for
+         */
         for (size_t i = 0; i < ring_size; i++)
         {
             const auto derived_commitment = Crypto::EIGHT * (input_commitments[i] - pseudo_commitment);
@@ -355,6 +379,8 @@ namespace Crypto::RingSignature::Triptych
             if (public_ephemeral == public_keys[i] && public_commitment == derived_commitment)
             {
                 real_output_index = i;
+
+                break;
             }
         }
 
@@ -398,6 +424,16 @@ namespace Crypto::RingSignature::Triptych
         const crypto_pedersen_commitment_t &pseudo_commitment)
     {
         const size_t n = 2;
+
+        // check to verify that there are no duplicate keys in the set
+        {
+            const auto keys = Crypto::dedupe_and_sort_keys(public_keys);
+
+            if (keys.size() != public_keys.size())
+            {
+                return {false, {}, {}};
+            }
+        }
 
         // checks to verify that it is a proper power of two
         const auto [m_found, m] = Crypto::calculate_base2_exponent(public_keys.size());

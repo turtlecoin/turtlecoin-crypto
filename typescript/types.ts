@@ -127,6 +127,9 @@ export interface crypto_triptych_signature_t {
  * Defines all of the user overrideable crypto methods
  */
 export interface IConfig {
+    audit_check_outputs_proof?: (public_ephemerals: string[], proof: string) => Promise<string[]>;
+    audit_generate_outputs_proof?: (secret_ephemerals: string[]) => Promise<string>;
+
     base58_encode?: (hex: string) => Promise<string>;
     base58_encode_check?: (hex: string) => Promise<string>;
     base58_decode?: (base58: string) => Promise<string>;
@@ -389,6 +392,7 @@ export interface IConfig {
     ) => Promise<string>;
     generate_key_image_v2?: (secret_ephemeral: string) => Promise<string>;
     generate_keys?: () => Promise<[string, string]>;
+    generate_keys_m?: (count: number) => Promise<[string[], string[]]>;
     generate_wallet_seed?: (entropy: string) => Promise<[string, string[], BigInteger.BigInteger]>;
     generate_wallet_spend_keys?: (
         secret_spend_key: string,
