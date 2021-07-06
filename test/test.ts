@@ -116,6 +116,24 @@ describe('Cryptographic Tests', async () => {
         });
     });
 
+    describe('AES', async () => {
+        const INPUT_DATA = 'cfc765d905c65e2b61816dc1f0fd69f6f6779f36ed6239ac7e21ff51ef2c891e';
+        const PASSWORD = 'TurtleCoin';
+        let encrypted: string;
+
+        it('Encrypt', async () => {
+            encrypted = await crypto.aes_encrypt(INPUT_DATA, PASSWORD);
+
+            assert(encrypted !== INPUT_DATA);
+        });
+
+        it('Decrypt', async () => {
+            const decrypted = await crypto.aes_decrypt(encrypted, PASSWORD);
+
+            assert(decrypted === INPUT_DATA);
+        });
+    });
+
     describe('Base58', async () => {
         const INPUT_DATA = 'cfc765d905c65e2b61816dc1f0fd69f6f6779f36ed6239ac7e21ff51ef2c891e';
 

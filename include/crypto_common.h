@@ -28,8 +28,10 @@
 #define CRYPTO_COMMON_H
 
 #include "crypto_vector_types.h"
-#include "hashing.h"
 
+#ifndef PBKDF2_ITERATIONS
+#define PBKDF2_ITERATIONS 10000
+#endif
 
 #ifndef CRYPTO_ENTROPY_BYTES
 #define CRYPTO_ENTROPY_BYTES 16384 // 16KiB
@@ -41,6 +43,31 @@
 
 namespace Crypto
 {
+    namespace AES
+    {
+        /**
+         * Decrypts data from the provided hexadecimal encoded encrypted string using the supplied password
+         *
+         * @param input
+         * @param password
+         * @param iterations
+         * @return
+         */
+        std::string
+            decrypt(const std::string &input, const std::string &password, size_t iterations = PBKDF2_ITERATIONS);
+
+        /**
+         * Encrypts the provided string using the supplied password into a hexadecimal encoded encrypted string
+         *
+         * @param input
+         * @param password
+         * @param iterations
+         * @return
+         */
+        std::string
+            encrypt(const std::string &input, const std::string &password, size_t iterations = PBKDF2_ITERATIONS);
+    } // namespace AES
+
     /**
      * Calculates the exponent of 2^e that matches the target value
      * @param target_value

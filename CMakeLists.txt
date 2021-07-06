@@ -96,7 +96,7 @@ add_definitions(-DSTATICLIB)
 add_definitions(-DRAPIDJSON_HAS_STDSTRING)
 
 if(MSVC)
-    add_definitions("/EHsc -std:c++17 /DWIN32_LEAN_AND_MEAN /O2 /wd4267 /wd4996")
+    add_definitions("/EHsc -std:c++17 /O2 /wd4267 /wd4996")
 endif()
 
 if(NOT MSVC)
@@ -106,8 +106,13 @@ endif()
 
 add_subdirectory(external)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson)
+set(INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson
+    ${CMAKE_CURRENT_SOURCE_DIR}/external
+)
+
+include_directories(${INCLUDE_DIRECTORIES})
 
 set(SOURCES
     src/audit.cpp
@@ -130,8 +135,8 @@ set(SOURCES
 )
 
 add_library(crypto-static STATIC ${SOURCES})
-target_link_libraries(crypto-static argon2 ed25519 sha3 uint256t)
-target_include_directories(crypto-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson)
+target_link_libraries(crypto-static argon2 ed25519 cryptopp-static uint256t)
+target_include_directories(crypto-static PUBLIC ${INCLUDE_DIRECTORIES})
 
 if(WIN32)
     target_link_libraries(crypto-static ws2_32 advapi32 crypt32 gdi32 user32)
@@ -139,8 +144,8 @@ endif()
 
 if(BUILD_SHARED)
     add_library(crypto-shared STATIC ${SOURCES})
-    target_link_libraries(crypto-shared argon2 ed25519 sha3 uint256t)
-    target_include_directories(crypto-shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include/rapidjson)
+    target_link_libraries(crypto-shared argon2 ed25519 cryptopp-static uint256t)
+    target_include_directories(crypto-shared PUBLIC ${INCLUDE_DIRECTORIES})
 
     if(WIN32)
         target_link_libraries(crypto-shared ws2_32 advapi32 crypt32 gdi32 user32)

@@ -28,7 +28,6 @@
 #define CRYPTO_SIGNATURE_H
 
 #include "crypto_common.h"
-#include "hashing.h"
 
 namespace Crypto::Signature
 {

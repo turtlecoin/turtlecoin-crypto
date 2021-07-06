@@ -366,6 +366,8 @@ export interface IConfig {
         public_key: string
     ) => Promise<string>;
 
+    aes_decrypt?: (input: string, password: string, iterations?: number) => Promise<string>;
+    aes_encrypt?: (input: string, password: string, iterations?: number) => Promise<string>;
     calculate_base2_exponent?: (value: number) => Promise<number>;
     check_point?: (point: string) => Promise<boolean>;
     check_scalar?: (scalar: string) => Promise<boolean>;

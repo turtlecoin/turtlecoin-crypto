@@ -1139,6 +1139,34 @@ export default class Crypto {
     }
 
     /**
+     * Decrypts data from the provided encrypted string using the supplied password
+     * @param input
+     * @param password
+     * @param iterations
+     */
+    public async aes_decrypt (
+        input: string,
+        password: string,
+        iterations?: number
+    ): Promise<string> {
+        return execute('aes_decrypt', input, password, iterations);
+    }
+
+    /**
+     * Encrypts the provided string using the supplied password into an encrypted string
+     * @param input
+     * @param password
+     * @param iterations
+     */
+    public async aes_encrypt (
+        input: string,
+        password: string,
+        iterations?: number
+    ): Promise<string> {
+        return execute('aes_encrypt', input, password, iterations);
+    }
+
+    /**
      * Calculates the exponent of 2^e that matches the target value
      * @param value
      */

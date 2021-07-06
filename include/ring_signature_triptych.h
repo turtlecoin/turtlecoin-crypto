@@ -31,8 +31,7 @@
 #define CRYPTO_PROOFS_TRIPTYCH_H
 
 #include "crypto_common.h"
-
-#include <utility>
+#include "hashing.h"
 
 struct crypto_triptych_signature_t : ISerializable
 {

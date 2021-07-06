@@ -28,7 +28,6 @@
 #define CRYPTO_SCALAR_TRANSCRIPT_H
 
 #include "crypto_common.h"
-#include "hashing.h"
 #include "serializer.h"
 
 static const crypto_scalar_t TRANSCRIPT_BASE = {0x53, 0x63, 0x61, 0x6c, 0x61, 0x72, 0x20, 0x54, 0x72, 0x61, 0x6e,

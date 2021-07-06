@@ -914,6 +914,70 @@ EMS_METHOD(bulletproofsplus_verify)
  * Mapped methods from crypto_common.cpp
  */
 
+EMS_METHOD(aes_decrypt)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto input = get<std::string>(info, 0);
+
+        const auto password = get<std::string>(info, 1);
+
+        auto iterations = get<uint32_t>(info, 2);
+
+        if (iterations == 0)
+        {
+            iterations = PBKDF2_ITERATIONS;
+        }
+
+        if (!input.empty() && !password.empty())
+        {
+            const auto decrypted = Crypto::AES::decrypt(input, password, iterations);
+
+            return prepare(true, decrypted);
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
+EMS_METHOD(aes_encrypt)
+{
+    try
+    {
+        PARSE_JSON();
+
+        const auto input = get<std::string>(info, 0);
+
+        const auto password = get<std::string>(info, 1);
+
+        auto iterations = get<uint32_t>(info, 2);
+
+        if (iterations == 0)
+        {
+            iterations = PBKDF2_ITERATIONS;
+        }
+
+        if (!input.empty() && !password.empty())
+        {
+            const auto encrypted = Crypto::AES::encrypt(input, password, iterations);
+
+            return prepare(true, encrypted);
+        }
+
+        return error(std::invalid_argument("invalid method argument"));
+    }
+    catch (const std::exception &e)
+    {
+        return error(e);
+    }
+}
+
 EMS_METHOD(calculate_base2_exponent)
 {
     try
@@ -2968,6 +3032,10 @@ EMSCRIPTEN_BINDINGS(InitModule)
 
     // Mapped methods from crypto_common.cpp
     {
+        EMS_EXPORT(aes_decrypt);
+
+        EMS_EXPORT(aes_encrypt);
+
         EMS_EXPORT(calculate_base2_exponent);
 
         EMS_EXPORT(check_point);

@@ -26,9 +26,18 @@
 
 #include "crypto_common.h"
 
+#include "base58.h"
 #include "hashing.h"
 #include "mnemonics.h"
 #include "random.h"
+#include "serializer.h"
+
+#include <cryptopp/aes.h>
+#include <cryptopp/algparam.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/pwdbased.h>
+#include <cryptopp/sha3.h>
 
 static const crypto_scalar_t DERIVATION_DOMAIN_0 = {0x20, 0x54, 0x75, 0x72, 0x74, 0x6c, 0x65, 0x43, 0x6f, 0x69, 0x6e,
                                                     0x20, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x20, 0x62, 0x79, 0x20,
@@ -40,6 +49,108 @@ static const crypto_scalar_t VIEWKEY_DOMAIN_0 = Crypto::hash_to_scalar(SUBWALLET
 
 namespace Crypto
 {
+    namespace AES
+    {
+        std::string decrypt(const std::string &input, const std::string &password, size_t iterations)
+        {
+            // load the hexadecimal encoded string
+            auto reader = deserializer_t(input);
+
+            CryptoPP::byte key[16] = {0}, salt[16] = {0};
+
+            if (reader.size() < sizeof(salt))
+            {
+                throw std::invalid_argument("Ciphertext does not contain enough data to include the salt");
+            }
+
+            // pull out the salt
+            {
+                const auto bytes = reader.bytes(sizeof(salt));
+
+                std::copy(bytes.begin(), bytes.end(), salt);
+            }
+
+            CryptoPP::PKCS5_PBKDF2_HMAC<CryptoPP::SHA3_512> pbkdf2;
+
+            // derive the AES key from the password and salt
+            pbkdf2.DeriveKey(
+                key,
+                sizeof(key),
+                0,
+                reinterpret_cast<const CryptoPP::byte *>(password.c_str()),
+                password.size(),
+                salt,
+                sizeof(salt),
+                iterations);
+
+            CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption cbc_decryption;
+
+            cbc_decryption.SetKeyWithIV(key, sizeof(key), salt);
+
+            std::string decrypted;
+
+            const auto buffer = reader.unread_data();
+
+            try
+            {
+                CryptoPP::StringSource(
+                    reinterpret_cast<const CryptoPP::byte *>(buffer.data()),
+                    buffer.size(),
+                    true,
+                    new CryptoPP::StreamTransformationFilter(cbc_decryption, new CryptoPP::StringSink(decrypted)));
+            }
+            catch (const CryptoPP::Exception &)
+            {
+                throw std::invalid_argument("Wrong password supplied for decryption");
+            }
+
+            return decrypted;
+        }
+
+        std::string encrypt(const std::string &input, const std::string &password, size_t iterations)
+        {
+            CryptoPP::byte key[16] = {0}, salt[16] = {0};
+
+            // generate a random salt
+            random_bytes(sizeof(salt), salt);
+
+            CryptoPP::PKCS5_PBKDF2_HMAC<CryptoPP::SHA3_512> pbkdf2;
+
+            // derive the AES key from the password and salt
+            pbkdf2.DeriveKey(
+                key,
+                sizeof(key),
+                0,
+                reinterpret_cast<const CryptoPP::byte *>(password.c_str()),
+                password.size(),
+                salt,
+                sizeof(salt),
+                iterations);
+
+            CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption cbc_encryption;
+
+            cbc_encryption.SetKeyWithIV(key, sizeof(key), salt);
+
+            std::vector<CryptoPP::byte> encrypted;
+
+            CryptoPP::StringSource(
+                input,
+                true,
+                new CryptoPP::StreamTransformationFilter(cbc_encryption, new CryptoPP::VectorSink(encrypted)));
+
+            auto writer = serializer_t();
+
+            // pack the salt on to the front
+            writer.bytes(salt, sizeof(salt));
+
+            // append the encrypted data
+            writer.bytes(encrypted.data(), encrypted.size());
+
+            // return it as a hexadecimal encoded string
+            return writer.to_string();
+        }
+    } // namespace AES
+
     std::tuple<bool, size_t> calculate_base2_exponent(const size_t &target_value)
     {
         const auto rounded = pow2_round(target_value);

@@ -26,6 +26,13 @@
 
 #include "hashing.h"
 
+extern "C"
+{
+#include <argon2.h>
+};
+
+#include <cryptopp/sha3.h>
+
 static bool argon2_optimization_selected = false;
 
 static inline void init_argon2()
@@ -296,7 +303,11 @@ namespace Crypto::Hashing
     {
         crypto_hash_t result;
 
-        SHA3::hash(input, length, result.bytes);
+        auto hash_context = new CryptoPP::SHA3_256();
+
+        hash_context->Update(static_cast<const CryptoPP::byte *>(input), length);
+
+        hash_context->TruncatedFinal(result.bytes, result.size());
 
         return result;
     }
@@ -317,7 +328,11 @@ namespace Crypto::Hashing
 
             buffer.idx = i;
 
-            SHA3::hash(&buffer, sizeof(buffer), &result.bytes);
+            auto hash_context = new CryptoPP::SHA3_256();
+
+            hash_context->Update(reinterpret_cast<const CryptoPP::byte *>(&buffer), sizeof(buffer));
+
+            hash_context->TruncatedFinal(result.bytes, result.size());
         }
 
         return result;

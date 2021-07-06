@@ -26,6 +26,8 @@
 
 #include "mnemonics.h"
 
+#include "hashing.h"
+
 #include <chrono>
 
 #define MNEMONIC_PREFIX_LENGTH 5

@@ -31,6 +31,7 @@
 #define CRYPTO_RANGEPROOFS_BULLETPROOFS_PLUS_H
 
 #include "crypto_common.h"
+#include "hashing.h"
 
 /**
  * A Bulletproof+ Range Proof

@@ -1,6 +1,3 @@
-[submodule "external/sha3"]
-	path = external/sha3
-	url = https://github.com/turtlecoin/sha3
 [submodule "external/ed25519"]
 	path = external/ed25519
 	url = https://github.com/turtlecoin/ed25519
@@ -16,3 +13,6 @@
 [submodule "external/uint256_t"]
 	path = external/uint256_t
 	url = https://github.com/turtlecoin/uint256_t
+[submodule "external/cryptopp"]
+	path = external/cryptopp
+	url = https://github.com/turtlecoin/cryptopp

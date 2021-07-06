@@ -903,6 +903,78 @@ NAN_METHOD(bulletproofsplus_verify)
  * Mapped methods from crypto_common.cpp
  */
 
+NAN_METHOD(aes_decrypt)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto input = get<std::string>(info, 0);
+
+    const auto password = get<std::string>(info, 1);
+
+    auto iterations = get<uint32_t>(info, 2);
+
+    if (iterations = 0)
+    {
+        iterations = PBKDF2_ITERATIONS;
+    }
+
+    if (!input.empty() && !password.empty())
+    {
+        try
+        {
+            const auto decrypted = Crypto::AES::decrypt(input, password, iterations);
+
+            success = true;
+
+            result = STR_TO_NAN_VAL(decrypted);
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
+NAN_METHOD(aes_encrypt)
+{
+    auto result = STR_TO_NAN_VAL("");
+
+    bool success = false;
+
+    const auto input = get<std::string>(info, 0);
+
+    const auto password = get<std::string>(info, 1);
+
+    auto iterations = get<uint32_t>(info, 2);
+
+    if (iterations = 0)
+    {
+        iterations = PBKDF2_ITERATIONS;
+    }
+
+    if (!input.empty() && !password.empty())
+    {
+        try
+        {
+            const auto encrypted = Crypto::AES::encrypt(input, password, iterations);
+
+            success = true;
+
+            result = STR_TO_NAN_VAL(encrypted);
+        }
+        catch (const std::exception &e)
+        {
+            PRINTF(e.what())
+        }
+    }
+
+    info.GetReturnValue().Set(prepare(success, result));
+}
+
 NAN_METHOD(calculate_base2_exponent)
 {
     auto result = STR_TO_NAN_VAL("");
@@ -3157,6 +3229,10 @@ NAN_MODULE_INIT(InitModule)
 
     // Mapped methods from crypto_common.cpp
     {
+        NAN_EXPORT(target, aes_decrypt);
+
+        NAN_EXPORT(target, aes_encrypt);
+
         NAN_EXPORT(target, calculate_base2_exponent);
 
         NAN_EXPORT(target, check_point);

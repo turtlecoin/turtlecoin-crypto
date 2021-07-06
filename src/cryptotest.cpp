@@ -167,6 +167,38 @@ int main()
         std::cout << "Hashing::sha3_slow_hash[4096]: Passed!" << std::endl << std::endl;
     }
 
+    // AES Test
+    {
+        std::cout << "AES Test:" << std::endl;
+
+        const auto input = std::string("cfc765d905c65e2b61816dc1f0fd69f6f6779f36ed6239ac7e21ff51ef2c891e");
+
+        std::cout << "\tInput:\t\t" << input << std::endl;
+
+        const auto password = std::string("TurtleCoin");
+
+        std::cout << "\tPassword:\t" << password << std::endl;
+
+        const auto encrypted = Crypto::AES::encrypt(input, password);
+
+        std::cout << "\tEncrypted:\t" << encrypted << std::endl;
+
+        const auto decrypted = Crypto::AES::decrypt(encrypted, password);
+
+        std::cout << "\tDecrypted:\t" << decrypted << std::endl;
+
+        if (decrypted != input)
+        {
+            std::cout << "AES Test: Failed" << std::endl;
+
+            return 1;
+        }
+
+        std::cout << "AES Test: Passed" << std::endl << std::endl;
+
+        return 0;
+    }
+
     // Base58 Test #1
     {
         std::cout << "Base58 Test #1:" << std::endl;

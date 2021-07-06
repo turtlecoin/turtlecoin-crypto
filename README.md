@@ -40,6 +40,8 @@ This repository a standalone cryptographic primitive wrapper library that can be
   * Prove & Verify output ownership with linking tags (key images)
 * [SHA3](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf) (256-bit)
   * Simple KDF via `sha3_slow_hash()`
+* [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
+  * Simple AES wrapper encrypting/decrypting data to/from hexadecimal encoded strings
 * [Argon2](https://github.com/P-H-C/phc-winner-argon2/blob/master/argon2-specs.pdf) Hashing
   * Argon2d
   * Argon2i

@@ -27,7 +27,7 @@
 #ifndef CRYPTO_MNEMONICS_H
 #define CRYPTO_MNEMONICS_H
 
-#include "hashing.h"
+#include "crypto_types.h"
 
 #include <string>
 #include <vector>
