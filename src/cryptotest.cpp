@@ -195,8 +195,6 @@ int main()
         }
 
         std::cout << "AES Test: Passed" << std::endl << std::endl;
-
-        return 0;
     }
 
     // Base58 Test #1
