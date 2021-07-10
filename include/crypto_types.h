@@ -229,11 +229,6 @@ struct crypto_point_t
      * structure to use a lot cleaner syntactic sugar in downstream code.
      */
 
-    operator std::string() const
-    {
-        return to_string();
-    }
-
     unsigned char operator[](int i) const
     {
         return bytes[i];
@@ -770,11 +765,6 @@ struct crypto_scalar_t
     /**
      * Operator overloads to make arithmetic a lot easier to handle in methods that use these structures
      */
-
-    operator std::string() const
-    {
-        return to_string();
-    }
 
     unsigned char &operator[](int i)
     {
@@ -1570,11 +1560,6 @@ struct crypto_hash_t
         secure_erase(&bytes, sizeof(bytes));
     }
 
-    operator std::string() const
-    {
-        return to_string();
-    }
-
     unsigned char &operator[](int i)
     {
         return bytes[i];
@@ -1912,11 +1897,6 @@ struct crypto_signature_t
     /**
      * Simple operator overloads for comparison
      */
-
-    operator std::string() const
-    {
-        return to_string();
-    }
 
     unsigned char operator[](int i) const
     {

@@ -6,6 +6,19 @@ if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
+if(DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: Debug, Release, RelWithDebInfo")
+else()
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: Debug, Release, RelWithDebInfo")
+endif()
+
+message(STATUS "Mode: ${CMAKE_BUILD_TYPE}")
+
+set(CMAKE_CONFIGURATION_TYPES Debug RelWithDebInfo Release CACHE STRING INTERNAL)
+set(ARCH native CACHE STRING  "CPU to build for: -march value or native")
+
+message(STATUS "Building for target architecture: ${ARCH}")
+
 set(LIB_MAJOR_VERSION "7")
 set(LIB_MINOR_VERSION "0")
 set(LIB_PATCH_VERSION "0")
@@ -96,12 +109,49 @@ add_definitions(-DSTATICLIB)
 add_definitions(-DRAPIDJSON_HAS_STDSTRING)
 
 if(MSVC)
-    add_definitions("/EHsc -std:c++17 /O2 /wd4267 /wd4996")
-endif()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++17 /wd4267 /wd4804 /wd4996 /D_DLL /D_CRT_SECURE_NO_WARNINGS")
 
-if(NOT MSVC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -O3")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")
+else()
+    if("${ARCH}" STREQUAL "default")
+        set(ARCH_FLAG "")
+    else()
+        set(ARCH_FLAG "-march=${ARCH}")
+    endif()
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wuninitialized ${MAES_FLAG}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wuninitialized ${MAES_FLAG}")
+
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -Og")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -Og")
+
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG -O3")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -O3")
+
+    if(APPLE)
+        if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+            # Need to build against libc++ instead of libstc++ on apple
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nostdinc++ -I/usr/local/opt/llvm/include/c++/v1 -nodefaultlibs -lc++ -lc++abi -lm -lc -lgcc -lgcc_eh")
+
+            # Need these flags so gcc OSX works on the cryptopp ASM - https://groups.google.com/forum/#!topic/cryptopp-users/po8yO-vYaac
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCRYPTOPP_CLANG_INTEGRATED_ASSEMBLER=1")
+
+        elseif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+            # Need to link against the llvm libc++ library, default is too old for std::filesystem
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -I/usr/local/opt/llvm/include/c++/v1")
+        endif()
+    endif()
+
+    if(MINGW OR STATIC_LIBC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libstdc++")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+    endif()
+
+    if(NOT APPLE)
+        set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+    endif()
 endif()
 
 add_subdirectory(external)
@@ -216,12 +266,3 @@ if(BUILD_JS)
     message(STATUS "WASM emcc flags: ${WASM_LINKER}")
     set_target_properties(crypto-wasm PROPERTIES LINK_FLAGS "${WASM_LINKER}" PREFIX "" SUFFIX ".js")
 endif()
-
-foreach(flag_var
-        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
-        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    string(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
-    string(REGEX REPLACE "/Od" "" ${flag_var} "${${flag_var}}")
-endforeach(flag_var)
