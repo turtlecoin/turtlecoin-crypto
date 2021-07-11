@@ -115,7 +115,7 @@ jobs:
           CCACHE_DIR: $GITHUB_WORKSPACE/.ccache
         run: |
           cd build
-          cmake --build . -j
+          cmake --build .
       - name: Test Cryptography (Linux & OSX)
         if: matrix.os != 'windows-latest' || matrix.name == 'mingw-gcc'
         run: |
