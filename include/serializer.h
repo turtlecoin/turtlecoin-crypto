@@ -275,10 +275,9 @@ struct serializer_t
      */
     template<typename T> void key(const T &value)
     {
-        for (size_t i = 0; i < value.size(); ++i)
-        {
-            buffer.push_back(value[int(i)]);
-        }
+        const auto bytes = value.serialize();
+
+        extend(bytes);
     }
 
     /**
@@ -329,7 +328,7 @@ struct serializer_t
      * size of the structure in bytes
      * @return
      */
-    [[nodiscard]] size_t const size() const
+    [[nodiscard]] size_t size() const
     {
         return buffer.size();
     }
@@ -462,6 +461,8 @@ struct serializer_t
 
 struct deserializer_t
 {
+    deserializer_t() {}
+
     deserializer_t(const serializer_t &writer)
     {
         buffer = writer.vector();
